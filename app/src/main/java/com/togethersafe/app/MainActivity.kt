@@ -3,45 +3,36 @@ package com.togethersafe.app
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.togethersafe.app.ui.theme.TogetherSafeTheme
+import androidx.compose.ui.viewinterop.AndroidView
+import com.mapbox.maps.MapView
+import com.mapbox.maps.CameraOptions
+import com.mapbox.geojson.Point
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
-            TogetherSafeTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+            MapScreen()
         }
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
+fun MapScreen() {
+    AndroidView(
+        factory = { context ->
+            MapView(context).apply {
+                mapboxMap.setCamera(
+                    CameraOptions.Builder()
+                        .center(Point.fromLngLat(106.8166, -6.2000)) // Jakarta
+                        .zoom(10.0)
+                        .build()
+                )
+            }
+        },
+        modifier = Modifier.fillMaxSize()
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    TogetherSafeTheme {
-        Greeting("Android")
-    }
 }
