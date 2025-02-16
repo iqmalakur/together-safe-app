@@ -10,6 +10,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.mapbox.maps.MapView
 import com.mapbox.maps.CameraOptions
 import com.mapbox.geojson.Point
+import com.mapbox.maps.CameraBoundsOptions
+import com.mapbox.maps.Style
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,10 +27,19 @@ fun MapScreen() {
     AndroidView(
         factory = { context ->
             MapView(context).apply {
+                mapboxMap.loadStyle(Style.TRAFFIC_DAY)
+
+                mapboxMap.setBounds(
+                    CameraBoundsOptions.Builder()
+                        .minZoom(5.0)
+                        .maxZoom(20.0)
+                        .build()
+                )
+
                 mapboxMap.setCamera(
                     CameraOptions.Builder()
-                        .center(Point.fromLngLat(106.8166, -6.2000)) // Jakarta
-                        .zoom(10.0)
+                        .center(Point.fromLngLat(107.5420, -6.8789)) // Jakarta
+                        .zoom(15.0)
                         .build()
                 )
             }
