@@ -6,12 +6,14 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraBoundsOptions
 import com.mapbox.maps.Style
 import com.mapbox.maps.extension.compose.MapEffect
 import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
+import com.mapbox.maps.extension.compose.annotation.generated.CircleAnnotation
 import com.mapbox.maps.extension.compose.style.MapStyle
 
 class MainActivity: ComponentActivity() {
@@ -47,6 +49,18 @@ fun MapScreen() {
                 .build()
 
             mapboxMap.setBounds(cameraBoundsOption)
+        }
+
+        CircleAnnotation(Point.fromLngLat(107.5420, -6.8789)) {
+            circleRadius = 8.0
+            circleColor = Color.Red
+            circleStrokeWidth = 2.0
+            circleStrokeColor = Color.Black
+
+            interactionsState.onClicked {
+                circleColor = if (circleColor == Color.Red) Color.Blue else Color.Red
+                true
+            }
         }
     }
 }
