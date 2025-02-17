@@ -58,6 +58,8 @@ private fun Map(mapViewportState: MapViewportState) {
     MapboxMap(
         modifier = Modifier.fillMaxSize(),
         mapViewportState = mapViewportState,
+        scaleBar = { },
+        compass = { }, // to be fix
         style = { MapStyle(Style.OUTDOORS) }
     ) {
         ConfigureMapBounds()
