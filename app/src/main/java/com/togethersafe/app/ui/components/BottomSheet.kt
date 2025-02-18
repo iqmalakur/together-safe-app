@@ -26,31 +26,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.togethersafe.app.data.Incident
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomSheet(content: String, sheetState: SheetState, handleDismissRequest: () -> Unit) {
-    val incidentCategory = "Pembegalan"
-    val incidentDescription = "Terjadi pembegalan di daerah Jalan Raya Cimahi pada malam hari. Pelaku menggunakan motor dan membawa senjata tajam."
-    val incidentLocation = "Jalan Raya Cimahi"
-    val incidentTime = "17 Februari 2025, 22:30 WIB"
-    val incidentStatus = "Terverifikasi"
-    val reportCount = 5
-
-    val reports = listOf(
-        "Saya melihat kejadian ini sekitar pukul 22:15 WIB.",
-        "Pelaku membawa senjata tajam dan merampas motor korban.",
-        "Korban mengalami luka ringan dan sudah melapor ke polisi.",
-        "Pelaku kabur ke arah jalan tol setelah kejadian.",
-        "Beberapa warga mencoba mengejar pelaku tetapi gagal."
-    )
-
-    val mediaUrls = listOf(
-        "https://source.unsplash.com/300x200/?crime,street",
-        "https://source.unsplash.com/300x200/?accident,night",
-        "https://source.unsplash.com/300x200/?police,incident"
-    )
-
+fun BottomSheet(incident: Incident, sheetState: SheetState, handleDismissRequest: () -> Unit) {
     ModalBottomSheet(
         sheetState = sheetState,
         onDismissRequest = handleDismissRequest,
@@ -61,7 +41,7 @@ fun BottomSheet(content: String, sheetState: SheetState, handleDismissRequest: (
                 .padding(16.dp, 16.dp, 16.dp, 30.dp)
         ) {
             Text(
-                text = incidentCategory,
+                text = incident.category,
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold
             )
@@ -69,33 +49,38 @@ fun BottomSheet(content: String, sheetState: SheetState, handleDismissRequest: (
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = incidentDescription,
+                text = incident.description,
                 style = MaterialTheme.typography.bodyMedium
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "📍 Lokasi: $incidentLocation",
+                text = "Lokasi: ${incident.location}",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium
             )
 
             Text(
-                text = "🕒 Waktu: $incidentTime",
+                text = "Waktu: ${incident.dateTime}",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium
             )
 
             Text(
-                text = "✅ Status: $incidentStatus",
+                text = "Tingkat Risiko: ${incident.riskLevel}",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium,
-                color = Color.Green
             )
 
             Text(
-                text = "📊 Jumlah Laporan: $reportCount",
+                text = "Status: ${incident.status}",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium,
+            )
+
+            Text(
+                text = "Jumlah Laporan: ${incident.reportCount}",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium
             )
@@ -109,7 +94,7 @@ fun BottomSheet(content: String, sheetState: SheetState, handleDismissRequest: (
             )
 
             LazyRow {
-                items(mediaUrls.take(3)) { mediaUrl ->
+                items(incident.mediaUrls.take(3)) { mediaUrl ->
                     AsyncImage(
                         model = mediaUrl,
                         contentDescription = "Bukti Insiden",
@@ -140,7 +125,7 @@ fun BottomSheet(content: String, sheetState: SheetState, handleDismissRequest: (
             )
 
             LazyColumn {
-                items(reports.take(3)) { report ->
+                items(incident.reports.take(3)) { report ->
                     Text(text = "- $report", style = MaterialTheme.typography.bodySmall)
                     Spacer(modifier = Modifier.height(4.dp))
                 }

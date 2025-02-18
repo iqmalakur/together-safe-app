@@ -22,6 +22,7 @@ import com.mapbox.maps.extension.compose.animation.viewport.MapViewportState
 import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
 import com.mapbox.maps.extension.compose.annotation.generated.CircleAnnotation
 import com.mapbox.maps.extension.compose.style.MapStyle
+import com.togethersafe.app.data.Incident
 import com.togethersafe.app.ui.components.BottomSheet
 import com.togethersafe.app.utils.MapConfig.BEARING
 import com.togethersafe.app.utils.MapConfig.PITCH
@@ -66,7 +67,7 @@ private fun createMapViewportState(): MapViewportState {
 private fun Map(mapViewportState: MapViewportState) {
     val sheetState = rememberModalBottomSheetState()
     var isSheetOpen by rememberSaveable { mutableStateOf(false) }
-    var content by remember { mutableStateOf("") }
+    var incident: Incident? by remember { mutableStateOf(null) }
 
     MapboxMap(
         modifier = Modifier.fillMaxSize(),
@@ -78,49 +79,119 @@ private fun Map(mapViewportState: MapViewportState) {
         ConfigureMapBounds()
 
         CircleAnnotation(Point.fromLngLat(107.5420, -6.8789)) {
+            incident = Incident(
+                category = "Pembegalan",
+                riskLevel = "Tinggi",
+                description = "Terjadi pembegalan di daerah Jalan Raya Cimahi pada malam hari. Pelaku menggunakan motor dan membawa senjata tajam.",
+                location = "Jalan Raya Cimahi",
+                dateTime = "17 Februari 2025, 22:30 WIB",
+                status = "Terverifikasi",
+                reportCount = 5,
+                reports = listOf(
+                    "Saya melihat kejadian ini sekitar pukul 22:15 WIB.",
+                    "Pelaku membawa senjata tajam dan merampas motor korban.",
+                    "Korban mengalami luka ringan dan sudah melapor ke polisi.",
+                    "Pelaku kabur ke arah jalan tol setelah kejadian.",
+                    "Beberapa warga mencoba mengejar pelaku tetapi gagal."
+                ),
+                mediaUrls = listOf(
+                    "https://source.unsplash.com/300x200/?crime,street",
+                    "https://source.unsplash.com/300x200/?accident,night",
+                    "https://source.unsplash.com/300x200/?police,incident"
+                ),
+            )
+
             circleRadius = 8.0
-            circleColor = Color.Red
+            circleColor = getRiskLevelColor(incident!!.riskLevel)
             circleStrokeWidth = 2.0
             circleStrokeColor = Color.Black
 
             interactionsState.onClicked {
                 isSheetOpen = true
-                content = "Marker 1"
                 true
             }
         }
 
         CircleAnnotation(Point.fromLngLat(107.5420, -6.9)) {
+            incident = Incident(
+                category = "Pencurian",
+                riskLevel = "Tinggi",
+                description = "Terjadi pencurian mobil",
+                location = "Jalan Raya Cimahi",
+                dateTime = "18 Februari 2025, 08:00 WIB",
+                status = "Terverifikasi",
+                reportCount = 5,
+                reports = listOf(
+                    "Saya melihat kejadian ini sekitar pukul 22:15 WIB.",
+                    "Pelaku membawa senjata tajam dan merampas motor korban.",
+                    "Korban mengalami luka ringan dan sudah melapor ke polisi.",
+                    "Pelaku kabur ke arah jalan tol setelah kejadian.",
+                    "Beberapa warga mencoba mengejar pelaku tetapi gagal."
+                ),
+                mediaUrls = listOf(
+                    "https://source.unsplash.com/300x200/?crime,street",
+                    "https://source.unsplash.com/300x200/?accident,night",
+                    "https://source.unsplash.com/300x200/?police,incident"
+                ),
+            )
+
             circleRadius = 8.0
-            circleColor = Color.Red
+            circleColor = getRiskLevelColor(incident!!.riskLevel)
             circleStrokeWidth = 2.0
             circleStrokeColor = Color.Black
 
             interactionsState.onClicked {
                 isSheetOpen = true
-                content = "Marker 2"
                 true
             }
         }
 
         CircleAnnotation(Point.fromLngLat(107.5420, -6.7)) {
+            incident = Incident(
+                category = "Kecelakaan",
+                riskLevel = "Sedang",
+                description = "Terjadi kecelakaan beruntun",
+                location = "Jalan Raya Cimahi",
+                dateTime = "15 Februari 2025, 12:00 WIB",
+                status = "Terverifikasi",
+                reportCount = 5,
+                reports = listOf(
+                    "Saya melihat kejadian ini sekitar pukul 22:15 WIB.",
+                    "Pelaku membawa senjata tajam dan merampas motor korban.",
+                    "Korban mengalami luka ringan dan sudah melapor ke polisi.",
+                    "Pelaku kabur ke arah jalan tol setelah kejadian.",
+                    "Beberapa warga mencoba mengejar pelaku tetapi gagal."
+                ),
+                mediaUrls = listOf(
+                    "https://source.unsplash.com/300x200/?crime,street",
+                    "https://source.unsplash.com/300x200/?accident,night",
+                    "https://source.unsplash.com/300x200/?police,incident"
+                ),
+            )
+
             circleRadius = 8.0
-            circleColor = Color.Red
+            circleColor = getRiskLevelColor(incident!!.riskLevel)
             circleStrokeWidth = 2.0
             circleStrokeColor = Color.Black
 
             interactionsState.onClicked {
                 isSheetOpen = true
-                content = "Marker 3"
                 true
             }
         }
 
-        if (isSheetOpen) {
-            BottomSheet(content, sheetState) { isSheetOpen = false }
+        if (isSheetOpen && incident != null) {
+            BottomSheet(incident!!, sheetState) { isSheetOpen = false }
         }
     }
 }
+
+private fun getRiskLevelColor(riskLevel: String): Color =
+    when (riskLevel) {
+        "Tinggi" -> Color.Red
+        "Sedang" -> Color.Yellow
+        else -> Color.Blue
+    }
 
 @Composable
 private fun ConfigureMapBounds() {
