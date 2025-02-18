@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material.icons.rounded.MyLocation
 import androidx.compose.material.icons.rounded.ZoomIn
@@ -39,7 +40,7 @@ import com.togethersafe.app.utils.MapConfig.ZOOM_MIN
 import com.togethersafe.app.utils.MapConfig.ZOOM_DEFAULT
 import com.togethersafe.app.utils.MapConfig.ZOOM_STEP
 
-class MainActivity: ComponentActivity() {
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -61,26 +62,33 @@ class MainActivity: ComponentActivity() {
                     verticalAlignment = Alignment.Top,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                        MapControlButton(
-                            onClick = {  },
-                            imageVector = Icons.Rounded.Menu,
-                            contentDescription = "Menu",
-                        )
-                        TextField(
-                            value = searchValue,
-                            onValueChange = { searchValue = it },
-                            placeholder = { Text("Telusuri di sini") },
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color.White,
-                                unfocusedContainerColor = Color.White,
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent
-                            ),
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(5.dp, 0.dp)
-                                .clip(CircleShape)
-                        )
+                    MapControlButton(
+                        onClick = { },
+                        imageVector = Icons.Rounded.Menu,
+                        contentDescription = "Menu",
+                    )
+                    TextField(
+                        value = searchValue,
+                        onValueChange = { searchValue = it },
+                        placeholder = { Text("Telusuri di sini") },
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.White,
+                            unfocusedContainerColor = Color.White,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent
+                        ),
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Filled.Search,
+                                contentDescription = "Search Icon",
+                                tint = Color.Gray
+                            )
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(5.dp, 0.dp)
+                            .clip(CircleShape)
+                    )
                 }
                 MapButtons(
                     showLocationClick = { showLocationState = true },
