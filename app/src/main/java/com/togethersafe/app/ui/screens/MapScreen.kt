@@ -1,8 +1,6 @@
 package com.togethersafe.app.ui.screens
 
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -25,6 +23,8 @@ import com.mapbox.maps.extension.compose.style.MapStyle
 import com.togethersafe.app.data.Incident
 import com.togethersafe.app.ui.components.BottomSheet
 import com.togethersafe.app.utils.MapConfig.BEARING
+import com.togethersafe.app.utils.MapConfig.LATITUDE_DEFAULT
+import com.togethersafe.app.utils.MapConfig.LONGITUDE_DEFAULT
 import com.togethersafe.app.utils.MapConfig.PITCH
 import com.togethersafe.app.utils.MapConfig.ZOOM_DEFAULT
 import com.togethersafe.app.utils.MapConfig.ZOOM_MAX
@@ -32,7 +32,8 @@ import com.togethersafe.app.utils.MapConfig.ZOOM_MIN
 
 @Composable
 fun MapScreen(zoom: Double, showLocation: Boolean, resetShowLocation: () -> Unit) {
-    val mapViewportState = createMapViewportState()
+    val location = Point.fromLngLat(LONGITUDE_DEFAULT, LATITUDE_DEFAULT)
+    val mapViewportState = createMapViewportState(location)
     val setCameraOptions: (CameraOptions.Builder) -> Unit = { cameraOptions ->
         mapViewportState.flyTo(cameraOptions.build())
     }
@@ -40,9 +41,7 @@ fun MapScreen(zoom: Double, showLocation: Boolean, resetShowLocation: () -> Unit
     LaunchedEffect(zoom) { setCameraOptions(CameraOptions.Builder().zoom(zoom)) }
     LaunchedEffect(showLocation) {
         if (showLocation) {
-            setCameraOptions(
-                CameraOptions.Builder().center(Point.fromLngLat(107.5420, -6.85))
-            )
+            setCameraOptions(CameraOptions.Builder().center(location))
             resetShowLocation()
         }
     }
@@ -50,22 +49,39 @@ fun MapScreen(zoom: Double, showLocation: Boolean, resetShowLocation: () -> Unit
     Map(mapViewportState)
 }
 
+private fun getRiskLevelColor(riskLevel: String): Color =
+    when (riskLevel) {
+        "Tinggi" -> Color.Red
+        "Sedang" -> Color.Yellow
+        else -> Color.Blue
+    }
+
 @Composable
-private fun createMapViewportState(): MapViewportState {
+private fun createMapViewportState(location: Point): MapViewportState {
     return rememberMapViewportState {
         setCameraOptions {
             zoom(ZOOM_DEFAULT)
-            center(Point.fromLngLat(107.5420, -6.8789))
+            center(location)
             pitch(PITCH)
             bearing(BEARING)
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ConfigureMapBounds() {
+    MapEffect(Unit) { mapView ->
+        mapView.mapboxMap.setBounds(
+            CameraBoundsOptions.Builder()
+                .minZoom(ZOOM_MIN)
+                .maxZoom(ZOOM_MAX)
+                .build()
+        )
+    }
+}
+
 @Composable
 private fun Map(mapViewportState: MapViewportState) {
-    val sheetState = rememberModalBottomSheetState()
     var isSheetOpen by rememberSaveable { mutableStateOf(false) }
     var incident: Incident? by remember { mutableStateOf(null) }
 
@@ -73,7 +89,7 @@ private fun Map(mapViewportState: MapViewportState) {
         modifier = Modifier.fillMaxSize(),
         mapViewportState = mapViewportState,
         scaleBar = { },
-        compass = { }, // to be fix
+        compass = { /* TODO: Pindahkan compass ke bawah kanan */ },
         style = { MapStyle(Style.OUTDOORS) }
     ) {
         ConfigureMapBounds()
@@ -181,27 +197,7 @@ private fun Map(mapViewportState: MapViewportState) {
         }
 
         if (isSheetOpen && incident != null) {
-            BottomSheet(incident!!, sheetState) { isSheetOpen = false }
+            BottomSheet(incident!!) { isSheetOpen = false }
         }
-    }
-}
-
-private fun getRiskLevelColor(riskLevel: String): Color =
-    when (riskLevel) {
-        "Tinggi" -> Color.Red
-        "Sedang" -> Color.Yellow
-        else -> Color.Blue
-    }
-
-@Composable
-private fun ConfigureMapBounds() {
-    MapEffect(Unit) { mapView ->
-        val mapboxMap = mapView.mapboxMap
-        mapboxMap.setBounds(
-            CameraBoundsOptions.Builder()
-                .minZoom(ZOOM_MIN)
-                .maxZoom(ZOOM_MAX)
-                .build()
-        )
     }
 }
