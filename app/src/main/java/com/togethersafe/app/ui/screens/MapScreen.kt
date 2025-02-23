@@ -95,7 +95,7 @@ private fun Map(mapViewportState: MapViewportState) {
         ConfigureMapBounds()
 
         CircleAnnotation(Point.fromLngLat(107.5420, -6.8789)) {
-            incident = Incident(
+            val incidentData = Incident(
                 category = "Pembegalan",
                 riskLevel = "Tinggi",
                 description = "Terjadi pembegalan di daerah Jalan Raya Cimahi pada malam hari. Pelaku menggunakan motor dan membawa senjata tajam.",
@@ -118,18 +118,19 @@ private fun Map(mapViewportState: MapViewportState) {
             )
 
             circleRadius = 8.0
-            circleColor = getRiskLevelColor(incident!!.riskLevel)
+            circleColor = getRiskLevelColor(incidentData.riskLevel)
             circleStrokeWidth = 2.0
             circleStrokeColor = Color.Black
 
             interactionsState.onClicked {
+                incident = incidentData
                 isSheetOpen = true
                 true
             }
         }
 
         CircleAnnotation(Point.fromLngLat(107.5420, -6.9)) {
-            incident = Incident(
+            val incidentData = Incident(
                 category = "Pencurian",
                 riskLevel = "Tinggi",
                 description = "Terjadi pencurian mobil",
@@ -152,18 +153,19 @@ private fun Map(mapViewportState: MapViewportState) {
             )
 
             circleRadius = 8.0
-            circleColor = getRiskLevelColor(incident!!.riskLevel)
+            circleColor = getRiskLevelColor(incidentData.riskLevel)
             circleStrokeWidth = 2.0
             circleStrokeColor = Color.Black
 
             interactionsState.onClicked {
+                incident = incidentData
                 isSheetOpen = true
                 true
             }
         }
 
         CircleAnnotation(Point.fromLngLat(107.5420, -6.7)) {
-            incident = Incident(
+            val incidentData = Incident(
                 category = "Kecelakaan",
                 riskLevel = "Sedang",
                 description = "Terjadi kecelakaan beruntun",
@@ -186,11 +188,12 @@ private fun Map(mapViewportState: MapViewportState) {
             )
 
             circleRadius = 8.0
-            circleColor = getRiskLevelColor(incident!!.riskLevel)
+            circleColor = getRiskLevelColor(incidentData.riskLevel)
             circleStrokeWidth = 2.0
             circleStrokeColor = Color.Black
 
             interactionsState.onClicked {
+                incident = incidentData
                 isSheetOpen = true
                 true
             }

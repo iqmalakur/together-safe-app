@@ -55,6 +55,7 @@ private fun SearchBar(modifier: Modifier = Modifier) {
         onValueChange = { searchValue = it },
         placeholder = { Text("Telusuri di sini") },
         colors = textFieldColors,
+        singleLine = true,
         leadingIcon = {
             Icon(
                 imageVector = Icons.Filled.Search,
