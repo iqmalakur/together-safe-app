@@ -52,6 +52,8 @@ dependencies {
     implementation(libs.mapbox.maps)
     implementation(libs.mapbox.extension)
     implementation(libs.androidx.material.icons.extended)
+    implementation(libs.coil.compose)
+    implementation(libs.play.services.location)
 
     testImplementation(libs.junit)
 
