@@ -1,5 +1,6 @@
 package com.togethersafe.app.ui.screens
 
+import android.content.Context
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -22,6 +23,7 @@ import com.mapbox.maps.extension.compose.annotation.generated.CircleAnnotation
 import com.mapbox.maps.extension.compose.style.MapStyle
 import com.togethersafe.app.data.Incident
 import com.togethersafe.app.ui.components.BottomSheet
+import com.togethersafe.app.utils.GetUserLocation
 import com.togethersafe.app.utils.MapConfig.BEARING
 import com.togethersafe.app.utils.MapConfig.LATITUDE_DEFAULT
 import com.togethersafe.app.utils.MapConfig.LONGITUDE_DEFAULT
@@ -31,22 +33,46 @@ import com.togethersafe.app.utils.MapConfig.ZOOM_MAX
 import com.togethersafe.app.utils.MapConfig.ZOOM_MIN
 
 @Composable
-fun MapScreen(zoom: Double, showLocation: Boolean, resetShowLocation: () -> Unit) {
-    val location = Point.fromLngLat(LONGITUDE_DEFAULT, LATITUDE_DEFAULT)
+fun MapScreen(
+    context: Context,
+    zoom: Double,
+    showLocation: Boolean,
+    resetShowLocation: () -> Unit,
+    requestLocationPermission: (onSuccess: () -> Unit) -> Unit
+) {
+    var location by remember { mutableStateOf(Point.fromLngLat(LONGITUDE_DEFAULT, LATITUDE_DEFAULT)) }
+    var isTrackUser by remember { mutableStateOf(false) }
+    var isLocationPermissionGranted by remember { mutableStateOf(false) }
+
     val mapViewportState = createMapViewportState(location)
     val setCameraOptions: (CameraOptions.Builder) -> Unit = { cameraOptions ->
         mapViewportState.flyTo(cameraOptions.build())
     }
 
+    if (isLocationPermissionGranted) {
+        GetUserLocation(context) { currentLocation ->
+            location = Point.fromLngLat(currentLocation.longitude, currentLocation.latitude)
+            setCameraOptions(CameraOptions.Builder().center(location))
+        }
+        isLocationPermissionGranted = false
+    }
+
     LaunchedEffect(zoom) { setCameraOptions(CameraOptions.Builder().zoom(zoom)) }
     LaunchedEffect(showLocation) {
         if (showLocation) {
-            setCameraOptions(CameraOptions.Builder().center(location))
+            isTrackUser = true
+            requestLocationPermission {
+                isLocationPermissionGranted = true
+            }
             resetShowLocation()
         }
     }
 
-    Map(mapViewportState)
+    Map(
+        mapViewportState = mapViewportState,
+        location = location,
+        isTrackUser = isTrackUser,
+    )
 }
 
 private fun getRiskLevelColor(riskLevel: String): Color =
@@ -81,7 +107,27 @@ private fun ConfigureMapBounds() {
 }
 
 @Composable
-private fun Map(mapViewportState: MapViewportState) {
+private fun UserPosition(location: Point) {
+    CircleAnnotation(location) {
+        circleRadius = 16.0
+        circleColor = Color(0x553498DB)
+        circleStrokeWidth = 0.0
+    }
+
+    CircleAnnotation(location) {
+        circleRadius = 8.0
+        circleColor = Color.Cyan
+        circleStrokeWidth = 2.0
+        circleStrokeColor = Color.Black
+    }
+}
+
+@Composable
+private fun Map(
+    mapViewportState: MapViewportState,
+    location: Point,
+    isTrackUser: Boolean,
+) {
     var isSheetOpen by rememberSaveable { mutableStateOf(false) }
     var incident: Incident? by remember { mutableStateOf(null) }
 
@@ -93,6 +139,10 @@ private fun Map(mapViewportState: MapViewportState) {
         style = { MapStyle(Style.OUTDOORS) }
     ) {
         ConfigureMapBounds()
+
+        if (isTrackUser) {
+            UserPosition(location)
+        }
 
         CircleAnnotation(Point.fromLngLat(107.5420, -6.8789)) {
             val incidentData = Incident(
