@@ -17,15 +17,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModelProvider
+import com.togethersafe.app.data.network.ApiService
+import com.togethersafe.app.repository.IncidentRepository
 import com.togethersafe.app.ui.components.MapButtons
 import com.togethersafe.app.ui.components.MapHeader
-import com.togethersafe.app.ui.screens.MapScreen
+import com.togethersafe.app.ui.view.MapScreen
+import com.togethersafe.app.ui.view.ViewModelFactory
+import com.togethersafe.app.ui.viewmodel.IncidentViewModel
 import com.togethersafe.app.utils.MapConfig.ZOOM_MAX
 import com.togethersafe.app.utils.MapConfig.ZOOM_MIN
 import com.togethersafe.app.utils.MapConfig.ZOOM_DEFAULT
 import com.togethersafe.app.utils.MapConfig.ZOOM_STEP
 import com.togethersafe.app.utils.checkLocationPermission
 import com.togethersafe.app.utils.getCurrentLocation
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
 
 class MainActivity : ComponentActivity() {
     private lateinit var locationPermissionLauncher: ActivityResultLauncher<String>
@@ -44,7 +52,18 @@ class MainActivity : ComponentActivity() {
             else showGoToSettingsDialog()
         }
 
-        if (checkLocationPermission(context)) getCurrentLocation(context) { }
+        if (checkLocationPermission(context)) getCurrentLocation(context) {}
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://stirred-eagle-witty.ngrok-free.app")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val apiService = retrofit.create(ApiService::class.java)
+        val repository = IncidentRepository(apiService)
+
+        val factory = ViewModelFactory(IncidentViewModel::class.java) { IncidentViewModel(repository) }
+        val viewModel = ViewModelProvider(this, factory)[IncidentViewModel::class.java]
 
         setContent {
             var zoomState by remember { mutableDoubleStateOf(ZOOM_DEFAULT) }
@@ -53,10 +72,11 @@ class MainActivity : ComponentActivity() {
             Box {
                 MapScreen(
                     context = context,
+                    viewModel = viewModel,
                     zoom = zoomState,
                     showLocation = showLocationState,
                     resetShowLocation = { showLocationState = false },
-                    ::requestLocationPermission,
+                    requestLocationPermission = ::requestLocationPermission,
                 )
                 MapHeader()
                 MapButtons(
