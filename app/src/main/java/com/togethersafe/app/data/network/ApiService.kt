@@ -5,5 +5,5 @@ import retrofit2.http.GET
 
 interface ApiService {
     @GET("incident")
-    suspend fun getIncidents(): List<Incident>
+    suspend fun fetchIncidents(): List<Incident>
 }
