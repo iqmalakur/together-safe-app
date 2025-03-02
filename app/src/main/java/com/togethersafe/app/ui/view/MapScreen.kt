@@ -26,6 +26,7 @@ import com.mapbox.maps.extension.compose.style.MapStyle
 import com.togethersafe.app.data.model.Incident
 import com.togethersafe.app.ui.components.BottomSheet
 import com.togethersafe.app.ui.viewmodel.IncidentViewModel
+import com.togethersafe.app.ui.viewmodel.MapViewModel
 import com.togethersafe.app.utils.GetUserLocation
 import com.togethersafe.app.utils.MapConfig.BEARING
 import com.togethersafe.app.utils.MapConfig.LATITUDE_DEFAULT
@@ -38,17 +39,18 @@ import com.togethersafe.app.utils.MapConfig.ZOOM_MIN
 @Composable
 fun MapScreen(
     context: Context,
-    zoom: Double,
     showLocation: Boolean,
     resetShowLocation: () -> Unit,
     requestLocationPermission: (onSuccess: () -> Unit) -> Unit,
-    viewModel: IncidentViewModel = hiltViewModel(),
+    incidentViewModel: IncidentViewModel = hiltViewModel(),
+    mapViewModel: MapViewModel = hiltViewModel(),
 ) {
     var location by remember { mutableStateOf(Point.fromLngLat(LONGITUDE_DEFAULT, LATITUDE_DEFAULT)) }
     var isTrackUser by remember { mutableStateOf(false) }
     var isLocationPermissionGranted by remember { mutableStateOf(false) }
 
-    val incidents by viewModel.incidents.collectAsState()
+    val incidents by incidentViewModel.incidents.collectAsState()
+    val zoomLevel by mapViewModel.zoomLevel.collectAsState()
     val mapViewportState = createMapViewportState(location)
     val setCameraOptions: (CameraOptions.Builder) -> Unit = { cameraOptions ->
         mapViewportState.flyTo(cameraOptions.build())
@@ -63,10 +65,10 @@ fun MapScreen(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.loadIncidents()
+        incidentViewModel.loadIncidents()
     }
 
-    LaunchedEffect(zoom) { setCameraOptions(CameraOptions.Builder().zoom(zoom)) }
+    LaunchedEffect(zoomLevel) { setCameraOptions(CameraOptions.Builder().zoom(zoomLevel)) }
     LaunchedEffect(showLocation) {
         if (showLocation) {
             isTrackUser = true
