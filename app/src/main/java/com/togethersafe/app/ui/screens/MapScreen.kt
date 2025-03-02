@@ -7,6 +7,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -21,6 +22,7 @@ import com.mapbox.maps.extension.compose.animation.viewport.MapViewportState
 import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
 import com.mapbox.maps.extension.compose.annotation.generated.CircleAnnotation
 import com.mapbox.maps.extension.compose.style.MapStyle
+import com.togethersafe.app.api.TogetherSafeApi
 import com.togethersafe.app.data.Incident
 import com.togethersafe.app.ui.components.BottomSheet
 import com.togethersafe.app.utils.GetUserLocation
@@ -31,6 +33,9 @@ import com.togethersafe.app.utils.MapConfig.PITCH
 import com.togethersafe.app.utils.MapConfig.ZOOM_DEFAULT
 import com.togethersafe.app.utils.MapConfig.ZOOM_MAX
 import com.togethersafe.app.utils.MapConfig.ZOOM_MIN
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun MapScreen(
@@ -65,6 +70,14 @@ fun MapScreen(
                 isLocationPermissionGranted = true
             }
             resetShowLocation()
+        }
+    }
+
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        coroutineScope.launch {
+            TogetherSafeApi.getIncident()
         }
     }
 

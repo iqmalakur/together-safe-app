@@ -54,6 +54,8 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.coil.compose)
     implementation(libs.play.services.location)
+    implementation(libs.retrofit2.retrofit)
+    implementation(libs.converter.gson)
 
     testImplementation(libs.junit)
 
