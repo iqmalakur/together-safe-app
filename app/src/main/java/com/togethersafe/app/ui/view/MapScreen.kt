@@ -12,6 +12,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraBoundsOptions
 import com.mapbox.maps.CameraOptions
@@ -37,11 +38,11 @@ import com.togethersafe.app.utils.MapConfig.ZOOM_MIN
 @Composable
 fun MapScreen(
     context: Context,
-    viewModel: IncidentViewModel,
     zoom: Double,
     showLocation: Boolean,
     resetShowLocation: () -> Unit,
-    requestLocationPermission: (onSuccess: () -> Unit) -> Unit
+    requestLocationPermission: (onSuccess: () -> Unit) -> Unit,
+    viewModel: IncidentViewModel = hiltViewModel(),
 ) {
     var location by remember { mutableStateOf(Point.fromLngLat(LONGITUDE_DEFAULT, LATITUDE_DEFAULT)) }
     var isTrackUser by remember { mutableStateOf(false) }

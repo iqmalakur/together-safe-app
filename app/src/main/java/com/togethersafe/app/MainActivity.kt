@@ -23,7 +23,6 @@ import com.togethersafe.app.repository.IncidentRepository
 import com.togethersafe.app.ui.components.MapButtons
 import com.togethersafe.app.ui.components.MapHeader
 import com.togethersafe.app.ui.view.MapScreen
-import com.togethersafe.app.ui.view.ViewModelFactory
 import com.togethersafe.app.ui.viewmodel.IncidentViewModel
 import com.togethersafe.app.utils.MapConfig.ZOOM_MAX
 import com.togethersafe.app.utils.MapConfig.ZOOM_MIN
@@ -31,10 +30,11 @@ import com.togethersafe.app.utils.MapConfig.ZOOM_DEFAULT
 import com.togethersafe.app.utils.MapConfig.ZOOM_STEP
 import com.togethersafe.app.utils.checkLocationPermission
 import com.togethersafe.app.utils.getCurrentLocation
+import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private lateinit var locationPermissionLauncher: ActivityResultLauncher<String>
     private lateinit var context: Context
@@ -54,17 +54,6 @@ class MainActivity : ComponentActivity() {
 
         if (checkLocationPermission(context)) getCurrentLocation(context) {}
 
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://stirred-eagle-witty.ngrok-free.app")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        val apiService = retrofit.create(ApiService::class.java)
-        val repository = IncidentRepository(apiService)
-
-        val factory = ViewModelFactory(IncidentViewModel::class.java) { IncidentViewModel(repository) }
-        val viewModel = ViewModelProvider(this, factory)[IncidentViewModel::class.java]
-
         setContent {
             var zoomState by remember { mutableDoubleStateOf(ZOOM_DEFAULT) }
             var showLocationState by remember { mutableStateOf(false) }
@@ -72,7 +61,6 @@ class MainActivity : ComponentActivity() {
             Box {
                 MapScreen(
                     context = context,
-                    viewModel = viewModel,
                     zoom = zoomState,
                     showLocation = showLocationState,
                     resetShowLocation = { showLocationState = false },

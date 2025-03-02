@@ -4,11 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.togethersafe.app.data.model.Incident
 import com.togethersafe.app.repository.IncidentRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class IncidentViewModel(private val repository: IncidentRepository): ViewModel() {
+@HiltViewModel
+class IncidentViewModel @Inject constructor(private val repository: IncidentRepository): ViewModel() {
     private val _incidents = MutableStateFlow<List<Incident>>(emptyList())
     val incidents: StateFlow<List<Incident>> get() = _incidents
 
