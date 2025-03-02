@@ -1,16 +1,8 @@
 package com.togethersafe.app.api
 
 import android.util.Log
-import com.togethersafe.app.data.Incident
-import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.GET
-
-private interface TogetherSafeApiInterface {
-    @GET("incident")
-    suspend fun getIncident(): List<Incident>
-}
 
 object TogetherSafeApi {
     private const val BASE_URL = "https://stirred-eagle-witty.ngrok-free.app"
