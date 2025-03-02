@@ -1,4 +1,4 @@
-package com.togethersafe.app.ui
+package com.togethersafe.app.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

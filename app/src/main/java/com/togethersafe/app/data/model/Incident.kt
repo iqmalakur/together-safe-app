@@ -6,7 +6,7 @@ data class Incident(
     val time: String,
     val riskLevel: String,
     val location: String,
-    val latitude: Float,
-    val longitude: Float,
+    val latitude: Double,
+    val longitude: Double,
     val status: String,
 )
