@@ -13,6 +13,9 @@ class LocationViewModel @Inject constructor() : ViewModel() {
     private val _isPermissionRequest = MutableStateFlow(false)
     val isPermissionRequest: StateFlow<Boolean> get() = _isPermissionRequest
 
+    private val _isLocating = MutableStateFlow(false)
+    val isLocating: StateFlow<Boolean> get() = _isLocating
+
     fun requestPermission(onResult: (() -> Unit)?) {
         _isPermissionRequest.value = true
         _onResult = onResult
@@ -22,4 +25,7 @@ class LocationViewModel @Inject constructor() : ViewModel() {
         _isPermissionRequest.value = false
         if (granted) _onResult?.invoke()
     }
+
+    fun startLocating() { _isLocating.value = true }
+    fun stopLocating() { _isLocating.value = false }
 }

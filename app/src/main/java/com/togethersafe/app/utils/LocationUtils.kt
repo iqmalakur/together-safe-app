@@ -17,7 +17,7 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
+import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
 
 fun checkLocationPermission(context: Context): Boolean {
     return ActivityCompat.checkSelfPermission(
@@ -28,7 +28,7 @@ fun checkLocationPermission(context: Context): Boolean {
 fun getCurrentLocation(context: Context, onLocationReceived: (Location) -> Unit) {
     if (checkLocationPermission(context)) {
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-        val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000)
+        val locationRequest = LocationRequest.Builder(PRIORITY_HIGH_ACCURACY, 1000)
             .setWaitForAccurateLocation(false)
             .setMinUpdateIntervalMillis(2000)
             .build()
@@ -100,7 +100,7 @@ fun StartRealTimeLocationUpdates(
 ): LocationCallback {
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
 
-    val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 2000)
+    val locationRequest = LocationRequest.Builder(PRIORITY_HIGH_ACCURACY, 2000)
         .setMinUpdateIntervalMillis(1000)
         .build()
 

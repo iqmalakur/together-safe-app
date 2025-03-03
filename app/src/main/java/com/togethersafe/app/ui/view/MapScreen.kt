@@ -40,8 +40,6 @@ import com.togethersafe.app.utils.MapConfig.ZOOM_MIN
 @Composable
 fun MapScreen(
     context: Context,
-    showLocation: Boolean,
-    resetShowLocation: () -> Unit,
     mapViewModel: MapViewModel = hiltViewModel(),
     locationViewModel: LocationViewModel = hiltViewModel(),
 ) {
@@ -50,6 +48,7 @@ fun MapScreen(
     var isLocationPermissionGranted by remember { mutableStateOf(false) }
 
     val zoomLevel by mapViewModel.zoomLevel.collectAsState()
+    val isLocating by locationViewModel.isLocating.collectAsState()
     val mapViewportState = createMapViewportState(location)
     val setCameraOptions: (CameraOptions.Builder) -> Unit = { cameraOptions ->
         mapViewportState.flyTo(cameraOptions.build())
@@ -65,13 +64,13 @@ fun MapScreen(
 
 
     LaunchedEffect(zoomLevel) { setCameraOptions(CameraOptions.Builder().zoom(zoomLevel)) }
-    LaunchedEffect(showLocation) {
-        if (showLocation) {
+    LaunchedEffect(isLocating) {
+        if (isLocating) {
             locationViewModel.requestPermission {
                 if (!isTrackUser) isTrackUser = true
                 isLocationPermissionGranted = true
             }
-            resetShowLocation()
+            locationViewModel.stopLocating()
         }
     }
 

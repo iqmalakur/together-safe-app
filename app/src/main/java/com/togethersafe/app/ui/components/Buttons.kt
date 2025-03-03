@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.togethersafe.app.ui.viewmodel.LocationViewModel
 import com.togethersafe.app.ui.viewmodel.MapViewModel
 
 @Composable
@@ -41,11 +42,11 @@ fun RoundedIconButton(
 
 @Composable
 fun MapButtons(
-    showLocationClick: () -> Unit,
     mapViewModel: MapViewModel = hiltViewModel(),
+    locationViewModel: LocationViewModel = hiltViewModel(),
 ) {
     val buttons = listOf(
-        Triple(Icons.Rounded.MyLocation, "Lokasi Saya", showLocationClick),
+        Triple(Icons.Rounded.MyLocation, "Lokasi Saya", locationViewModel::startLocating),
         Triple(Icons.Rounded.ZoomIn, "Perbesar Peta", mapViewModel::zoomIn),
         Triple(Icons.Rounded.ZoomOut, "Perkecil Peta", mapViewModel::zoomOut),
     )

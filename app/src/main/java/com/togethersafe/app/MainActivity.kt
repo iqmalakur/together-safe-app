@@ -15,10 +15,7 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import com.togethersafe.app.ui.components.MapButtons
 import com.togethersafe.app.ui.components.MapHeader
 import com.togethersafe.app.ui.view.MapScreen
@@ -52,22 +49,15 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val isPermissionRequest by locationViewModel.isPermissionRequest.collectAsState()
-            var showLocationState by remember { mutableStateOf(false) }
 
             LaunchedEffect(isPermissionRequest) {
                 if (isPermissionRequest) { requestLocationPermission() }
             }
 
             Box {
-                MapScreen(
-                    context = context,
-                    showLocation = showLocationState,
-                    resetShowLocation = { showLocationState = false },
-                )
+                MapScreen(context = context)
                 MapHeader()
-                MapButtons(
-                    showLocationClick = { showLocationState = true },
-                )
+                MapButtons()
             }
         }
     }
