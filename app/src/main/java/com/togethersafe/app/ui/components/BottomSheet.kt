@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -74,7 +75,7 @@ private fun BottomSheetContent(incident: Incident) {
     InfoText("Jam", incident.time)
     InfoText("Tingkat Risiko", incident.riskLevel)
     InfoText("Status", incident.status)
-//    InfoText("Jumlah Laporan", incident.reportCount.toString())
+    InfoText("Jumlah Laporan", "${incident.reports.size}")
 
     Spacer(modifier = Modifier.height(16.dp))
 }
@@ -93,17 +94,17 @@ private fun BottomSheetMedia(incident: Incident) {
     SectionTitle("Bukti Gambar/Video")
 
     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-//        items(incident.mediaUrls.take(3)) { mediaUrl ->
-//            AsyncImage(
-//                model = mediaUrl,
-//                contentDescription = "Bukti Insiden",
-//                modifier = Modifier
-//                    .size(120.dp)
-//                    .clip(RoundedCornerShape(8.dp))
-//                    .border(1.dp, Color.Gray, RoundedCornerShape(8.dp)),
-//                contentScale = ContentScale.Crop
-//            )
-//        }
+        items(incident.mediaUrls.take(3)) { mediaUrl ->
+            AsyncImage(
+                model = mediaUrl,
+                contentDescription = "Bukti Insiden",
+                modifier = Modifier
+                    .size(120.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .border(1.dp, Color.Gray, RoundedCornerShape(8.dp)),
+                contentScale = ContentScale.Crop
+            )
+        }
     }
 
     SeeMore { /* TODO: Navigasi ke galeri insiden */ }
@@ -114,9 +115,9 @@ private fun BottomSheetReport(incident: Incident) {
     SectionTitle("Laporan Terkait")
 
     LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-//        items(incident.reports.take(3)) { report ->
-//            Text(text = "- $report", style = MaterialTheme.typography.bodySmall)
-//        }
+        items(incident.reports.take(3)) { report ->
+            Text(text = "- ${report.description}", style = MaterialTheme.typography.bodySmall)
+        }
     }
 
     SeeMore { /* TODO: Navigasi ke list laporan insiden */ }
