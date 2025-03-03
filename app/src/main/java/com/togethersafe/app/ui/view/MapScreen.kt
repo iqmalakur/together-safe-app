@@ -26,6 +26,7 @@ import com.mapbox.maps.extension.compose.style.MapStyle
 import com.togethersafe.app.data.model.Incident
 import com.togethersafe.app.ui.components.BottomSheet
 import com.togethersafe.app.ui.viewmodel.IncidentViewModel
+import com.togethersafe.app.ui.viewmodel.LocationViewModel
 import com.togethersafe.app.ui.viewmodel.MapViewModel
 import com.togethersafe.app.utils.GetUserLocation
 import com.togethersafe.app.utils.MapConfig.BEARING
@@ -41,15 +42,13 @@ fun MapScreen(
     context: Context,
     showLocation: Boolean,
     resetShowLocation: () -> Unit,
-    requestLocationPermission: (onSuccess: () -> Unit) -> Unit,
-    incidentViewModel: IncidentViewModel = hiltViewModel(),
     mapViewModel: MapViewModel = hiltViewModel(),
+    locationViewModel: LocationViewModel = hiltViewModel(),
 ) {
     var location by remember { mutableStateOf(Point.fromLngLat(LONGITUDE_DEFAULT, LATITUDE_DEFAULT)) }
     var isTrackUser by remember { mutableStateOf(false) }
     var isLocationPermissionGranted by remember { mutableStateOf(false) }
 
-    val incidents by incidentViewModel.incidents.collectAsState()
     val zoomLevel by mapViewModel.zoomLevel.collectAsState()
     val mapViewportState = createMapViewportState(location)
     val setCameraOptions: (CameraOptions.Builder) -> Unit = { cameraOptions ->
@@ -64,15 +63,12 @@ fun MapScreen(
         isLocationPermissionGranted = false
     }
 
-    LaunchedEffect(Unit) {
-        incidentViewModel.loadIncidents()
-    }
 
     LaunchedEffect(zoomLevel) { setCameraOptions(CameraOptions.Builder().zoom(zoomLevel)) }
     LaunchedEffect(showLocation) {
         if (showLocation) {
-            isTrackUser = true
-            requestLocationPermission {
+            locationViewModel.requestPermission {
+                if (!isTrackUser) isTrackUser = true
                 isLocationPermissionGranted = true
             }
             resetShowLocation()
@@ -83,7 +79,6 @@ fun MapScreen(
         mapViewportState = mapViewportState,
         location = location,
         isTrackUser = isTrackUser,
-        incidents = incidents,
     )
 }
 
@@ -137,10 +132,11 @@ private fun UserPosition(location: Point) {
 @Composable
 private fun Map(
     mapViewportState: MapViewportState,
-    incidents: List<Incident>,
     location: Point,
     isTrackUser: Boolean,
+    incidentViewModel: IncidentViewModel = hiltViewModel(),
 ) {
+    val incidents by incidentViewModel.incidents.collectAsState()
     var incidentData by remember { mutableStateOf<Incident?>(null) }
     var isSheetOpen by rememberSaveable { mutableStateOf(false) }
 
@@ -153,9 +149,8 @@ private fun Map(
     ) {
         ConfigureMapBounds()
 
-        if (isTrackUser) {
-            UserPosition(location)
-        }
+        if (isTrackUser) UserPosition(location)
+        LaunchedEffect(Unit) { incidentViewModel.loadIncidents() }
 
         incidents.forEach { incident ->
             CircleAnnotation(Point.fromLngLat(incident.longitude, incident.latitude)) {

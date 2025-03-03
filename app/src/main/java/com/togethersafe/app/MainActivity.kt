@@ -11,7 +11,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,16 +22,17 @@ import androidx.compose.runtime.setValue
 import com.togethersafe.app.ui.components.MapButtons
 import com.togethersafe.app.ui.components.MapHeader
 import com.togethersafe.app.ui.view.MapScreen
+import com.togethersafe.app.ui.viewmodel.LocationViewModel
 import com.togethersafe.app.utils.checkLocationPermission
 import com.togethersafe.app.utils.getCurrentLocation
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private val locationViewModel: LocationViewModel by viewModels()
+
     private lateinit var locationPermissionLauncher: ActivityResultLauncher<String>
     private lateinit var context: Context
-
-    private lateinit var onRequestPermissionSuccess: () -> Unit
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,21 +41,28 @@ class MainActivity : ComponentActivity() {
         locationPermissionLauncher = registerForActivityResult(
             ActivityResultContracts.RequestPermission()
         ) { isGranted ->
-            if (isGranted) onRequestPermissionSuccess()
-            else showGoToSettingsDialog()
+            if (isGranted) locationViewModel.completeRequestPermission(true)
+            else {
+                locationViewModel.completeRequestPermission(false)
+                showGoToSettingsDialog()
+            }
         }
 
         if (checkLocationPermission(context)) getCurrentLocation(context) {}
 
         setContent {
+            val isPermissionRequest by locationViewModel.isPermissionRequest.collectAsState()
             var showLocationState by remember { mutableStateOf(false) }
+
+            LaunchedEffect(isPermissionRequest) {
+                if (isPermissionRequest) { requestLocationPermission() }
+            }
 
             Box {
                 MapScreen(
                     context = context,
                     showLocation = showLocationState,
                     resetShowLocation = { showLocationState = false },
-                    requestLocationPermission = ::requestLocationPermission,
                 )
                 MapHeader()
                 MapButtons(
@@ -61,11 +72,9 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun requestLocationPermission(onSuccess: () -> Unit) {
-        onRequestPermissionSuccess = onSuccess
-
+    private fun requestLocationPermission() {
         if (checkLocationPermission(this)) {
-            onRequestPermissionSuccess()
+            locationViewModel.completeRequestPermission(true)
         } else {
             locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }

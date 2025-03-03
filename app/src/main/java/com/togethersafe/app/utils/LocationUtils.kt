@@ -50,6 +50,12 @@ fun getCurrentLocation(context: Context, onLocationReceived: (Location) -> Unit)
     }
 }
 
+private fun isLocationSame(first: Location, second: Location): Boolean {
+    val isLatitudeSame = first.latitude == second.latitude
+    val isLongitudeSame = first.longitude == second.longitude
+    return isLatitudeSame && isLongitudeSame
+}
+
 @Composable
 fun GetUserLocation(
     context: Context,
@@ -62,14 +68,21 @@ fun GetUserLocation(
     LaunchedEffect(Unit) {
         if (checkLocationPermission(context)) {
             fusedLocationClient.lastLocation.addOnSuccessListener { lastLocation ->
-                if (lastLocation != null && lastLocation != lastKnownLocation) {
+                if (lastLocation != null) {
                     lastKnownLocation = lastLocation
                     onLocationReceivedState.value(lastLocation)
                 }
             }
 
             getCurrentLocation(context) { newLocation ->
-                if (newLocation != lastKnownLocation) {
+                var update = false
+
+                if (lastKnownLocation == null) update = true
+                lastKnownLocation?.let {
+                    if (!isLocationSame(newLocation, it)) update = true
+                }
+
+                if (update) {
                     lastKnownLocation = newLocation
                     onLocationReceivedState.value(newLocation)
                 }
@@ -77,11 +90,6 @@ fun GetUserLocation(
         }
     }
 }
-
-
-
-
-
 
 
 // TODO: fix for location tracking
