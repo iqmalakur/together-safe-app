@@ -7,19 +7,26 @@ import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class PermissionViewModel @Inject constructor() : ViewModel() {
-    private var _onResult: (() -> Unit)? = null
+class AppViewModel @Inject constructor() : ViewModel() {
+    private var _onLocationPermissionResult: (() -> Unit)? = null
 
     private val _isPermissionRequest = MutableStateFlow(false)
     val isPermissionRequest: StateFlow<Boolean> get() = _isPermissionRequest
 
+    private val _toastMessage = MutableStateFlow("")
+    val toastMessage: StateFlow<String> get() = _toastMessage
+
     fun requestPermission(onResult: (() -> Unit)?) {
         _isPermissionRequest.value = true
-        _onResult = onResult
+        _onLocationPermissionResult = onResult
     }
 
     fun completeRequestPermission(granted: Boolean) {
         _isPermissionRequest.value = false
-        if (granted) _onResult?.invoke()
+        if (granted) _onLocationPermissionResult?.invoke()
+    }
+
+    fun setToastMessage(message: String) {
+        _toastMessage.value = message
     }
 }

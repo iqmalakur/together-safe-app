@@ -25,16 +25,23 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.togethersafe.app.ui.viewmodel.AppViewModel
 import com.togethersafe.app.ui.viewmodel.GeocodingViewModel
 import kotlinx.coroutines.delay
 
 @Composable
-fun MapHeader(geocodingViewModel: GeocodingViewModel = hiltViewModel()) {
+fun MapHeader(
+    geocodingViewModel: GeocodingViewModel = hiltViewModel(),
+    appViewModel: AppViewModel = hiltViewModel(),
+) {
     val locationResult by geocodingViewModel.locationResult.collectAsState()
+    val error by geocodingViewModel.error.collectAsState()
 
     LaunchedEffect(locationResult) {
         // TODO: action for location result
     }
+
+    LaunchedEffect(error) { if (error != null) appViewModel.setToastMessage(error!!) }
 
     Row(
         modifier = Modifier

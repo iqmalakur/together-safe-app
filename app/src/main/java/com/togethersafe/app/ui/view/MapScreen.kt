@@ -36,7 +36,7 @@ import com.togethersafe.app.data.model.Incident
 import com.togethersafe.app.ui.components.BottomSheet
 import com.togethersafe.app.ui.components.MapButtons
 import com.togethersafe.app.ui.viewmodel.IncidentViewModel
-import com.togethersafe.app.ui.viewmodel.PermissionViewModel
+import com.togethersafe.app.ui.viewmodel.AppViewModel
 import com.togethersafe.app.ui.viewmodel.MapViewModel
 import com.togethersafe.app.utils.GetUserLocation
 import com.togethersafe.app.utils.MapConfig.BEARING
@@ -90,13 +90,13 @@ private fun createMapViewportState(location: Point): MapViewportState {
 private fun Tracking(
     context: Context,
     mapViewModel: MapViewModel = hiltViewModel(),
-    permissionViewModel: PermissionViewModel = hiltViewModel(),
+    appViewModel: AppViewModel = hiltViewModel(),
 ) {
     val isTracking by mapViewModel.isTracking.collectAsState()
     var isLocationPermissionGranted by remember { mutableStateOf(false) }
 
     if (isTracking) {
-        permissionViewModel.requestPermission {
+        appViewModel.requestPermission {
             isLocationPermissionGranted = true
         }
 
@@ -164,15 +164,44 @@ private fun UserPosition(mapViewModel: MapViewModel = hiltViewModel()) {
 }
 
 @Composable
-private fun Map(
-    mapViewportState: MapViewportState,
+private fun IncidentMarkers(
     incidentViewModel: IncidentViewModel = hiltViewModel(),
-    mapViewModel: MapViewModel = hiltViewModel(),
+    appViewModel: AppViewModel = hiltViewModel(),
 ) {
     val incidents by incidentViewModel.incidents.collectAsState()
-    val userPosition by mapViewModel.userPosition.collectAsState()
+    val error by incidentViewModel.error.collectAsState()
     var incidentData by remember { mutableStateOf<Incident?>(null) }
     var isSheetOpen by rememberSaveable { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) { incidentViewModel.loadIncidents() }
+    LaunchedEffect(error) { if (error != null) appViewModel.setToastMessage(error!!) }
+
+    incidents.forEach { incident ->
+        CircleAnnotation(Point.fromLngLat(incident.longitude, incident.latitude)) {
+            circleRadius = 8.0
+            circleColor = getRiskLevelColor(incident.riskLevel)
+            circleStrokeWidth = 2.0
+            circleStrokeColor = Color.Black
+
+            interactionsState.onClicked {
+                incidentData = incident
+                isSheetOpen = true
+                true
+            }
+        }
+    }
+
+    if (isSheetOpen && incidentData != null) {
+        BottomSheet(incidentData!!) { isSheetOpen = false }
+    }
+}
+
+@Composable
+private fun Map(
+    mapViewportState: MapViewportState,
+    mapViewModel: MapViewModel = hiltViewModel(),
+) {
+    val userPosition by mapViewModel.userPosition.collectAsState()
     val focusManager = LocalFocusManager.current
 
     MapboxMap(
@@ -200,25 +229,6 @@ private fun Map(
         }
 
         if (userPosition != null) UserPosition()
-        LaunchedEffect(Unit) { incidentViewModel.loadIncidents() }
-
-        incidents.forEach { incident ->
-            CircleAnnotation(Point.fromLngLat(incident.longitude, incident.latitude)) {
-                circleRadius = 8.0
-                circleColor = getRiskLevelColor(incident.riskLevel)
-                circleStrokeWidth = 2.0
-                circleStrokeColor = Color.Black
-
-                interactionsState.onClicked {
-                    incidentData = incident
-                    isSheetOpen = true
-                    true
-                }
-            }
-        }
-
-        if (isSheetOpen && incidentData != null) {
-            BottomSheet(incidentData!!) { isSheetOpen = false }
-        }
+        IncidentMarkers()
     }
 }
