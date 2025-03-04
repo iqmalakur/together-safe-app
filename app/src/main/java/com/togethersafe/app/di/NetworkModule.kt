@@ -1,6 +1,7 @@
 package com.togethersafe.app.di
 
 import com.togethersafe.app.data.network.ApiService
+import com.togethersafe.app.data.network.GeocodingService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,6 +22,16 @@ object NetworkModule {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(ApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGeocodingService(): GeocodingService {
+        return Retrofit.Builder()
+            .baseUrl("https://nominatim.openstreetmap.org")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(GeocodingService::class.java)
     }
 
 }

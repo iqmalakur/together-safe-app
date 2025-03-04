@@ -3,8 +3,8 @@ package com.togethersafe.app.ui.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.togethersafe.app.data.model.Incident
-import com.togethersafe.app.repository.IncidentRepository
+import com.togethersafe.app.data.model.GeocodingLocation
+import com.togethersafe.app.repository.GeocodingRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,21 +12,24 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class IncidentViewModel @Inject constructor(private val repository: IncidentRepository): ViewModel() {
-    private val _incidents = MutableStateFlow<List<Incident>>(emptyList())
-    val incidents: StateFlow<List<Incident>> get() = _incidents
+class GeocodingViewModel @Inject constructor(private val geocodingRepository: GeocodingRepository) :
+    ViewModel() {
+
+    private val _locationResult = MutableStateFlow<List<GeocodingLocation>>(emptyList())
+    val locationResult: StateFlow<List<GeocodingLocation>> get() = _locationResult
 
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> get() = _error
 
-    fun loadIncidents() {
+    fun search(query: String) {
         viewModelScope.launch {
             try {
-                _incidents.value = repository.getIncidents()
+                _locationResult.value = geocodingRepository.findLocation(query)
             } catch (e: Exception) {
                 Log.e(this.javaClass.name, e.toString())
-                _error.value = "Terjadi keasalahn saat mengambil data"
+                _error.value = "Terjadi keasalahn saat mencari lokasi"
             }
         }
     }
+
 }
