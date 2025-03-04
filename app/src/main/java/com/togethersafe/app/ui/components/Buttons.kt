@@ -2,6 +2,7 @@ package com.togethersafe.app.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -43,7 +44,10 @@ fun RoundedIconButton(
 }
 
 @Composable
-fun MapButtons(mapViewModel: MapViewModel = hiltViewModel()) {
+fun MapButtons(
+    mapViewModel: MapViewModel = hiltViewModel(),
+    compass: @Composable () -> Unit,
+) {
     val isTracking by mapViewModel.isTracking.collectAsState()
 
     Column(
@@ -53,14 +57,6 @@ fun MapButtons(mapViewModel: MapViewModel = hiltViewModel()) {
         horizontalAlignment = Alignment.End,
         verticalArrangement = Arrangement.Bottom,
     ) {
-        RoundedIconButton(
-            imageVector =
-                if (isTracking) Icons.Rounded.MyLocation
-                else Icons.Rounded.LocationSearching,
-            contentDescription = "Lokasi Saya",
-            onClick = { mapViewModel.startTracking() }
-        )
-
         RoundedIconButton(
             imageVector = Icons.Rounded.ZoomIn,
             contentDescription = "Perbesar Peta",
@@ -72,5 +68,15 @@ fun MapButtons(mapViewModel: MapViewModel = hiltViewModel()) {
             contentDescription = "Perkecil Peta",
             onClick = { mapViewModel.zoomOut() }
         )
+
+        RoundedIconButton(
+            imageVector =
+            if (isTracking) Icons.Rounded.MyLocation
+            else Icons.Rounded.LocationSearching,
+            contentDescription = "Lokasi Saya",
+            onClick = { mapViewModel.startTracking() }
+        )
+
+        Box { compass() }
     }
 }

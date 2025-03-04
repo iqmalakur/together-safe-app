@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import com.togethersafe.app.ui.components.MapButtons
 import com.togethersafe.app.ui.components.MapHeader
 import com.togethersafe.app.ui.view.MapScreen
 import com.togethersafe.app.ui.viewmodel.PermissionViewModel
@@ -57,7 +56,6 @@ class MainActivity : ComponentActivity() {
             Box {
                 MapScreen(context = context)
                 MapHeader()
-                MapButtons()
             }
         }
     }

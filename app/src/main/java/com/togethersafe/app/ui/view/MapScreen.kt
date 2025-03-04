@@ -1,7 +1,6 @@
 package com.togethersafe.app.ui.view
 
 import android.content.Context
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -11,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
@@ -34,6 +34,7 @@ import com.mapbox.maps.plugin.gestures.addOnMoveListener
 import com.mapbox.maps.plugin.gestures.addOnScaleListener
 import com.togethersafe.app.data.model.Incident
 import com.togethersafe.app.ui.components.BottomSheet
+import com.togethersafe.app.ui.components.MapButtons
 import com.togethersafe.app.ui.viewmodel.IncidentViewModel
 import com.togethersafe.app.ui.viewmodel.PermissionViewModel
 import com.togethersafe.app.ui.viewmodel.MapViewModel
@@ -182,7 +183,14 @@ private fun Map(
             false
         },
         scaleBar = { },
-        compass = { /* TODO: Pindahkan compass ke bawah kanan */ },
+        compass = {
+            MapButtons {
+                Compass(
+                    fadeWhenFacingNorth = false,
+                    alignment = Alignment.Center,
+                )
+            }
+        },
         style = { MapStyle(Style.OUTDOORS) }
     ) {
         MapEffect(Unit) { mapView ->
