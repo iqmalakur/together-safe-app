@@ -19,14 +19,14 @@ import androidx.compose.runtime.getValue
 import com.togethersafe.app.ui.components.MapButtons
 import com.togethersafe.app.ui.components.MapHeader
 import com.togethersafe.app.ui.view.MapScreen
-import com.togethersafe.app.ui.viewmodel.LocationViewModel
+import com.togethersafe.app.ui.viewmodel.PermissionViewModel
 import com.togethersafe.app.utils.checkLocationPermission
 import com.togethersafe.app.utils.getCurrentLocation
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val locationViewModel: LocationViewModel by viewModels()
+    private val permissionViewModel: PermissionViewModel by viewModels()
 
     private lateinit var locationPermissionLauncher: ActivityResultLauncher<String>
     private lateinit var context: Context
@@ -38,9 +38,9 @@ class MainActivity : ComponentActivity() {
         locationPermissionLauncher = registerForActivityResult(
             ActivityResultContracts.RequestPermission()
         ) { isGranted ->
-            if (isGranted) locationViewModel.completeRequestPermission(true)
+            if (isGranted) permissionViewModel.completeRequestPermission(true)
             else {
-                locationViewModel.completeRequestPermission(false)
+                permissionViewModel.completeRequestPermission(false)
                 showGoToSettingsDialog()
             }
         }
@@ -48,7 +48,7 @@ class MainActivity : ComponentActivity() {
         if (checkLocationPermission(context)) getCurrentLocation(context) {}
 
         setContent {
-            val isPermissionRequest by locationViewModel.isPermissionRequest.collectAsState()
+            val isPermissionRequest by permissionViewModel.isPermissionRequest.collectAsState()
 
             LaunchedEffect(isPermissionRequest) {
                 if (isPermissionRequest) { requestLocationPermission() }
@@ -64,7 +64,7 @@ class MainActivity : ComponentActivity() {
 
     private fun requestLocationPermission() {
         if (checkLocationPermission(this)) {
-            locationViewModel.completeRequestPermission(true)
+            permissionViewModel.completeRequestPermission(true)
         } else {
             locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
