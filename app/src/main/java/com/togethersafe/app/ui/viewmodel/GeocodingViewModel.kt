@@ -26,7 +26,7 @@ class GeocodingViewModel @Inject constructor(private val geocodingRepository: Ge
             try {
                 _locationResult.value = geocodingRepository.findLocation(query)
             } catch (e: Exception) {
-                Log.e(this.javaClass.name, e.toString())
+                Log.e("GeocodingViewModel", e.toString())
                 _error.value = "Terjadi keasalahn saat mencari lokasi"
             }
         }

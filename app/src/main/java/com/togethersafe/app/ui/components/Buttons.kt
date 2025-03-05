@@ -1,6 +1,7 @@
 package com.togethersafe.app.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,13 +31,17 @@ import com.togethersafe.app.ui.viewmodel.MapViewModel
 fun RoundedIconButton(
     imageVector: ImageVector,
     contentDescription: String,
+    bordered: Boolean = false,
     onClick: () -> Unit
 ) {
     IconButton(
         modifier = Modifier
             .padding(5.dp)
             .clip(CircleShape)
-            .background(Color.White),
+            .background(Color.White)
+            .then(
+                if (bordered) Modifier.border(1.dp, Color.Gray, CircleShape) else Modifier
+            ),
         onClick = onClick
     ) {
         Icon(imageVector = imageVector, contentDescription = contentDescription)
@@ -71,8 +76,8 @@ fun MapButtons(
 
         RoundedIconButton(
             imageVector =
-            if (isTracking) Icons.Rounded.MyLocation
-            else Icons.Rounded.LocationSearching,
+                if (isTracking) Icons.Rounded.MyLocation
+                else Icons.Rounded.LocationSearching,
             contentDescription = "Lokasi Saya",
             onClick = { mapViewModel.startTracking() }
         )

@@ -24,7 +24,7 @@ class IncidentViewModel @Inject constructor(private val repository: IncidentRepo
             try {
                 _incidents.value = repository.getIncidents()
             } catch (e: Exception) {
-                Log.e(this.javaClass.name, e.toString())
+                Log.e("IncidentViewModel", e.toString())
                 _error.value = "Terjadi keasalahn saat mengambil data"
             }
         }
