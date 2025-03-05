@@ -16,17 +16,17 @@ import javax.inject.Inject
 @HiltViewModel
 class MapViewModel @Inject constructor() : ViewModel() {
     private val _zoomLevel = MutableStateFlow(ZOOM_DEFAULT)
-    val zoomLevel: StateFlow<Double> get() = _zoomLevel
-
     private val _isTracking = MutableStateFlow(false)
-    val isTracking: StateFlow<Boolean> get() = _isTracking
-
     private val _cameraPosition =
         MutableStateFlow(Point.fromLngLat(LONGITUDE_DEFAULT, LATITUDE_DEFAULT))
-    val cameraPosition: StateFlow<Point> get() = _cameraPosition
-
     private val _userPosition = MutableStateFlow<Point?>(null)
+    private val _destination = MutableStateFlow<Point?>(null)
+
+    val zoomLevel: StateFlow<Double> get() = _zoomLevel
+    val isTracking: StateFlow<Boolean> get() = _isTracking
+    val cameraPosition: StateFlow<Point> get() = _cameraPosition
     val userPosition: StateFlow<Point?> get() = _userPosition
+    val destination: StateFlow<Point?> get() = _destination
 
     fun setZoomLevel(zoomLevel: Double) { _zoomLevel.value = zoomLevel }
 
@@ -50,5 +50,9 @@ class MapViewModel @Inject constructor() : ViewModel() {
 
     fun setUserPosition(latitude: Double, longitude: Double) {
         _userPosition.value = Point.fromLngLat(longitude, latitude)
+    }
+
+    fun setDestination(destination: Point) {
+        _destination.value = destination
     }
 }

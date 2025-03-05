@@ -52,11 +52,13 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.togethersafe.app.ui.viewmodel.AppViewModel
 import com.togethersafe.app.ui.viewmodel.GeocodingViewModel
+import com.togethersafe.app.ui.viewmodel.MapViewModel
 import kotlinx.coroutines.delay
 
 @Composable
 fun MapHeader(
     geocodingViewModel: GeocodingViewModel = hiltViewModel(),
+    mapViewModel: MapViewModel = hiltViewModel(),
     appViewModel: AppViewModel = hiltViewModel(),
 ) {
     val focusManager = LocalFocusManager.current
@@ -122,11 +124,18 @@ fun MapHeader(
                     .wrapContentHeight()
                     .pointerInput(Unit) { detectTapGestures {} }
             ) {
-                items(locationResult) { location ->
+                items(locationResult) { geocodingLocation ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { /* Handle lokasi terpilih */ }
+                            .clickable {
+                                val location = geocodingLocation.getLocationPoint()
+                                mapViewModel.setDestination(location)
+                                mapViewModel.setCameraPosition(
+                                    location.latitude(), location.longitude()
+                                )
+                                focusManager.clearFocus()
+                            }
                             .padding(8.dp)
                     ) {
                         Icon(
@@ -137,8 +146,8 @@ fun MapHeader(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Column {
-                            Text(text = location.name, fontWeight = FontWeight.Bold)
-                            Text(text = location.display_name, fontSize = 12.sp, color = Color.Gray)
+                            Text(text = geocodingLocation.name, fontWeight = FontWeight.Bold)
+                            Text(text = geocodingLocation.display_name, fontSize = 12.sp, color = Color.Gray)
                         }
                     }
                 }

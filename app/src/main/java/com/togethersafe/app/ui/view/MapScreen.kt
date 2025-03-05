@@ -1,6 +1,11 @@
 package com.togethersafe.app.ui.view
 
 import android.content.Context
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -14,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mapbox.android.gestures.MoveGestureDetector
 import com.mapbox.android.gestures.StandardScaleGestureDetector
@@ -26,12 +32,16 @@ import com.mapbox.maps.extension.compose.MapEffect
 import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.animation.viewport.MapViewportState
 import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
+import com.mapbox.maps.extension.compose.annotation.IconImage
 import com.mapbox.maps.extension.compose.annotation.generated.CircleAnnotation
+import com.mapbox.maps.extension.compose.annotation.generated.PointAnnotation
+import com.mapbox.maps.extension.compose.annotation.rememberIconImage
 import com.mapbox.maps.extension.compose.style.MapStyle
 import com.mapbox.maps.plugin.gestures.OnMoveListener
 import com.mapbox.maps.plugin.gestures.OnScaleListener
 import com.mapbox.maps.plugin.gestures.addOnMoveListener
 import com.mapbox.maps.plugin.gestures.addOnScaleListener
+import com.togethersafe.app.R
 import com.togethersafe.app.data.model.Incident
 import com.togethersafe.app.ui.components.BottomSheet
 import com.togethersafe.app.ui.components.MapButtons
@@ -164,6 +174,20 @@ private fun UserPosition(mapViewModel: MapViewModel = hiltViewModel()) {
 }
 
 @Composable
+private fun Destination(mapViewModel: MapViewModel = hiltViewModel()) {
+    val destination by mapViewModel.destination.collectAsState()
+    val markerIconDrawable = R.drawable.ic_marker
+    val marker = rememberIconImage(
+        key = markerIconDrawable,
+        painter = painterResource(markerIconDrawable)
+    )
+
+    PointAnnotation(destination!!) {
+        iconImage = marker
+    }
+}
+
+@Composable
 private fun IncidentMarkers(
     incidentViewModel: IncidentViewModel = hiltViewModel(),
     appViewModel: AppViewModel = hiltViewModel(),
@@ -202,6 +226,7 @@ private fun Map(
     mapViewModel: MapViewModel = hiltViewModel(),
 ) {
     val userPosition by mapViewModel.userPosition.collectAsState()
+    val destination by mapViewModel.destination.collectAsState()
     val focusManager = LocalFocusManager.current
 
     MapboxMap(
@@ -229,6 +254,7 @@ private fun Map(
         }
 
         if (userPosition != null) UserPosition()
+        if (destination != null) Destination()
         IncidentMarkers()
     }
 }
