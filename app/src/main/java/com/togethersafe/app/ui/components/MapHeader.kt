@@ -9,6 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -47,6 +48,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -115,39 +117,55 @@ fun MapHeader(
             enter = fadeIn(animationSpec = tween(durationMillis = animationDuration)),
             exit = fadeOut(animationSpec = tween(durationMillis = animationDuration)),
         ) {
-            LazyColumn(
-                modifier = Modifier
-                    .background(Color.White)
-                    .fillMaxWidth()
-                    .padding(10.dp)
-                    .heightIn(max = 400.dp)
-                    .wrapContentHeight()
-                    .pointerInput(Unit) { detectTapGestures {} }
-            ) {
-                items(locationResult) { geocodingLocation ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                val location = geocodingLocation.getLocationPoint()
-                                mapViewModel.setDestination(location)
-                                mapViewModel.setCameraPosition(
-                                    location.latitude(), location.longitude()
-                                )
-                                focusManager.clearFocus()
+            if (locationResult.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.White)
+                        .padding(vertical = 20.dp),
+                ) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = "Tidak Ada Hasil",
+                        textAlign = TextAlign.Center,
+                        color = Color.Gray,
+                    )
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .background(Color.White)
+                        .fillMaxWidth()
+                        .padding(10.dp)
+                        .heightIn(max = 400.dp)
+                        .wrapContentHeight()
+                        .pointerInput(Unit) { detectTapGestures {} }
+                ) {
+                    items(locationResult) { geocodingLocation ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    val location = geocodingLocation.getLocationPoint()
+                                    mapViewModel.setDestination(location)
+                                    mapViewModel.setCameraPosition(
+                                        location.latitude(), location.longitude()
+                                    )
+                                    focusManager.clearFocus()
+                                }
+                                .padding(8.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.LocationOn,
+                                contentDescription = "Location Icon",
+                                tint = Color.Gray,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Column {
+                                Text(text = geocodingLocation.name, fontWeight = FontWeight.Bold)
+                                Text(text = geocodingLocation.display_name, fontSize = 12.sp, color = Color.Gray)
                             }
-                            .padding(8.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.LocationOn,
-                            contentDescription = "Location Icon",
-                            tint = Color.Gray,
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Column {
-                            Text(text = geocodingLocation.name, fontWeight = FontWeight.Bold)
-                            Text(text = geocodingLocation.display_name, fontSize = 12.sp, color = Color.Gray)
                         }
                     }
                 }
