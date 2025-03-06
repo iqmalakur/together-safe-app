@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.rounded.LocationSearching
+import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material.icons.rounded.MyLocation
 import androidx.compose.material.icons.rounded.ZoomIn
 import androidx.compose.material.icons.rounded.ZoomOut
@@ -23,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.togethersafe.app.ui.viewmodel.MapViewModel
@@ -83,5 +86,26 @@ fun MapButtons(
         )
 
         Box { compass() }
+    }
+}
+
+@Composable
+fun HeaderButton(isSearching: Boolean) {
+    val focusManager = LocalFocusManager.current
+
+    if (isSearching) {
+        RoundedIconButton(
+            bordered = true,
+            onClick = { focusManager.clearFocus() },
+            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+            contentDescription = "Back",
+        )
+    } else {
+        RoundedIconButton(
+            bordered = true,
+            onClick = { /* TODO: Implementasi menu */ },
+            imageVector = Icons.Rounded.Menu,
+            contentDescription = "Menu",
+        )
     }
 }
