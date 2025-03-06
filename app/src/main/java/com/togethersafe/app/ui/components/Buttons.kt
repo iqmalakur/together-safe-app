@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.togethersafe.app.ui.viewmodel.AppViewModel
 import com.togethersafe.app.ui.viewmodel.MapViewModel
 
 @Composable
@@ -90,7 +91,10 @@ fun MapButtons(
 }
 
 @Composable
-fun HeaderButton(isSearching: Boolean) {
+fun HeaderButton(
+    isSearching: Boolean,
+    appViewModel: AppViewModel = hiltViewModel(),
+) {
     val focusManager = LocalFocusManager.current
 
     if (isSearching) {
@@ -103,7 +107,7 @@ fun HeaderButton(isSearching: Boolean) {
     } else {
         RoundedIconButton(
             bordered = true,
-            onClick = { /* TODO: Implementasi menu */ },
+            onClick = { appViewModel.setMenuOpen(true) },
             imageVector = Icons.Rounded.Menu,
             contentDescription = "Menu",
         )

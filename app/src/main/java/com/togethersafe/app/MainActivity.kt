@@ -17,7 +17,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import com.togethersafe.app.data.model.User
 import com.togethersafe.app.ui.components.MapHeader
+import com.togethersafe.app.ui.components.NavigationDrawer
 import com.togethersafe.app.ui.view.MapScreen
 import com.togethersafe.app.ui.viewmodel.AppViewModel
 import com.togethersafe.app.utils.checkLocationPermission
@@ -60,7 +62,7 @@ class MainActivity : ComponentActivity() {
                 if (isPermissionRequest) { requestLocationPermission() }
             }
 
-            Box {
+            NavigationDrawer {
                 MapScreen(context = context)
                 MapHeader()
             }

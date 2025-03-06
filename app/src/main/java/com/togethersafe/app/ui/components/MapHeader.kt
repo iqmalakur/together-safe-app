@@ -38,6 +38,7 @@ fun MapHeader(
 
     val locationResult by geocodingViewModel.locationResult.collectAsState()
     val error by geocodingViewModel.error.collectAsState()
+//    val isMenuOpen by appViewModel.isMenuOpen.collectAsState()
     var isSearching by remember { mutableStateOf(false) }
     val headerBackgroundAlpha by animateFloatAsState(
         targetValue = if (isSearching) 1f else 0f,
