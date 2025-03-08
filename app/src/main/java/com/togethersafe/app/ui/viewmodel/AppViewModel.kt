@@ -38,7 +38,7 @@ class AppViewModel @Inject constructor() : ViewModel() {
         _isMenuOpen.value = isOpen
     }
 
-    fun setUser(user: User) {
+    fun setUser(user: User?) {
         _user.value = user
     }
 }

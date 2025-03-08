@@ -26,6 +26,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.togethersafe.app.ui.viewmodel.AppViewModel
@@ -33,13 +34,14 @@ import com.togethersafe.app.ui.viewmodel.MapViewModel
 
 @Composable
 fun RoundedIconButton(
+    modifier: Modifier = Modifier,
     imageVector: ImageVector,
     contentDescription: String,
     bordered: Boolean = false,
     onClick: () -> Unit
 ) {
     IconButton(
-        modifier = Modifier
+        modifier = modifier
             .padding(5.dp)
             .clip(CircleShape)
             .background(Color.White)
@@ -106,6 +108,7 @@ fun HeaderButton(
         )
     } else {
         RoundedIconButton(
+            modifier = Modifier.testTag("MenuButton"),
             bordered = true,
             onClick = { appViewModel.setMenuOpen(true) },
             imageVector = Icons.Rounded.Menu,

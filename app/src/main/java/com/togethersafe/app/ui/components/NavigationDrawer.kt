@@ -34,6 +34,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
@@ -112,7 +113,10 @@ private fun DrawerHeader(appViewModel: AppViewModel = hiltViewModel()) {
         UserIdentity(user)
 
         Spacer(Modifier.weight(1f))
-        IconButton(onClick = { appViewModel.setMenuOpen(false) }) {
+        IconButton(
+            modifier = Modifier.testTag("DrawerBackButton"),
+            onClick = { appViewModel.setMenuOpen(false) }
+        ) {
             Icon(imageVector = Icons.Default.Close, contentDescription = "Tutup Drawer")
         }
     }
@@ -136,6 +140,7 @@ private fun UserProfile(user: User?) {
             model = user.profilePhoto,
             contentDescription = "Foto Profil",
             modifier = Modifier
+                .testTag("UserProfile")
                 .size(48.dp)
                 .clip(CircleShape)
                 .border(1.dp, MaterialTheme.colorScheme.primary, CircleShape)
@@ -144,7 +149,9 @@ private fun UserProfile(user: User?) {
         Icon(
             imageVector = Icons.Default.AccountCircle,
             contentDescription = "Foto Profil",
-            modifier = Modifier.size(48.dp)
+            modifier = Modifier
+                .testTag("UserProfileDefault")
+                .size(48.dp)
         )
     }
 }
@@ -154,16 +161,19 @@ private fun UserIdentity(user: User?) {
     Column {
         if (user != null) {
             Text(
+                modifier = Modifier.testTag("UserName"),
                 text = user.name,
                 style = MaterialTheme.typography.titleMedium
             )
             Text(
+                modifier = Modifier.testTag("UserEmail"),
                 text = user.email,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         } else {
             Text(
+                modifier = Modifier.testTag("WelcomeMessage"),
                 text = "Selamat Datang",
                 style = MaterialTheme.typography.titleMedium
             )
