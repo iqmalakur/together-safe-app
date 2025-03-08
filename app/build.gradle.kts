@@ -65,13 +65,16 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
     kapt(libs.hilt.compiler)
+    kaptAndroidTest(libs.hilt.android.compiler)
 
     testImplementation(libs.junit)
+    testImplementation(platform(libs.androidx.compose.bom))
 
     androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    androidTestImplementation(libs.hilt.android.testing)
+    androidTestImplementation(libs.androidx.ui.test)
 
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
