@@ -1,5 +1,6 @@
 package com.togethersafe.app.ui.components
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -62,6 +63,10 @@ fun NavigationDrawer(
                     appViewModel.setMenuOpen(false)
                 }
             }
+    }
+
+    if (isMenuOpen) {
+        BackHandler { appViewModel.setMenuOpen(false) }
     }
 
     ModalNavigationDrawer(

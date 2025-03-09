@@ -1,5 +1,6 @@
 package com.togethersafe.app.ui.components
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -38,7 +39,6 @@ fun MapHeader(
 
     val locationResult by geocodingViewModel.locationResult.collectAsState()
     val error by geocodingViewModel.error.collectAsState()
-//    val isMenuOpen by appViewModel.isMenuOpen.collectAsState()
     var isSearching by remember { mutableStateOf(false) }
     val headerBackgroundAlpha by animateFloatAsState(
         targetValue = if (isSearching) 1f else 0f,
@@ -68,6 +68,10 @@ fun MapHeader(
                 setIsSearching = { state -> isSearching = state },
                 onSearch = { keyword -> geocodingViewModel.search(keyword) }
             )
+        }
+
+        if (isSearching) {
+            BackHandler { isSearching = false }
         }
 
         AnimatedVisibility(

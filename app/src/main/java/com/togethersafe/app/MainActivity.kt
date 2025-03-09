@@ -13,11 +13,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import com.togethersafe.app.data.model.User
+import com.togethersafe.app.ui.components.DoubleBackHandler
 import com.togethersafe.app.ui.components.MapHeader
 import com.togethersafe.app.ui.components.NavigationDrawer
 import com.togethersafe.app.ui.view.MapScreen
@@ -66,6 +65,8 @@ class MainActivity : ComponentActivity() {
                 MapScreen(context = context)
                 MapHeader()
             }
+
+            DoubleBackHandler()
         }
     }
 
