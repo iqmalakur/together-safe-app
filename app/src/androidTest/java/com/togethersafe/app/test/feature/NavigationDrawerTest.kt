@@ -1,26 +1,24 @@
-package com.togethersafe.app
+package com.togethersafe.app.test.feature
 
 import androidx.activity.viewModels
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.click
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipe
 import com.togethersafe.app.data.model.User
+import com.togethersafe.app.test.setup.BaseTest
 import com.togethersafe.app.ui.viewmodel.AppViewModel
+import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
-import org.junit.Rule
 import org.junit.Test
 
-class NavigationDrawerTest {
-
-    @get:Rule
-    val composeTestRule = createAndroidComposeRule<MainActivity>()
+@HiltAndroidTest
+class NavigationDrawerTest : BaseTest() {
 
     private val appViewModel by lazy { composeTestRule.activity.viewModels<AppViewModel>().value }
     private val root by lazy { composeTestRule.onRoot() }

@@ -17,6 +17,7 @@ mapboxExtension = "11.10.0"
 materialIconsExtended = "1.7.8"
 playServicesLocation = "21.3.0"
 retrofitVersion = "2.11.0"
+runner = "1.6.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -46,6 +47,7 @@ mapbox-maps = { module = "com.mapbox.maps:android", version.ref = "mapbox" }
 mapbox-extension = { module = "com.mapbox.extension:maps-compose", version.ref = "mapboxExtension" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
 retrofit2-retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofitVersion" }
+androidx-runner = { group = "androidx.test", name = "runner", version.ref = "runner" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
