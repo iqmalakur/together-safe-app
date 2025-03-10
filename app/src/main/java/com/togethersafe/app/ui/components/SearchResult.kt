@@ -1,5 +1,6 @@
 package com.togethersafe.app.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -14,7 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Icon
@@ -24,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -40,6 +42,7 @@ fun SearchResult(
     if (locationResult.isEmpty()) {
         Box(
             modifier = Modifier
+                .testTag("SearchNotFoundBox")
                 .fillMaxWidth()
                 .background(Color.White)
                 .padding(vertical = 20.dp),
@@ -70,20 +73,26 @@ private fun LocationList(
             .wrapContentHeight()
             .pointerInput(Unit) { detectTapGestures {} }
     ) {
-        items(locationResult) { geocodingLocation ->
-            LocationItem(geocodingLocation, focusManager)
+        itemsIndexed(locationResult) { index, geocodingLocation ->
+            LocationItem(
+                tag = "Item-$index",
+                geocodingLocation = geocodingLocation,
+                focusManager = focusManager,
+            )
         }
     }
 }
 
 @Composable
 private fun LocationItem(
+    tag: String,
     geocodingLocation: GeocodingLocation,
     focusManager: FocusManager,
     mapViewModel: MapViewModel = hiltViewModel(),
 ) {
     Row(
         modifier = Modifier
+            .testTag("Row-$tag")
             .fillMaxWidth()
             .clickable {
                 val location = geocodingLocation.getLocationPoint()
@@ -103,8 +112,16 @@ private fun LocationItem(
         )
         Spacer(modifier = Modifier.width(8.dp))
         Column {
-            Text(text = geocodingLocation.name, fontWeight = FontWeight.Bold)
-            Text(text = geocodingLocation.display_name, fontSize = 12.sp, color = Color.Gray)
+            Text(
+                text = geocodingLocation.name,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.testTag("Name-$tag"),
+            )
+            Text(
+                text = geocodingLocation.display_name,
+                fontSize = 12.sp, color = Color.Gray,
+                modifier = Modifier.testTag("DisplayName-$tag"),
+            )
         }
     }
 }

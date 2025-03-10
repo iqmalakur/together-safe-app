@@ -101,6 +101,7 @@ fun HeaderButton(
 
     if (isSearching) {
         RoundedIconButton(
+            modifier = Modifier.testTag("SearchBackButton"),
             bordered = true,
             onClick = { focusManager.clearFocus() },
             imageVector = Icons.AutoMirrored.Filled.ArrowBack,

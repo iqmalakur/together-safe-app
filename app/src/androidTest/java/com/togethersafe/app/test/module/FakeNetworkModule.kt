@@ -5,6 +5,8 @@ import com.togethersafe.app.data.model.Incident
 import com.togethersafe.app.data.network.ApiService
 import com.togethersafe.app.data.network.GeocodingService
 import com.togethersafe.app.di.NetworkModule
+import com.togethersafe.app.utils.MapConfig.LATITUDE_DEFAULT
+import com.togethersafe.app.utils.MapConfig.LONGITUDE_DEFAULT
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.components.SingletonComponent
@@ -17,6 +19,9 @@ import javax.inject.Singleton
     replaces = [NetworkModule::class]
 )
 object FakeNetworkModule {
+
+    const val LATITUDE = LATITUDE_DEFAULT + 5
+    const val LONGITUDE = LONGITUDE_DEFAULT + 5
 
     @Provides
     @Singleton
@@ -33,16 +38,18 @@ object FakeNetworkModule {
     fun provideGeocodingService(): GeocodingService {
         return object : GeocodingService {
             override suspend fun searchLocation(query: String): List<GeocodingLocation> {
-                return listOf(
-                    GeocodingLocation(
-                        lat = "123",
-                        lon = "123",
-                        name = "Cimahi",
-                        display_name = "Cimahi",
+                return when(query) {
+                    "Testing" -> listOf(
+                        GeocodingLocation(
+                            lat = "$LATITUDE",
+                            lon = "$LONGITUDE",
+                            name = "Testing",
+                            display_name = "Testing",
+                        )
                     )
-                )
+                    else -> emptyList()
+                }
             }
-
         }
     }
 

@@ -24,6 +24,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.togethersafe.app.ui.viewmodel.AppViewModel
@@ -64,7 +65,9 @@ fun MapHeader(
         ) {
             HeaderButton(isSearching)
             SearchBar(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .testTag("SearchBar")
+                    .weight(1f),
                 setIsSearching = { state -> isSearching = state },
                 onSearch = { keyword -> geocodingViewModel.search(keyword) }
             )
