@@ -1,10 +1,10 @@
 package com.togethersafe.app.test.feature
 
+import androidx.activity.viewModels
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
-import androidx.lifecycle.ViewModelProvider
 import com.mapbox.geojson.Point
 import com.togethersafe.app.di.NetworkModule
 import com.togethersafe.app.test.module.FakeNetworkModule
@@ -23,9 +23,7 @@ import org.junit.Test
 class MapHeaderTest : BaseTest() {
 
     private val searchKeyword = "Testing"
-    private val mapViewModel by lazy {
-        ViewModelProvider(composeTestRule.activity)[MapViewModel::class.java]
-    }
+    private val mapViewModel by lazy { composeTestRule.activity.viewModels<MapViewModel>().value }
 
     private val searchBar by lazy { composeTestRule.onNodeWithTag("SearchBar") }
     private val searchBackButton by lazy {
