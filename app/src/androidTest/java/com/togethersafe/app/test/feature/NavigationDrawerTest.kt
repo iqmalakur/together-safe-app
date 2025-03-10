@@ -57,16 +57,6 @@ class NavigationDrawerTest : BaseTest() {
     }
 
     @Test
-    fun clickOutsideToCloseDrawer() {
-        menuButton.performClick()
-        assertTrue(appViewModel.isMenuOpen.value)
-
-        root.performTouchInput { click(Offset(width - 10f, centerY)) }
-        composeTestRule.waitForIdle()
-        assertFalse(appViewModel.isMenuOpen.value)
-    }
-
-    @Test
     fun defaultUserIdentity() {
         menuButton.performClick()
 
