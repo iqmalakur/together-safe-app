@@ -2,6 +2,7 @@ package com.togethersafe.app.test.module
 
 import com.togethersafe.app.data.model.GeocodingLocation
 import com.togethersafe.app.data.model.Incident
+import com.togethersafe.app.data.model.IncidentReport
 import com.togethersafe.app.data.network.ApiService
 import com.togethersafe.app.data.network.GeocodingService
 import com.togethersafe.app.di.NetworkModule
@@ -28,7 +29,25 @@ object FakeNetworkModule {
     fun provideApiService(): ApiService {
         return object : ApiService {
             override suspend fun fetchIncidents(): List<Incident> {
-                return emptyList()
+                return listOf(
+                    Incident(
+                        category = "Testing",
+                        date = "01 Januari 1970",
+                        time = "00:00",
+                        riskLevel = "high",
+                        location = "Jl. Testing",
+                        latitude = LATITUDE_DEFAULT,
+                        longitude = LONGITUDE_DEFAULT,
+                        status = "active",
+                        mediaUrls = listOf("https://picsum.photos/200"),
+                        reports = listOf(
+                            IncidentReport(
+                                id = "abc",
+                                description = "lorem ipsum dolor sit amet",
+                            ),
+                        ),
+                    )
+                )
             }
         }
     }

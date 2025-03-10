@@ -14,9 +14,11 @@ import javax.inject.Inject
 @HiltViewModel
 class IncidentViewModel @Inject constructor(private val repository: IncidentRepository): ViewModel() {
     private val _incidents = MutableStateFlow<List<Incident>>(emptyList())
-    val incidents: StateFlow<List<Incident>> get() = _incidents
-
+    private val _selectedIncident = MutableStateFlow<Incident?>(null)
     private val _error = MutableStateFlow<String?>(null)
+
+    val incidents: StateFlow<List<Incident>> get() = _incidents
+    val selectedIncident: StateFlow<Incident?> get() = _selectedIncident
     val error: StateFlow<String?> get() = _error
 
     fun loadIncidents() {
@@ -28,5 +30,9 @@ class IncidentViewModel @Inject constructor(private val repository: IncidentRepo
                 _error.value = "Terjadi keasalahn saat mengambil data"
             }
         }
+    }
+
+    fun setSelectedIncident(incident: Incident?) {
+        _selectedIncident.value = incident
     }
 }

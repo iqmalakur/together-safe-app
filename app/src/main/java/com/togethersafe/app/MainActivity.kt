@@ -1,8 +1,8 @@
 package com.togethersafe.app
 
-import android.content.Context
 import android.Manifest
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -21,6 +21,7 @@ import com.togethersafe.app.ui.components.MapHeader
 import com.togethersafe.app.ui.components.NavigationDrawer
 import com.togethersafe.app.ui.view.MapScreen
 import com.togethersafe.app.ui.viewmodel.AppViewModel
+import com.togethersafe.app.ui.viewmodel.IncidentViewModel
 import com.togethersafe.app.utils.checkLocationPermission
 import com.togethersafe.app.utils.getCurrentLocation
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,6 +29,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val appViewModel: AppViewModel by viewModels()
+    private val incidentViewModel: IncidentViewModel by viewModels()
 
     private lateinit var locationPermissionLauncher: ActivityResultLauncher<String>
     private lateinit var context: Context
@@ -48,9 +50,12 @@ class MainActivity : ComponentActivity() {
 
         if (checkLocationPermission(context)) getCurrentLocation(context) {}
 
+        incidentViewModel.loadIncidents()
+
         setContent {
             val isPermissionRequest by appViewModel.isPermissionRequest.collectAsState()
             val toastMessage by appViewModel.toastMessage.collectAsState()
+            val errorIncident by incidentViewModel.error.collectAsState()
 
             if (toastMessage.isNotBlank()) {
                 Toast.makeText(this, toastMessage, Toast.LENGTH_SHORT).show()
@@ -59,6 +64,9 @@ class MainActivity : ComponentActivity() {
 
             LaunchedEffect(isPermissionRequest) {
                 if (isPermissionRequest) { requestLocationPermission() }
+            }
+            LaunchedEffect(errorIncident) {
+                if (errorIncident != null) appViewModel.setToastMessage(errorIncident!!)
             }
 
             NavigationDrawer {

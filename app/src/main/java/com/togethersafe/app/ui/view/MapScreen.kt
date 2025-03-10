@@ -1,19 +1,15 @@
 package com.togethersafe.app.ui.view
 
 import android.content.Context
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,7 +28,6 @@ import com.mapbox.maps.extension.compose.MapEffect
 import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.animation.viewport.MapViewportState
 import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
-import com.mapbox.maps.extension.compose.annotation.IconImage
 import com.mapbox.maps.extension.compose.annotation.generated.CircleAnnotation
 import com.mapbox.maps.extension.compose.annotation.generated.PointAnnotation
 import com.mapbox.maps.extension.compose.annotation.rememberIconImage
@@ -42,11 +37,10 @@ import com.mapbox.maps.plugin.gestures.OnScaleListener
 import com.mapbox.maps.plugin.gestures.addOnMoveListener
 import com.mapbox.maps.plugin.gestures.addOnScaleListener
 import com.togethersafe.app.R
-import com.togethersafe.app.data.model.Incident
 import com.togethersafe.app.ui.components.BottomSheet
 import com.togethersafe.app.ui.components.MapButtons
-import com.togethersafe.app.ui.viewmodel.IncidentViewModel
 import com.togethersafe.app.ui.viewmodel.AppViewModel
+import com.togethersafe.app.ui.viewmodel.IncidentViewModel
 import com.togethersafe.app.ui.viewmodel.MapViewModel
 import com.togethersafe.app.utils.GetUserLocation
 import com.togethersafe.app.utils.MapConfig.BEARING
@@ -187,18 +181,12 @@ private fun Destination(mapViewModel: MapViewModel = hiltViewModel()) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun IncidentMarkers(
-    incidentViewModel: IncidentViewModel = hiltViewModel(),
-    appViewModel: AppViewModel = hiltViewModel(),
-) {
+private fun IncidentMarkers(incidentViewModel: IncidentViewModel = hiltViewModel()) {
     val incidents by incidentViewModel.incidents.collectAsState()
-    val error by incidentViewModel.error.collectAsState()
-    var incidentData by remember { mutableStateOf<Incident?>(null) }
-    var isSheetOpen by rememberSaveable { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) { incidentViewModel.loadIncidents() }
-    LaunchedEffect(error) { if (error != null) appViewModel.setToastMessage(error!!) }
+    val selectedIncident by incidentViewModel.selectedIncident.collectAsState()
+    val sheetState = rememberModalBottomSheetState()
 
     incidents.forEach { incident ->
         CircleAnnotation(Point.fromLngLat(incident.longitude, incident.latitude)) {
@@ -208,15 +196,14 @@ private fun IncidentMarkers(
             circleStrokeColor = Color.Black
 
             interactionsState.onClicked {
-                incidentData = incident
-                isSheetOpen = true
+                incidentViewModel.setSelectedIncident(incident)
                 true
             }
         }
     }
 
-    if (isSheetOpen && incidentData != null) {
-        BottomSheet(incidentData!!) { isSheetOpen = false }
+    if (selectedIncident != null) {
+        BottomSheet(sheetState)
     }
 }
 
