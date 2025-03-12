@@ -20,6 +20,7 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
 import com.togethersafe.app.ui.viewmodel.MapViewModel
+import com.togethersafe.app.utils.MapConfig.ZOOM_DEFAULT
 
 fun checkLocationPermission(context: Context): Boolean {
     return ActivityCompat.checkSelfPermission(
@@ -71,7 +72,10 @@ fun GetUserLocation(
         val latitude = location.latitude
         val longitude = location.longitude
         mapViewModel.setUserPosition(latitude, longitude)
-        if (isTracking) mapViewModel.setCameraPosition(latitude, longitude)
+        if (isTracking) {
+            mapViewModel.setZoomLevel(ZOOM_DEFAULT)
+            mapViewModel.setCameraPosition(latitude, longitude)
+        }
     }
 
     LaunchedEffect(Unit) {

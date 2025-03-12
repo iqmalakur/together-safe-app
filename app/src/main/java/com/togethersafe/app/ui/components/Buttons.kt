@@ -81,6 +81,7 @@ fun MapButtons(
         )
 
         RoundedIconButton(
+            modifier = Modifier.testTag("UserTrackButton"),
             imageVector =
                 if (isTracking) Icons.Rounded.MyLocation
                 else Icons.Rounded.LocationSearching,
