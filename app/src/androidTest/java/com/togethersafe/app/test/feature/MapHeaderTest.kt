@@ -12,6 +12,7 @@ import com.togethersafe.app.test.setup.BaseTest
 import com.togethersafe.app.ui.viewmodel.MapViewModel
 import com.togethersafe.app.utils.MapConfig.LATITUDE_DEFAULT
 import com.togethersafe.app.utils.MapConfig.LONGITUDE_DEFAULT
+import com.togethersafe.app.utils.MapConfig.ZOOM_DEFAULT
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import org.junit.Assert.assertEquals
@@ -77,6 +78,7 @@ class MapHeaderTest : BaseTest() {
             .performClick()
         composeTestRule.waitForIdle()
 
+        assertEquals(ZOOM_DEFAULT, mapViewModel.zoomLevel.value, 0.0)
         assertEquals(
             Point.fromLngLat(FakeNetworkModule.LONGITUDE, FakeNetworkModule.LATITUDE),
             mapViewModel.cameraPosition.value

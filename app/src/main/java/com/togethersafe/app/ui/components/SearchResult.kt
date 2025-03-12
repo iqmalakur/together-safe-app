@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.togethersafe.app.data.model.GeocodingLocation
 import com.togethersafe.app.ui.viewmodel.MapViewModel
+import com.togethersafe.app.utils.MapConfig.ZOOM_DEFAULT
 
 @Composable
 fun SearchResult(
@@ -97,6 +98,7 @@ private fun LocationItem(
             .clickable {
                 val location = geocodingLocation.getLocationPoint()
                 mapViewModel.setDestination(location)
+                mapViewModel.setZoomLevel(ZOOM_DEFAULT)
                 mapViewModel.setCameraPosition(
                     location.latitude(), location.longitude()
                 )
