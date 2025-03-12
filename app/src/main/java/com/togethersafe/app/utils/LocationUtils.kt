@@ -1,10 +1,14 @@
 package com.togethersafe.app.utils
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
+import android.location.LocationManager
 import android.os.Looper
+import android.provider.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -59,6 +63,24 @@ private fun isLocationSame(first: Location, second: Location): Boolean {
     return isLatitudeSame && isLongitudeSame
 }
 
+fun isLocationEnabled(context: Context): Boolean {
+    val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+            locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+}
+
+fun promptEnableGPS(context: Context) {
+    AlertDialog.Builder(context)
+        .setTitle("Aktifkan Lokasi")
+        .setMessage("Fitur ini memerlukan GPS. Silakan aktifkan GPS untuk melanjutkan.")
+        .setPositiveButton("Pengaturan") { _, _ ->
+            context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+        }
+        .setNegativeButton("Batal", null)
+        .show()
+}
+
+
 @Composable
 fun GetUserLocation(
     context: Context,
@@ -80,6 +102,10 @@ fun GetUserLocation(
 
     LaunchedEffect(Unit) {
         if (checkLocationPermission(context)) {
+            if (!isLocationEnabled(context)) {
+                promptEnableGPS(context)
+            }
+
             fusedLocationClient.lastLocation.addOnSuccessListener { lastLocation ->
                 if (lastLocation != null) {
                     lastKnownLocation = lastLocation
