@@ -6,13 +6,13 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import com.mapbox.geojson.Point
+import com.togethersafe.app.constants.MapConstants.LATITUDE_DEFAULT
+import com.togethersafe.app.constants.MapConstants.LONGITUDE_DEFAULT
+import com.togethersafe.app.constants.MapConstants.ZOOM_DEFAULT
 import com.togethersafe.app.di.NetworkModule
 import com.togethersafe.app.test.module.FakeNetworkModule
 import com.togethersafe.app.test.setup.BaseTest
 import com.togethersafe.app.viewmodels.MapViewModel
-import com.togethersafe.app.constants.MapConstants.LATITUDE_DEFAULT
-import com.togethersafe.app.constants.MapConstants.LONGITUDE_DEFAULT
-import com.togethersafe.app.constants.MapConstants.ZOOM_DEFAULT
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import org.junit.Assert.assertEquals

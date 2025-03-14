@@ -4,13 +4,13 @@ import android.location.Location
 import androidx.activity.viewModels
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import com.togethersafe.app.constants.MapConstants.ZOOM_DEFAULT
 import com.togethersafe.app.test.module.FakeNetworkModule.LATITUDE
 import com.togethersafe.app.test.module.FakeNetworkModule.LONGITUDE
 import com.togethersafe.app.test.setup.BaseTest
-import com.togethersafe.app.viewmodels.MapViewModel
-import com.togethersafe.app.constants.MapConstants.ZOOM_DEFAULT
-import com.togethersafe.app.utils.isPermissionGranted
 import com.togethersafe.app.utils.getCurrentLocation
+import com.togethersafe.app.utils.isPermissionGranted
+import com.togethersafe.app.viewmodels.MapViewModel
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.every
 import io.mockk.mockkStatic

@@ -68,11 +68,13 @@ class NavigationDrawerTest : BaseTest() {
 
     @Test
     fun providedUserIdentity() {
-        appViewModel.setUser(User(
-            name = name,
-            email = email,
-            profilePhoto = profilePhoto,
-        ))
+        appViewModel.setUser(
+            User(
+                name = name,
+                email = email,
+                profilePhoto = profilePhoto,
+            )
+        )
 
         menuButton.performClick()
 
@@ -92,11 +94,13 @@ class NavigationDrawerTest : BaseTest() {
 
     @Test
     fun providedUserIdentityWithoutProfilePhoto() {
-        appViewModel.setUser(User(
-            name = name,
-            email = email,
-            profilePhoto = null,
-        ))
+        appViewModel.setUser(
+            User(
+                name = name,
+                email = email,
+                profilePhoto = null,
+            )
+        )
 
         menuButton.performClick()
 
