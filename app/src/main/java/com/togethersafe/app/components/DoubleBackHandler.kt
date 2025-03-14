@@ -1,7 +1,7 @@
-package com.togethersafe.app.ui.components
+package com.togethersafe.app.components
 
-import androidx.activity.compose.BackHandler
 import android.os.Process
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -9,7 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.togethersafe.app.ui.viewmodel.AppViewModel
+import com.togethersafe.app.viewmodels.AppViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

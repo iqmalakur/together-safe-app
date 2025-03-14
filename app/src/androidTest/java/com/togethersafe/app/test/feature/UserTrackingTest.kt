@@ -7,9 +7,9 @@ import androidx.compose.ui.test.performClick
 import com.togethersafe.app.test.module.FakeNetworkModule.LATITUDE
 import com.togethersafe.app.test.module.FakeNetworkModule.LONGITUDE
 import com.togethersafe.app.test.setup.BaseTest
-import com.togethersafe.app.ui.viewmodel.MapViewModel
-import com.togethersafe.app.utils.MapConfig.ZOOM_DEFAULT
-import com.togethersafe.app.utils.checkLocationPermission
+import com.togethersafe.app.viewmodels.MapViewModel
+import com.togethersafe.app.constants.MapConstants.ZOOM_DEFAULT
+import com.togethersafe.app.utils.isPermissionGranted
 import com.togethersafe.app.utils.getCurrentLocation
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.every
@@ -25,10 +25,10 @@ class UserTrackingTest : BaseTest() {
 
     @Test
     fun tracking() {
-        mockkStatic(::checkLocationPermission)
+        mockkStatic(::isPermissionGranted)
         mockkStatic(::getCurrentLocation)
 
-        every { checkLocationPermission(any()) } returns true
+        every { isPermissionGranted(any()) } returns true
         every { getCurrentLocation(any(), any()) } answers {
             val onLocationReceived = secondArg<(Location) -> Unit>()
             val location = Location("gps")

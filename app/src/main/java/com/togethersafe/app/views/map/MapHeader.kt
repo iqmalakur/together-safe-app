@@ -1,4 +1,4 @@
-package com.togethersafe.app.ui.components
+package com.togethersafe.app.views.map
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
@@ -23,21 +23,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.togethersafe.app.ui.viewmodel.AppViewModel
-import com.togethersafe.app.ui.viewmodel.GeocodingViewModel
+import com.togethersafe.app.viewmodels.AppViewModel
+import com.togethersafe.app.viewmodels.GeocodingViewModel
 
 @Composable
 fun MapHeader(
     geocodingViewModel: GeocodingViewModel = hiltViewModel(),
     appViewModel: AppViewModel = hiltViewModel(),
 ) {
-    val focusManager = LocalFocusManager.current
     val animationSpec = tween<Float>(durationMillis = 200)
-
     val locationResult by geocodingViewModel.locationResult.collectAsState()
     val error by geocodingViewModel.error.collectAsState()
     var isSearching by remember { mutableStateOf(false) }
@@ -55,13 +52,13 @@ fun MapHeader(
             .pointerInput(Unit) { detectTapGestures {} }
     ) {
         Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
                 .drawBehind {
                     drawRect(Color.White.copy(alpha = headerBackgroundAlpha))
                 }
                 .padding(horizontal = 5.dp, vertical = 15.dp),
-            verticalAlignment = Alignment.CenterVertically,
         ) {
             HeaderButton(isSearching)
             SearchBar(
@@ -81,6 +78,6 @@ fun MapHeader(
             visible = isSearching,
             enter = fadeIn(animationSpec),
             exit = fadeOut(animationSpec),
-        ) { SearchResult(locationResult, focusManager) }
+        ) { SearchResult(locationResult) }
     }
 }

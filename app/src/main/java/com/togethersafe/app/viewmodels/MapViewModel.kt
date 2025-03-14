@@ -1,13 +1,13 @@
-package com.togethersafe.app.ui.viewmodel
+package com.togethersafe.app.viewmodels
 
 import androidx.lifecycle.ViewModel
 import com.mapbox.geojson.Point
-import com.togethersafe.app.utils.MapConfig.LATITUDE_DEFAULT
-import com.togethersafe.app.utils.MapConfig.LONGITUDE_DEFAULT
-import com.togethersafe.app.utils.MapConfig.ZOOM_DEFAULT
-import com.togethersafe.app.utils.MapConfig.ZOOM_MAX
-import com.togethersafe.app.utils.MapConfig.ZOOM_MIN
-import com.togethersafe.app.utils.MapConfig.ZOOM_STEP
+import com.togethersafe.app.constants.MapConstants.LATITUDE_DEFAULT
+import com.togethersafe.app.constants.MapConstants.LONGITUDE_DEFAULT
+import com.togethersafe.app.constants.MapConstants.ZOOM_DEFAULT
+import com.togethersafe.app.constants.MapConstants.ZOOM_MAX
+import com.togethersafe.app.constants.MapConstants.ZOOM_MIN
+import com.togethersafe.app.constants.MapConstants.ZOOM_STEP
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,7 +28,9 @@ class MapViewModel @Inject constructor() : ViewModel() {
     val userPosition: StateFlow<Point?> get() = _userPosition
     val destination: StateFlow<Point?> get() = _destination
 
-    fun setZoomLevel(zoomLevel: Double) { _zoomLevel.value = zoomLevel }
+    fun setZoomLevel(zoomLevel: Double) {
+        _zoomLevel.value = zoomLevel
+    }
 
     fun zoomIn() {
         if (_zoomLevel.value < ZOOM_MAX) _zoomLevel.value += ZOOM_STEP
@@ -42,7 +44,9 @@ class MapViewModel @Inject constructor() : ViewModel() {
         _isTracking.value = true
     }
 
-    fun stopTracking() { _isTracking.value = false }
+    fun stopTracking() {
+        _isTracking.value = false
+    }
 
     fun setCameraPosition(latitude: Double, longitude: Double) {
         _cameraPosition.value = Point.fromLngLat(longitude, latitude)

@@ -1,4 +1,4 @@
-package com.togethersafe.app.ui.components
+package com.togethersafe.app.views.map
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.padding
@@ -32,13 +32,6 @@ fun SearchBar(
     var searchValue by rememberSaveable { mutableStateOf("") }
     var debounceSearchValue by remember { mutableStateOf("") }
 
-    val textFieldColors = TextFieldDefaults.colors(
-        focusedContainerColor = Color.White,
-        unfocusedContainerColor = Color.White,
-        focusedIndicatorColor = Color.Transparent,
-        unfocusedIndicatorColor = Color.Transparent
-    )
-
     LaunchedEffect(searchValue) {
         delay(500)
         if (searchValue != debounceSearchValue) {
@@ -51,8 +44,13 @@ fun SearchBar(
         value = searchValue,
         onValueChange = { searchValue = it },
         placeholder = { Text("Telusuri di sini") },
-        colors = textFieldColors,
         singleLine = true,
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color.White,
+            unfocusedContainerColor = Color.White,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent
+        ),
         leadingIcon = {
             Icon(
                 imageVector = Icons.Filled.Search,

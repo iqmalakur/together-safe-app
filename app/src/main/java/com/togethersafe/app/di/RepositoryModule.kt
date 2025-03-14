@@ -1,7 +1,7 @@
 package com.togethersafe.app.di
 
 import com.togethersafe.app.data.network.ApiService
-import com.togethersafe.app.repository.IncidentRepository
+import com.togethersafe.app.repositories.IncidentRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -10,7 +10,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class RepositoryModule {
+object RepositoryModule {
 
     @Provides
     @Singleton

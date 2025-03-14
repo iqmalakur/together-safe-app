@@ -6,8 +6,8 @@ import com.togethersafe.app.data.model.IncidentReport
 import com.togethersafe.app.data.network.ApiService
 import com.togethersafe.app.data.network.GeocodingService
 import com.togethersafe.app.di.NetworkModule
-import com.togethersafe.app.utils.MapConfig.LATITUDE_DEFAULT
-import com.togethersafe.app.utils.MapConfig.LONGITUDE_DEFAULT
+import com.togethersafe.app.constants.MapConstants.LATITUDE_DEFAULT
+import com.togethersafe.app.constants.MapConstants.LONGITUDE_DEFAULT
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.components.SingletonComponent

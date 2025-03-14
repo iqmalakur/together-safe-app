@@ -1,4 +1,4 @@
-package com.togethersafe.app.ui.components
+package com.togethersafe.app.views.map
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.togethersafe.app.data.model.Incident
-import com.togethersafe.app.ui.viewmodel.IncidentViewModel
+import com.togethersafe.app.viewmodels.IncidentViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
