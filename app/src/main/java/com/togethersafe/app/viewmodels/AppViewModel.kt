@@ -1,4 +1,4 @@
-package com.togethersafe.app.ui.viewmodel
+package com.togethersafe.app.viewmodels
 
 import androidx.lifecycle.ViewModel
 import com.togethersafe.app.data.model.User

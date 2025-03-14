@@ -1,6 +1,6 @@
-package com.togethersafe.app.utils
+package com.togethersafe.app.constants
 
-object MapConfig {
+object MapConstants {
     const val ZOOM_DEFAULT = 15.0
     const val ZOOM_MIN = 5.0
     const val ZOOM_MAX = 20.0

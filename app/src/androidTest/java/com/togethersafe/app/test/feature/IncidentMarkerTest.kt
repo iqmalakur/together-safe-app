@@ -4,8 +4,8 @@ import androidx.activity.viewModels
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.onNodeWithTag
 import com.togethersafe.app.test.setup.BaseTest
-import com.togethersafe.app.ui.viewmodel.IncidentViewModel
-import com.togethersafe.app.ui.viewmodel.MapViewModel
+import com.togethersafe.app.viewmodels.IncidentViewModel
+import com.togethersafe.app.viewmodels.MapViewModel
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Test
 

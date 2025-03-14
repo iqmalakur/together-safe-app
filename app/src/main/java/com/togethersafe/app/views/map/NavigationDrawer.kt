@@ -1,4 +1,4 @@
-package com.togethersafe.app.ui.components
+package com.togethersafe.app.views.map
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.border
@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.togethersafe.app.data.model.User
-import com.togethersafe.app.ui.viewmodel.AppViewModel
+import com.togethersafe.app.viewmodels.AppViewModel
 
 @Composable
 fun NavigationDrawer(

@@ -1,6 +1,5 @@
-package com.togethersafe.app.ui.components
+package com.togethersafe.app.views.map
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -25,46 +24,44 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.mapbox.geojson.Point
+import com.togethersafe.app.constants.MapConstants.ZOOM_DEFAULT
 import com.togethersafe.app.data.model.GeocodingLocation
-import com.togethersafe.app.ui.viewmodel.MapViewModel
-import com.togethersafe.app.utils.MapConfig.ZOOM_DEFAULT
+import com.togethersafe.app.viewmodels.MapViewModel
 
 @Composable
-fun SearchResult(
-    locationResult: List<GeocodingLocation>,
-    focusManager: FocusManager,
-) {
-    if (locationResult.isEmpty()) {
-        Box(
-            modifier = Modifier
-                .testTag("SearchNotFoundBox")
-                .fillMaxWidth()
-                .background(Color.White)
-                .padding(vertical = 20.dp),
-        ) {
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = "Tidak Ada Hasil",
-                textAlign = TextAlign.Center,
-                color = Color.Gray,
-            )
-        }
-    } else {
-        LocationList(locationResult, focusManager)
+fun SearchResult(locationResult: List<GeocodingLocation>) {
+    if (locationResult.isEmpty()) NoSearchResult()
+    else LocationList(locationResult)
+}
+
+@Composable
+private fun NoSearchResult() {
+    Box(
+        modifier = Modifier
+            .testTag("SearchNotFoundBox")
+            .fillMaxWidth()
+            .background(Color.White)
+            .padding(vertical = 20.dp),
+    ) {
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = "Tidak Ada Hasil",
+            textAlign = TextAlign.Center,
+            color = Color.Gray,
+        )
     }
 }
 
 @Composable
-private fun LocationList(
-    locationResult: List<GeocodingLocation>,
-    focusManager: FocusManager,
-) {
+private fun LocationList(locationResult: List<GeocodingLocation>) {
     LazyColumn(
         modifier = Modifier
             .background(Color.White)
@@ -78,7 +75,6 @@ private fun LocationList(
             LocationItem(
                 tag = "Item-$index",
                 geocodingLocation = geocodingLocation,
-                focusManager = focusManager,
             )
         }
     }
@@ -88,23 +84,22 @@ private fun LocationList(
 private fun LocationItem(
     tag: String,
     geocodingLocation: GeocodingLocation,
-    focusManager: FocusManager,
     mapViewModel: MapViewModel = hiltViewModel(),
 ) {
+    val focusManager = LocalFocusManager.current
+
     Row(
         modifier = Modifier
             .testTag("Row-$tag")
             .fillMaxWidth()
-            .clickable {
-                val location = geocodingLocation.getLocationPoint()
-                mapViewModel.setDestination(location)
-                mapViewModel.setZoomLevel(ZOOM_DEFAULT)
-                mapViewModel.setCameraPosition(
-                    location.latitude(), location.longitude()
-                )
-                focusManager.clearFocus()
-            }
             .padding(8.dp)
+            .clickable {
+                handleLocationClick(
+                    focusManager = focusManager,
+                    mapViewModel = mapViewModel,
+                    location = geocodingLocation.getLocationPoint(),
+                )
+            }
     ) {
         Icon(
             imageVector = Icons.Default.LocationOn,
@@ -112,13 +107,16 @@ private fun LocationItem(
             tint = Color.Gray,
             modifier = Modifier.size(24.dp)
         )
+
         Spacer(modifier = Modifier.width(8.dp))
+
         Column {
             Text(
                 text = geocodingLocation.name,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.testTag("Name-$tag"),
             )
+
             Text(
                 text = geocodingLocation.display_name,
                 fontSize = 12.sp, color = Color.Gray,
@@ -126,4 +124,18 @@ private fun LocationItem(
             )
         }
     }
+}
+
+fun handleLocationClick(
+    focusManager: FocusManager,
+    mapViewModel: MapViewModel,
+    location: Point,
+) {
+    mapViewModel.setDestination(location)
+    mapViewModel.setZoomLevel(ZOOM_DEFAULT)
+    mapViewModel.setCameraPosition(
+        location.latitude(), location.longitude()
+    )
+
+    focusManager.clearFocus()
 }

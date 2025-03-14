@@ -1,13 +1,13 @@
 package com.togethersafe.app.test.module
 
+import com.togethersafe.app.constants.MapConstants.LATITUDE_DEFAULT
+import com.togethersafe.app.constants.MapConstants.LONGITUDE_DEFAULT
 import com.togethersafe.app.data.model.GeocodingLocation
 import com.togethersafe.app.data.model.Incident
 import com.togethersafe.app.data.model.IncidentReport
 import com.togethersafe.app.data.network.ApiService
 import com.togethersafe.app.data.network.GeocodingService
 import com.togethersafe.app.di.NetworkModule
-import com.togethersafe.app.utils.MapConfig.LATITUDE_DEFAULT
-import com.togethersafe.app.utils.MapConfig.LONGITUDE_DEFAULT
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.components.SingletonComponent
@@ -57,7 +57,7 @@ object FakeNetworkModule {
     fun provideGeocodingService(): GeocodingService {
         return object : GeocodingService {
             override suspend fun searchLocation(query: String): List<GeocodingLocation> {
-                return when(query) {
+                return when (query) {
                     "Testing" -> listOf(
                         GeocodingLocation(
                             lat = "$LATITUDE",
@@ -66,6 +66,7 @@ object FakeNetworkModule {
                             display_name = "Testing",
                         )
                     )
+
                     else -> emptyList()
                 }
             }

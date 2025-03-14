@@ -1,4 +1,4 @@
-package com.togethersafe.app.repository
+package com.togethersafe.app.repositories
 
 import com.togethersafe.app.data.model.GeocodingLocation
 import com.togethersafe.app.data.network.GeocodingService
