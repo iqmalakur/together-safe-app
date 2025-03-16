@@ -1,7 +1,9 @@
 package com.togethersafe.app.components
 
 import android.os.Process
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -14,7 +16,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun DoubleBackHandler(appViewModel: AppViewModel = hiltViewModel()) {
+fun DoubleBackHandler() {
+    val appViewModel: AppViewModel = hiltViewModel(LocalActivity.current as ComponentActivity)
     var backPressedOnce by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 

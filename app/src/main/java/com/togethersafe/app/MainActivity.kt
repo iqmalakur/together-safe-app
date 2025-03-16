@@ -7,14 +7,13 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import com.togethersafe.app.components.DoubleBackHandler
 import com.togethersafe.app.components.LocationPermissionHandler
 import com.togethersafe.app.components.SimpleToast
+import com.togethersafe.app.navigation.AppNavigation
 import com.togethersafe.app.utils.getCurrentLocation
 import com.togethersafe.app.utils.isPermissionGranted
 import com.togethersafe.app.viewmodels.AppViewModel
 import com.togethersafe.app.viewmodels.IncidentViewModel
-import com.togethersafe.app.views.map.MapScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -25,10 +24,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (isPermissionGranted(this)) getCurrentLocation(this) {}
-
-        incidentViewModel.loadIncidents()
-
         setContent {
             val errorIncident by incidentViewModel.error.collectAsState()
 
@@ -36,11 +31,16 @@ class MainActivity : ComponentActivity() {
                 if (errorIncident != null) appViewModel.setToastMessage(errorIncident!!)
             }
 
-            MapScreen()
+            LaunchedEffect(Unit) {
+                if (isPermissionGranted(this@MainActivity))
+                    getCurrentLocation(this@MainActivity) {}
+                incidentViewModel.loadIncidents()
+            }
+
+            AppNavigation()
 
             LocationPermissionHandler()
             SimpleToast()
-            DoubleBackHandler()
         }
     }
 }

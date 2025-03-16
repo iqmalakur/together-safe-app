@@ -1,5 +1,7 @@
 package com.togethersafe.app.views.map
 
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,7 +41,9 @@ import com.togethersafe.app.viewmodels.AppViewModel
 import com.togethersafe.app.viewmodels.MapViewModel
 
 @Composable
-fun Map(mapViewModel: MapViewModel = hiltViewModel()) {
+fun Map() {
+    val mapViewModel: MapViewModel = hiltViewModel(LocalActivity.current as ComponentActivity)
+
     val cameraPosition by mapViewModel.cameraPosition.collectAsState()
     val zoomLevel by mapViewModel.zoomLevel.collectAsState()
     val focusManager = LocalFocusManager.current
@@ -72,15 +76,15 @@ fun Map(mapViewModel: MapViewModel = hiltViewModel()) {
         },
         style = { MapStyle(Style.OUTDOORS) }
     ) {
-        MapSetup()
+        MapSetup(mapViewModel)
         Annotations()
     }
 
-    Tracking()
+    Tracking(mapViewModel)
 }
 
 @Composable
-private fun MapSetup(mapViewModel: MapViewModel = hiltViewModel()) {
+private fun MapSetup(mapViewModel: MapViewModel) {
     MapEffect(Unit) { mapView ->
         configureMapBounds(mapView)
         handleOnMove(mapView, mapViewModel)
@@ -89,11 +93,8 @@ private fun MapSetup(mapViewModel: MapViewModel = hiltViewModel()) {
 }
 
 @Composable
-private fun Tracking(
-    mapViewModel: MapViewModel = hiltViewModel(),
-    appViewModel: AppViewModel = hiltViewModel(),
-) {
-    val context = LocalContext.current
+private fun Tracking(mapViewModel: MapViewModel) {
+    val appViewModel: AppViewModel = hiltViewModel(LocalActivity.current as ComponentActivity)
     val isTracking by mapViewModel.isTracking.collectAsState()
     var isLocationPermissionGranted by remember { mutableStateOf(false) }
 

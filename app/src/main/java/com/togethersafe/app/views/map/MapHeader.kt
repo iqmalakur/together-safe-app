@@ -1,6 +1,8 @@
 package com.togethersafe.app.views.map
 
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -31,10 +33,11 @@ import com.togethersafe.app.viewmodels.AppViewModel
 import com.togethersafe.app.viewmodels.GeocodingViewModel
 
 @Composable
-fun MapHeader(
-    geocodingViewModel: GeocodingViewModel = hiltViewModel(),
-    appViewModel: AppViewModel = hiltViewModel(),
-) {
+fun MapHeader() {
+    val activity = LocalActivity.current as ComponentActivity
+    val geocodingViewModel: GeocodingViewModel = hiltViewModel(activity)
+    val appViewModel: AppViewModel = hiltViewModel(activity)
+
     val animationSpec = tween<Float>(durationMillis = 200)
     val focusManager = LocalFocusManager.current
 

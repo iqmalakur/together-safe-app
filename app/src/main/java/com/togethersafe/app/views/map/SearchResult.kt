@@ -1,5 +1,7 @@
 package com.togethersafe.app.views.map
 
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -84,8 +86,8 @@ private fun LocationList(locationResult: List<GeocodingLocation>) {
 private fun LocationItem(
     tag: String,
     geocodingLocation: GeocodingLocation,
-    mapViewModel: MapViewModel = hiltViewModel(),
 ) {
+    val mapViewModel: MapViewModel = hiltViewModel(LocalActivity.current as ComponentActivity)
     val focusManager = LocalFocusManager.current
 
     Row(

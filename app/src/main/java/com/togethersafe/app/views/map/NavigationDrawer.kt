@@ -1,6 +1,8 @@
 package com.togethersafe.app.views.map
 
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,10 +45,8 @@ import com.togethersafe.app.data.model.User
 import com.togethersafe.app.viewmodels.AppViewModel
 
 @Composable
-fun NavigationDrawer(
-    appViewModel: AppViewModel = hiltViewModel(),
-    screenContent: @Composable () -> Unit,
-) {
+fun NavigationDrawer(screenContent: @Composable () -> Unit) {
+    val appViewModel: AppViewModel = hiltViewModel(LocalActivity.current as ComponentActivity)
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val isMenuOpen by appViewModel.isMenuOpen.collectAsState()
 
@@ -103,7 +103,8 @@ private fun DrawerContent() {
 }
 
 @Composable
-private fun DrawerHeader(appViewModel: AppViewModel = hiltViewModel()) {
+private fun DrawerHeader() {
+    val appViewModel: AppViewModel = hiltViewModel(LocalActivity.current as ComponentActivity)
     val user by appViewModel.user.collectAsState()
 
     Row(

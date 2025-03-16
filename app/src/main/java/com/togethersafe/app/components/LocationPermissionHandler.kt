@@ -6,6 +6,8 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
@@ -19,11 +21,11 @@ import com.togethersafe.app.viewmodels.AppViewModel
 import com.togethersafe.app.viewmodels.MapViewModel
 
 @Composable
-fun LocationPermissionHandler(
-    appViewModel: AppViewModel = hiltViewModel(),
-    mapViewModel: MapViewModel = hiltViewModel(),
-) {
-    val context = LocalContext.current
+fun LocationPermissionHandler() {
+    val activity = LocalActivity.current as ComponentActivity
+    val appViewModel: AppViewModel = hiltViewModel(activity)
+    val mapViewModel: MapViewModel = hiltViewModel(activity)
+
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -31,7 +33,7 @@ fun LocationPermissionHandler(
         else {
             mapViewModel.stopTracking()
             appViewModel.completeRequestPermission(false)
-            showGoToSettingsDialog(context)
+            showGoToSettingsDialog(activity)
         }
     }
 
@@ -39,7 +41,7 @@ fun LocationPermissionHandler(
 
     LaunchedEffect(isPermissionRequest) {
         if (isPermissionRequest) {
-            if (isPermissionGranted(context)) {
+            if (isPermissionGranted(activity)) {
                 appViewModel.completeRequestPermission(true)
             } else {
                 permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
