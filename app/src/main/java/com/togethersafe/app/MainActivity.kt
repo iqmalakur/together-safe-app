@@ -16,6 +16,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.togethersafe.app.components.DoubleBackHandler
+import com.togethersafe.app.components.SimpleToast
 import com.togethersafe.app.utils.getCurrentLocation
 import com.togethersafe.app.utils.isPermissionGranted
 import com.togethersafe.app.viewmodels.AppViewModel
@@ -49,15 +50,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val isPermissionRequest by appViewModel.isPermissionRequest.collectAsState()
-            val toastMessage by appViewModel.toastMessage.collectAsState()
             val errorIncident by incidentViewModel.error.collectAsState()
-
-            LaunchedEffect(toastMessage) {
-                if (toastMessage.isNotBlank()) {
-                    showToast(toastMessage)
-                    appViewModel.setToastMessage("")
-                }
-            }
 
             LaunchedEffect(isPermissionRequest) {
                 if (isPermissionRequest) {
@@ -70,7 +63,7 @@ class MainActivity : ComponentActivity() {
             }
 
             MapScreen()
-
+            SimpleToast()
             DoubleBackHandler()
         }
     }
