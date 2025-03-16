@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -35,6 +36,8 @@ fun MapHeader(
     appViewModel: AppViewModel = hiltViewModel(),
 ) {
     val animationSpec = tween<Float>(durationMillis = 200)
+    val focusManager = LocalFocusManager.current
+
     val locationResult by geocodingViewModel.locationResult.collectAsState()
     val error by geocodingViewModel.error.collectAsState()
     var isSearching by remember { mutableStateOf(false) }
@@ -71,7 +74,10 @@ fun MapHeader(
         }
 
         if (isSearching) {
-            BackHandler { isSearching = false }
+            BackHandler {
+                focusManager.clearFocus()
+                isSearching = false
+            }
         }
 
         AnimatedVisibility(
