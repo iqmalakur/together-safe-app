@@ -55,7 +55,11 @@ fun MapHeader() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .pointerInput(Unit) { detectTapGestures {} }
+            // prevent map dragging on the map header when the user is searching
+            .then(
+                if (isSearching) Modifier.pointerInput(Unit) { detectTapGestures {} }
+                else Modifier
+            )
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
