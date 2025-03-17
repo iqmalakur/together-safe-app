@@ -1,4 +1,4 @@
-package com.togethersafe.app.views.login
+package com.togethersafe.app.views.register
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -19,7 +19,7 @@ import com.togethersafe.app.components.TextLink
 import com.togethersafe.app.navigation.LocalNavController
 
 @Composable
-fun LoginScreen() {
+fun RegisterScreen() {
     val navController = LocalNavController.current
     val focusManager = LocalFocusManager.current
 
@@ -32,9 +32,9 @@ fun LoginScreen() {
             }
     ) {
         FormScreenHeader(
-            headerText = "Login ke Akun Anda",
-            descriptionText = "Masukkan informasi akun Anda untuk mengakses semua fitur " +
-                    "aplikasi Together Safe secara lengkap",
+            headerText = "Buat Akun Baru",
+            descriptionText = "Masukkan informasi yang diperlukan untuk membuat akun dan mulai " +
+                    "menggunakan fitur lengkap aplikasi Together Safe",
             onClick = { navController.popBackStack() }
         )
 
@@ -42,14 +42,14 @@ fun LoginScreen() {
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(16.dp)
         ) {
-            LoginForm()
+            RegisterForm()
 
             Spacer(modifier = Modifier.height(16.dp))
 
             TextLink(
-                text = "Belum punya akun?",
-                clickableText = "Daftar akun baru",
-                onClick = { navController.navigate("register") }
+                text = "Sudah punya akun?",
+                clickableText = "Masuk ke akun saya",
+                onClick = { navController.popBackStack() }
             )
         }
     }
