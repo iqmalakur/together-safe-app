@@ -1,6 +1,8 @@
 package com.togethersafe.app.views.map
 
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,13 +42,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.togethersafe.app.data.model.User
+import com.togethersafe.app.navigation.LocalNavController
 import com.togethersafe.app.viewmodels.AppViewModel
 
 @Composable
-fun NavigationDrawer(
-    appViewModel: AppViewModel = hiltViewModel(),
-    screenContent: @Composable () -> Unit,
-) {
+fun NavigationDrawer(screenContent: @Composable () -> Unit) {
+    val appViewModel: AppViewModel = hiltViewModel(LocalActivity.current as ComponentActivity)
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val isMenuOpen by appViewModel.isMenuOpen.collectAsState()
 
@@ -80,6 +81,11 @@ fun NavigationDrawer(
 
 @Composable
 private fun DrawerContent() {
+    val appViewModel: AppViewModel = hiltViewModel(LocalActivity.current as ComponentActivity)
+    val navController = LocalNavController.current
+
+    val user by appViewModel.user.collectAsState()
+
     ModalDrawerSheet {
         Column(modifier = Modifier.fillMaxSize()) {
             DrawerHeader()
@@ -91,19 +97,26 @@ private fun DrawerContent() {
             Spacer(modifier = Modifier.weight(1f))
 
             Button(
-                onClick = { /* TODO: Handle login/logout */ },
+                onClick = {
+                    appViewModel.setMenuOpen(false)
+                    navController.navigate("login")
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                Text("Login / Logout")
+                Text(
+                    if (user == null) "Login"
+                    else "Logout"
+                )
             }
         }
     }
 }
 
 @Composable
-private fun DrawerHeader(appViewModel: AppViewModel = hiltViewModel()) {
+private fun DrawerHeader() {
+    val appViewModel: AppViewModel = hiltViewModel(LocalActivity.current as ComponentActivity)
     val user by appViewModel.user.collectAsState()
 
     Row(

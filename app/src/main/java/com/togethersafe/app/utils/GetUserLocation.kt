@@ -10,6 +10,8 @@ import android.location.Location
 import android.location.LocationManager
 import android.os.Looper
 import android.provider.Settings
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -30,10 +32,11 @@ import com.togethersafe.app.viewmodels.MapViewModel
 
 @SuppressLint("MissingPermission")
 @Composable
-fun GetUserLocation(mapViewModel: MapViewModel = hiltViewModel()) {
-    val context = LocalContext.current
+fun GetUserLocation() {
+    val activity = LocalActivity.current as ComponentActivity
+    val mapViewModel: MapViewModel = hiltViewModel(activity)
     val isTracking by mapViewModel.isTracking.collectAsState()
-    val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
+    val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(activity) }
     var lastKnownLocation by remember { mutableStateOf<Location?>(null) }
 
     val updateLocation: (Location) -> Unit = { location ->
@@ -47,9 +50,9 @@ fun GetUserLocation(mapViewModel: MapViewModel = hiltViewModel()) {
     }
 
     LaunchedEffect(Unit) {
-        if (isPermissionGranted(context)) {
-            if (!isLocationEnabled(context)) {
-                promptEnableGPS(context)
+        if (isPermissionGranted(activity)) {
+            if (!isLocationEnabled(activity)) {
+                promptEnableGPS(activity)
             }
 
             fusedLocationClient.lastLocation.addOnSuccessListener { lastLocation ->
@@ -59,7 +62,7 @@ fun GetUserLocation(mapViewModel: MapViewModel = hiltViewModel()) {
                 }
             }
 
-            getCurrentLocation(context) { newLocation ->
+            getCurrentLocation(activity) { newLocation ->
                 var update = false
 
                 if (lastKnownLocation == null) update = true

@@ -1,6 +1,8 @@
 package com.togethersafe.app.views.map
 
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -23,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -30,11 +33,14 @@ import com.togethersafe.app.viewmodels.AppViewModel
 import com.togethersafe.app.viewmodels.GeocodingViewModel
 
 @Composable
-fun MapHeader(
-    geocodingViewModel: GeocodingViewModel = hiltViewModel(),
-    appViewModel: AppViewModel = hiltViewModel(),
-) {
+fun MapHeader() {
+    val activity = LocalActivity.current as ComponentActivity
+    val geocodingViewModel: GeocodingViewModel = hiltViewModel(activity)
+    val appViewModel: AppViewModel = hiltViewModel(activity)
+
     val animationSpec = tween<Float>(durationMillis = 200)
+    val focusManager = LocalFocusManager.current
+
     val locationResult by geocodingViewModel.locationResult.collectAsState()
     val error by geocodingViewModel.error.collectAsState()
     var isSearching by remember { mutableStateOf(false) }
@@ -49,7 +55,11 @@ fun MapHeader(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .pointerInput(Unit) { detectTapGestures {} }
+            // prevent map dragging on the map header when the user is searching
+            .then(
+                if (isSearching) Modifier.pointerInput(Unit) { detectTapGestures {} }
+                else Modifier
+            )
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -71,7 +81,10 @@ fun MapHeader(
         }
 
         if (isSearching) {
-            BackHandler { isSearching = false }
+            BackHandler {
+                focusManager.clearFocus()
+                isSearching = false
+            }
         }
 
         AnimatedVisibility(

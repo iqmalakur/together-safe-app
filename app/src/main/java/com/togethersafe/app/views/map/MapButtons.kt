@@ -1,5 +1,7 @@
 package com.togethersafe.app.views.map
 
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,10 +28,8 @@ import com.togethersafe.app.viewmodels.AppViewModel
 import com.togethersafe.app.viewmodels.MapViewModel
 
 @Composable
-fun ActionButton(
-    mapViewModel: MapViewModel = hiltViewModel(),
-    compass: @Composable () -> Unit,
-) {
+fun ActionButton(compass: @Composable () -> Unit) {
+    val mapViewModel: MapViewModel = hiltViewModel(LocalActivity.current as ComponentActivity)
     val isTracking by mapViewModel.isTracking.collectAsState()
 
     Column(
@@ -65,10 +65,8 @@ fun ActionButton(
 }
 
 @Composable
-fun HeaderButton(
-    isSearching: Boolean,
-    appViewModel: AppViewModel = hiltViewModel(),
-) {
+fun HeaderButton(isSearching: Boolean) {
+    val appViewModel: AppViewModel = hiltViewModel(LocalActivity.current as ComponentActivity)
     val focusManager = LocalFocusManager.current
 
     if (isSearching) {

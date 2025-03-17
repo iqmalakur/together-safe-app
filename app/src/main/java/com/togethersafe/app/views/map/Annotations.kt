@@ -1,5 +1,7 @@
 package com.togethersafe.app.views.map
 
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -17,17 +19,19 @@ import com.togethersafe.app.viewmodels.IncidentViewModel
 import com.togethersafe.app.viewmodels.MapViewModel
 
 @Composable
-fun Annotations(mapViewModel: MapViewModel = hiltViewModel()) {
+fun Annotations() {
+    val mapViewModel: MapViewModel = hiltViewModel(LocalActivity.current as ComponentActivity)
+
     val userPosition by mapViewModel.userPosition.collectAsState()
     val destination by mapViewModel.destination.collectAsState()
 
-    if (userPosition != null) UserPosition()
-    if (destination != null) Destination()
+    if (userPosition != null) UserPosition(mapViewModel)
+    if (destination != null) Destination(mapViewModel)
     IncidentMarkers()
 }
 
 @Composable
-private fun UserPosition(mapViewModel: MapViewModel = hiltViewModel()) {
+private fun UserPosition(mapViewModel: MapViewModel) {
     val userPosition by mapViewModel.userPosition.collectAsState()
 
     CircleAnnotation(userPosition!!) {
@@ -45,7 +49,7 @@ private fun UserPosition(mapViewModel: MapViewModel = hiltViewModel()) {
 }
 
 @Composable
-private fun Destination(mapViewModel: MapViewModel = hiltViewModel()) {
+private fun Destination(mapViewModel: MapViewModel) {
     val destination by mapViewModel.destination.collectAsState()
     val markerIconDrawable = R.drawable.ic_marker
     val marker = rememberIconImage(
@@ -60,7 +64,9 @@ private fun Destination(mapViewModel: MapViewModel = hiltViewModel()) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun IncidentMarkers(incidentViewModel: IncidentViewModel = hiltViewModel()) {
+private fun IncidentMarkers() {
+    val incidentViewModel: IncidentViewModel =
+        hiltViewModel(LocalActivity.current as ComponentActivity)
     val incidents by incidentViewModel.incidents.collectAsState()
     val selectedIncident by incidentViewModel.selectedIncident.collectAsState()
     val sheetState = rememberModalBottomSheetState()
