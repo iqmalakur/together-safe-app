@@ -1,11 +1,9 @@
-package com.togethersafe.app.views.register
+package com.togethersafe.app.views.report
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -14,12 +12,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
-import com.togethersafe.app.components.AuthScreenHeader
-import com.togethersafe.app.components.TextLink
+import com.togethersafe.app.components.AppHeader
 import com.togethersafe.app.navigation.LocalNavController
 
 @Composable
-fun RegisterScreen() {
+fun ReportScreen() {
     val navController = LocalNavController.current
     val focusManager = LocalFocusManager.current
 
@@ -31,10 +28,8 @@ fun RegisterScreen() {
                 detectTapGestures { focusManager.clearFocus() }
             }
     ) {
-        AuthScreenHeader(
-            headerText = "Buat Akun Baru",
-            descriptionText = "Masukkan informasi yang diperlukan untuk membuat akun dan mulai " +
-                    "menggunakan fitur lengkap aplikasi Together Safe",
+        AppHeader(
+            text = "Tambah Laporan",
             onClick = { navController.popBackStack() }
         )
 
@@ -42,15 +37,7 @@ fun RegisterScreen() {
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(16.dp)
         ) {
-            RegisterForm()
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            TextLink(
-                text = "Sudah punya akun?",
-                clickableText = "Masuk ke akun saya",
-                onClick = { navController.popBackStack() }
-            )
+            ReportForm()
         }
     }
 }

@@ -91,7 +91,7 @@ private fun DrawerContent() {
             DrawerHeader()
 
             DrawerItem("Akun Saya") { /* TODO: Handle action */ }
-            DrawerItem("Tambah Laporan") { /* TODO: Handle action */ }
+            DrawerItem("Tambah Laporan") { navController.navigate("report") }
             DrawerItem("Laporan Saya") { /* TODO: Handle action */ }
 
             Spacer(modifier = Modifier.weight(1f))
