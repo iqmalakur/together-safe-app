@@ -10,6 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import com.togethersafe.app.views.login.LoginScreen
 import com.togethersafe.app.views.map.MapScreen
 import com.togethersafe.app.views.register.RegisterScreen
+import com.togethersafe.app.views.report.ReportScreen
 
 val LocalNavController = staticCompositionLocalOf<NavHostController> {
     error("NavController not provided")
@@ -24,6 +25,7 @@ fun AppNavigation() {
             composable("map") { MapScreen() }
             composable("login") { LoginScreen() }
             composable("register") { RegisterScreen() }
+            composable("report") { ReportScreen() }
         }
     }
 }

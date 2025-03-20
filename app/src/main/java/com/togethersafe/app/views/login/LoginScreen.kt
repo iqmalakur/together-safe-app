@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
-import com.togethersafe.app.components.FormScreenHeader
+import com.togethersafe.app.components.AuthScreenHeader
 import com.togethersafe.app.components.TextLink
 import com.togethersafe.app.navigation.LocalNavController
 
@@ -31,7 +31,7 @@ fun LoginScreen() {
                 detectTapGestures { focusManager.clearFocus() }
             }
     ) {
-        FormScreenHeader(
+        AuthScreenHeader(
             headerText = "Login ke Akun Anda",
             descriptionText = "Masukkan informasi akun Anda untuk mengakses semua fitur " +
                     "aplikasi Together Safe secara lengkap",

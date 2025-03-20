@@ -7,7 +7,10 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -83,5 +86,22 @@ fun OutlinedRoundedButton(
             .fillMaxWidth(),
     ) {
         Text(text)
+    }
+}
+
+@Composable
+fun ArrowBackButton(
+    onClick: () -> Unit,
+    arrowColor: Color = Color.Black,
+) {
+    IconButton(
+        modifier = Modifier.size(24.dp),
+        onClick = onClick,
+    ) {
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+            contentDescription = "Kembali",
+            tint = arrowColor
+        )
     }
 }
