@@ -43,11 +43,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.togethersafe.app.data.model.User
 import com.togethersafe.app.navigation.LocalNavController
+import com.togethersafe.app.utils.getViewModel
 import com.togethersafe.app.viewmodels.AppViewModel
 
 @Composable
 fun NavigationDrawer(screenContent: @Composable () -> Unit) {
-    val appViewModel: AppViewModel = hiltViewModel(LocalActivity.current as ComponentActivity)
+    val appViewModel: AppViewModel = getViewModel()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val isMenuOpen by appViewModel.isMenuOpen.collectAsState()
 
@@ -81,7 +82,7 @@ fun NavigationDrawer(screenContent: @Composable () -> Unit) {
 
 @Composable
 private fun DrawerContent() {
-    val appViewModel: AppViewModel = hiltViewModel(LocalActivity.current as ComponentActivity)
+    val appViewModel: AppViewModel = getViewModel()
     val navController = LocalNavController.current
 
     val user by appViewModel.user.collectAsState()
@@ -116,7 +117,7 @@ private fun DrawerContent() {
 
 @Composable
 private fun DrawerHeader() {
-    val appViewModel: AppViewModel = hiltViewModel(LocalActivity.current as ComponentActivity)
+    val appViewModel: AppViewModel = getViewModel()
     val user by appViewModel.user.collectAsState()
 
     Row(

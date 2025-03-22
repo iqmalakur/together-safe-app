@@ -36,6 +36,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.mapbox.geojson.Point
 import com.togethersafe.app.constants.MapConstants.ZOOM_DEFAULT
 import com.togethersafe.app.data.model.GeocodingLocation
+import com.togethersafe.app.utils.getViewModel
 import com.togethersafe.app.viewmodels.MapViewModel
 
 @Composable
@@ -87,7 +88,7 @@ private fun LocationItem(
     tag: String,
     geocodingLocation: GeocodingLocation,
 ) {
-    val mapViewModel: MapViewModel = hiltViewModel(LocalActivity.current as ComponentActivity)
+    val mapViewModel: MapViewModel = getViewModel()
     val focusManager = LocalFocusManager.current
 
     Row(

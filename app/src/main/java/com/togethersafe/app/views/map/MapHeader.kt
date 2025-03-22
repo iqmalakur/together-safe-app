@@ -29,14 +29,14 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.togethersafe.app.utils.getViewModel
 import com.togethersafe.app.viewmodels.AppViewModel
 import com.togethersafe.app.viewmodels.GeocodingViewModel
 
 @Composable
 fun MapHeader() {
-    val activity = LocalActivity.current as ComponentActivity
-    val geocodingViewModel: GeocodingViewModel = hiltViewModel(activity)
-    val appViewModel: AppViewModel = hiltViewModel(activity)
+    val geocodingViewModel: GeocodingViewModel = getViewModel()
+    val appViewModel: AppViewModel = getViewModel()
 
     val animationSpec = tween<Float>(durationMillis = 200)
     val focusManager = LocalFocusManager.current

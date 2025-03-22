@@ -24,12 +24,13 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.togethersafe.app.components.RoundedIconButton
+import com.togethersafe.app.utils.getViewModel
 import com.togethersafe.app.viewmodels.AppViewModel
 import com.togethersafe.app.viewmodels.MapViewModel
 
 @Composable
 fun ActionButton(compass: @Composable () -> Unit) {
-    val mapViewModel: MapViewModel = hiltViewModel(LocalActivity.current as ComponentActivity)
+    val mapViewModel: MapViewModel = getViewModel()
     val isTracking by mapViewModel.isTracking.collectAsState()
 
     Column(
@@ -66,7 +67,7 @@ fun ActionButton(compass: @Composable () -> Unit) {
 
 @Composable
 fun HeaderButton(isSearching: Boolean) {
-    val appViewModel: AppViewModel = hiltViewModel(LocalActivity.current as ComponentActivity)
+    val appViewModel: AppViewModel = getViewModel()
     val focusManager = LocalFocusManager.current
 
     if (isSearching) {

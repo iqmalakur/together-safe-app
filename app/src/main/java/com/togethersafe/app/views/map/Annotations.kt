@@ -15,12 +15,13 @@ import com.mapbox.maps.extension.compose.annotation.generated.CircleAnnotation
 import com.mapbox.maps.extension.compose.annotation.generated.PointAnnotation
 import com.mapbox.maps.extension.compose.annotation.rememberIconImage
 import com.togethersafe.app.R
+import com.togethersafe.app.utils.getViewModel
 import com.togethersafe.app.viewmodels.IncidentViewModel
 import com.togethersafe.app.viewmodels.MapViewModel
 
 @Composable
 fun Annotations() {
-    val mapViewModel: MapViewModel = hiltViewModel(LocalActivity.current as ComponentActivity)
+    val mapViewModel: MapViewModel = getViewModel()
 
     val userPosition by mapViewModel.userPosition.collectAsState()
     val destination by mapViewModel.destination.collectAsState()
@@ -65,8 +66,7 @@ private fun Destination(mapViewModel: MapViewModel) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun IncidentMarkers() {
-    val incidentViewModel: IncidentViewModel =
-        hiltViewModel(LocalActivity.current as ComponentActivity)
+    val incidentViewModel: IncidentViewModel = getViewModel()
     val incidents by incidentViewModel.incidents.collectAsState()
     val selectedIncident by incidentViewModel.selectedIncident.collectAsState()
     val sheetState = rememberModalBottomSheetState()

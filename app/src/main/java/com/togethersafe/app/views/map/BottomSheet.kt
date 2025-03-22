@@ -33,13 +33,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.togethersafe.app.data.model.Incident
+import com.togethersafe.app.utils.getViewModel
 import com.togethersafe.app.viewmodels.IncidentViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomSheet(sheetState: SheetState) {
-    val incidentViewModel: IncidentViewModel =
-        hiltViewModel(LocalActivity.current as ComponentActivity)
+    val incidentViewModel: IncidentViewModel = getViewModel()
     val selectedIncident by incidentViewModel.selectedIncident.collectAsState()
 
     ModalBottomSheet(
