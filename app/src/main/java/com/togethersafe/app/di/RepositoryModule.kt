@@ -1,6 +1,7 @@
 package com.togethersafe.app.di
 
 import com.togethersafe.app.data.network.ApiService
+import com.togethersafe.app.repositories.AuthRepository
 import com.togethersafe.app.repositories.IncidentRepository
 import dagger.Module
 import dagger.Provides
@@ -16,6 +17,12 @@ object RepositoryModule {
     @Singleton
     fun provideIncidentRepository(apiService: ApiService): IncidentRepository {
         return IncidentRepository(apiService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthRepository(apiService: ApiService): AuthRepository {
+        return AuthRepository(apiService)
     }
 
 }

@@ -1,8 +1,6 @@
 package com.togethersafe.app.views.map
 
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
-import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,12 +37,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.togethersafe.app.data.model.User
 import com.togethersafe.app.navigation.LocalNavController
 import com.togethersafe.app.utils.getViewModel
 import com.togethersafe.app.viewmodels.AppViewModel
+import com.togethersafe.app.viewmodels.AuthViewModel
 
 @Composable
 fun NavigationDrawer(screenContent: @Composable () -> Unit) {
@@ -118,7 +116,8 @@ private fun DrawerContent() {
 @Composable
 private fun DrawerHeader() {
     val appViewModel: AppViewModel = getViewModel()
-    val user by appViewModel.user.collectAsState()
+    val authViewModel: AuthViewModel = getViewModel()
+    val user by authViewModel.user.collectAsState()
 
     Row(
         modifier = Modifier
