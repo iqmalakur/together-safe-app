@@ -1,11 +1,13 @@
 package com.togethersafe.app.viewmodels
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.togethersafe.app.data.dto.AuthResDto
 import com.togethersafe.app.data.model.User
 import com.togethersafe.app.repositories.AuthRepository
+import com.togethersafe.app.utils.saveToken
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,33 +18,54 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(private val repository: AuthRepository) : ViewModel() {
-
     private val _user = MutableStateFlow<User?>(null)
-    private val _token = MutableStateFlow("")
     private val _loginErrors = MutableStateFlow<List<String>>(emptyList())
 
     val user: StateFlow<User?> get() = _user
-    val token: StateFlow<String> get() = _token
     val loginErrors: StateFlow<List<String>> get() = _loginErrors
 
-    fun login(email: String, password: String, onSuccess: () -> Unit) {
+    fun login(
+        context: Context,
+        email: String,
+        password: String,
+        onSuccess: (token: String) -> Unit
+    ) {
         viewModelScope.launch {
-            handleRequest(onSuccess) {
-                repository.login(email, password)
+            handleRequest(
+                onSuccess = onSuccess,
+                onError = { _loginErrors.value = it },
+            ) {
+                val response = repository.login(email, password)
+                saveToken(context, response.token)
+
+                response
             }
         }
     }
 
-    private suspend fun handleRequest(onSuccess: () -> Unit, action: suspend () -> AuthResDto) {
+    fun verifyToken(token: String) {
+        viewModelScope.launch {
+            handleRequest {
+                repository.validateToken(token)
+            }
+        }
+    }
+
+    private suspend fun handleRequest(
+        onSuccess: (token: String) -> Unit = {},
+        onError: (errors: List<String>) -> Unit = {},
+        action: suspend () -> AuthResDto
+    ) {
         try {
-            handleResult(action())
-            onSuccess()
+            val result = action()
+            handleResult(result)
+            onSuccess(result.token)
         } catch (e: HttpException) {
             logError(e)
-            _loginErrors.value = handleError(e)
+            onError(handleError(e))
         } catch (e: Exception) {
             logError(e)
-            _loginErrors.value = listOf("Terjadi keasalahan tidak terduga")
+            onError(listOf("Terjadi keasalahan tidak terduga"))
         }
     }
 
@@ -70,7 +93,6 @@ class AuthViewModel @Inject constructor(private val repository: AuthRepository) 
     }
 
     private fun handleResult(result: AuthResDto) {
-        _token.value = result.token
         _user.value = User(
             name = result.name,
             email = result.email,

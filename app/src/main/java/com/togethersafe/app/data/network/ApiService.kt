@@ -15,6 +15,6 @@ interface ApiService {
     @POST("auth/login")
     suspend fun login(@Body body: LoginReqDto): AuthResDto
 
-    @POST("/auth/validate_token")
+    @POST("auth/validate_token")
     suspend fun validateToken(@Body body: ValidateTokenReqDto): AuthResDto
 }
