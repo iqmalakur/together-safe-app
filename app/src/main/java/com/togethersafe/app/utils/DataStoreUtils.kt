@@ -18,6 +18,12 @@ suspend fun saveToken(context: Context, token: String) {
     }
 }
 
+suspend fun removeToken(context: Context) {
+    context.datastore.edit { prefs ->
+        prefs.remove(TOKEN_KEY)
+    }
+}
+
 suspend fun getToken(context: Context): String? {
     val prefs = context.datastore.data.first()
     return prefs[TOKEN_KEY]

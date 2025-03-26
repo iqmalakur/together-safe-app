@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.togethersafe.app.data.dto.AuthResDto
 import com.togethersafe.app.data.model.User
 import com.togethersafe.app.repositories.AuthRepository
+import com.togethersafe.app.utils.removeToken
 import com.togethersafe.app.utils.saveToken
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,6 +41,13 @@ class AuthViewModel @Inject constructor(private val repository: AuthRepository) 
 
                 response
             }
+        }
+    }
+
+    fun logout(context: Context) {
+        viewModelScope.launch {
+            _user.value = null
+            removeToken(context)
         }
     }
 
