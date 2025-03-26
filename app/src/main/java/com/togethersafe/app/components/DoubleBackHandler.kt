@@ -11,13 +11,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.togethersafe.app.utils.getViewModel
 import com.togethersafe.app.viewmodels.AppViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
 fun DoubleBackHandler() {
-    val appViewModel: AppViewModel = hiltViewModel(LocalActivity.current as ComponentActivity)
+    val appViewModel: AppViewModel = getViewModel()
     var backPressedOnce by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 

@@ -34,7 +34,7 @@ import com.togethersafe.app.viewmodels.MapViewModel
 @Composable
 fun GetUserLocation() {
     val activity = LocalActivity.current as ComponentActivity
-    val mapViewModel: MapViewModel = hiltViewModel(activity)
+    val mapViewModel: MapViewModel = getViewModel()
     val isTracking by mapViewModel.isTracking.collectAsState()
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(activity) }
     var lastKnownLocation by remember { mutableStateOf<Location?>(null) }

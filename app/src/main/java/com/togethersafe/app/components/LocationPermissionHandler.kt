@@ -6,25 +6,23 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.platform.LocalContext
-import androidx.hilt.navigation.compose.hiltViewModel
+import com.togethersafe.app.utils.getActivity
+import com.togethersafe.app.utils.getViewModel
 import com.togethersafe.app.utils.isPermissionGranted
 import com.togethersafe.app.viewmodels.AppViewModel
 import com.togethersafe.app.viewmodels.MapViewModel
 
 @Composable
 fun LocationPermissionHandler() {
-    val activity = LocalActivity.current as ComponentActivity
-    val appViewModel: AppViewModel = hiltViewModel(activity)
-    val mapViewModel: MapViewModel = hiltViewModel(activity)
+    val activity = getActivity()
+    val appViewModel: AppViewModel = getViewModel()
+    val mapViewModel: MapViewModel = getViewModel()
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()

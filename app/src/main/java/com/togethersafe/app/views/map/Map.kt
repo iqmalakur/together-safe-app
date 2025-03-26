@@ -37,12 +37,13 @@ import com.togethersafe.app.constants.MapConstants.ZOOM_DEFAULT
 import com.togethersafe.app.constants.MapConstants.ZOOM_MAX
 import com.togethersafe.app.constants.MapConstants.ZOOM_MIN
 import com.togethersafe.app.utils.GetUserLocation
+import com.togethersafe.app.utils.getViewModel
 import com.togethersafe.app.viewmodels.AppViewModel
 import com.togethersafe.app.viewmodels.MapViewModel
 
 @Composable
 fun Map() {
-    val mapViewModel: MapViewModel = hiltViewModel(LocalActivity.current as ComponentActivity)
+    val mapViewModel: MapViewModel = getViewModel()
 
     val cameraPosition by mapViewModel.cameraPosition.collectAsState()
     val zoomLevel by mapViewModel.zoomLevel.collectAsState()
@@ -94,7 +95,7 @@ private fun MapSetup(mapViewModel: MapViewModel) {
 
 @Composable
 private fun Tracking(mapViewModel: MapViewModel) {
-    val appViewModel: AppViewModel = hiltViewModel(LocalActivity.current as ComponentActivity)
+    val appViewModel: AppViewModel = getViewModel()
     val isTracking by mapViewModel.isTracking.collectAsState()
     var isLocationPermissionGranted by remember { mutableStateOf(false) }
 
