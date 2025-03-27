@@ -1,7 +1,5 @@
 package com.togethersafe.app.views.map
 
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -12,9 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.mapbox.android.gestures.MoveGestureDetector
 import com.mapbox.android.gestures.StandardScaleGestureDetector
 import com.mapbox.geojson.Point
@@ -138,11 +134,13 @@ private fun handleOnMove(mapView: MapView, mapViewModel: MapViewModel) {
 
             override fun onMoveBegin(detector: MoveGestureDetector) {
                 mapViewModel.stopTracking()
+                mapViewModel.cancelScheduledMapSave()
             }
 
             override fun onMoveEnd(detector: MoveGestureDetector) {
                 val center = mapView.mapboxMap.cameraState.center
                 mapViewModel.setCameraPosition(center.latitude(), center.longitude())
+                mapViewModel.scheduleMapSave(center)
             }
         }
     )
