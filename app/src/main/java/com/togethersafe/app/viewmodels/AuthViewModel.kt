@@ -10,6 +10,7 @@ import com.togethersafe.app.repositories.AuthRepository
 import com.togethersafe.app.utils.removeToken
 import com.togethersafe.app.utils.saveToken
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -18,7 +19,10 @@ import retrofit2.HttpException
 import javax.inject.Inject
 
 @HiltViewModel
-class AuthViewModel @Inject constructor(private val repository: AuthRepository) : ViewModel() {
+class AuthViewModel @Inject constructor(
+    private val repository: AuthRepository,
+    @ApplicationContext private val context: Context,
+) : ViewModel() {
     private val _user = MutableStateFlow<User?>(null)
     private val _loginErrors = MutableStateFlow<List<String>>(emptyList())
 
@@ -26,7 +30,6 @@ class AuthViewModel @Inject constructor(private val repository: AuthRepository) 
     val loginErrors: StateFlow<List<String>> get() = _loginErrors
 
     fun login(
-        context: Context,
         email: String,
         password: String,
         onSuccess: (token: String) -> Unit
@@ -44,7 +47,7 @@ class AuthViewModel @Inject constructor(private val repository: AuthRepository) 
         }
     }
 
-    fun logout(context: Context) {
+    fun logout() {
         viewModelScope.launch {
             _user.value = null
             removeToken(context)

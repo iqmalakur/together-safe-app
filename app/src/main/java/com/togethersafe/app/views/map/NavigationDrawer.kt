@@ -40,7 +40,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -136,15 +135,13 @@ private fun LogoutDialog(onClose: () -> Unit) {
     val appViewModel: AppViewModel = getViewModel()
     val authViewModel: AuthViewModel = getViewModel()
 
-    val context = LocalContext.current
-
     AlertDialog(
         onDismissRequest = onClose,
         title = { Text("Konfirmasi Logout") },
         text = { Text("Apakah Anda yakin ingin logout?") },
         confirmButton = {
             TextButton(onClick = {
-                authViewModel.logout(context)
+                authViewModel.logout()
                 appViewModel.setToastMessage("Logout berhasil!")
                 onClose()
             }) {
