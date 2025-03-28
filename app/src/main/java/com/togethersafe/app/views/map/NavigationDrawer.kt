@@ -43,6 +43,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.togethersafe.app.components.UserProfile
 import com.togethersafe.app.data.model.User
 import com.togethersafe.app.navigation.LocalNavController
 import com.togethersafe.app.utils.getViewModel
@@ -169,7 +170,7 @@ private fun DrawerHeader() {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        UserProfile(user)
+        UserProfile(user?.profilePhoto)
         Spacer(Modifier.width(8.dp))
         UserIdentity(user)
 
@@ -192,29 +193,6 @@ private fun DrawerItem(label: String, onClick: () -> Unit) {
         selected = false,
         onClick = onClick
     )
-}
-
-@Composable
-private fun UserProfile(user: User?) {
-    if (user?.profilePhoto != null) {
-        AsyncImage(
-            model = user.profilePhoto,
-            contentDescription = "Foto Profil",
-            modifier = Modifier
-                .testTag("UserProfile")
-                .size(48.dp)
-                .clip(CircleShape)
-                .border(1.dp, MaterialTheme.colorScheme.primary, CircleShape)
-        )
-    } else {
-        Icon(
-            imageVector = Icons.Default.AccountCircle,
-            contentDescription = "Foto Profil",
-            modifier = Modifier
-                .testTag("UserProfileDefault")
-                .size(48.dp)
-        )
-    }
 }
 
 @Composable
