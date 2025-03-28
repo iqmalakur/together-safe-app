@@ -1,5 +1,7 @@
 package com.togethersafe.app.data.dto
 
+import java.io.File
+
 data class AuthResDto(
     val email: String,
     val name: String,
@@ -10,6 +12,14 @@ data class AuthResDto(
 data class LoginReqDto(
     val email: String,
     val password: String,
+)
+
+data class RegisterReqDto(
+    val name: String,
+    val email: String,
+    val password: String,
+    val phone: String,
+    val profilePhoto: File?,
 )
 
 data class ValidateTokenReqDto(val token: String)

@@ -5,11 +5,13 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.togethersafe.app.data.dto.AuthResDto
+import com.togethersafe.app.data.dto.RegisterReqDto
 import com.togethersafe.app.data.model.User
 import com.togethersafe.app.repositories.AuthRepository
 import com.togethersafe.app.utils.removeToken
 import com.togethersafe.app.utils.saveToken
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -18,15 +20,19 @@ import retrofit2.HttpException
 import javax.inject.Inject
 
 @HiltViewModel
-class AuthViewModel @Inject constructor(private val repository: AuthRepository) : ViewModel() {
+class AuthViewModel @Inject constructor(
+    private val repository: AuthRepository,
+    @ApplicationContext private val context: Context,
+) : ViewModel() {
     private val _user = MutableStateFlow<User?>(null)
     private val _loginErrors = MutableStateFlow<List<String>>(emptyList())
+    private val _registerErrors = MutableStateFlow<List<String>>(emptyList())
 
     val user: StateFlow<User?> get() = _user
     val loginErrors: StateFlow<List<String>> get() = _loginErrors
+    val registerErrors: StateFlow<List<String>> get() = _registerErrors
 
     fun login(
-        context: Context,
         email: String,
         password: String,
         onSuccess: (token: String) -> Unit
@@ -36,15 +42,26 @@ class AuthViewModel @Inject constructor(private val repository: AuthRepository) 
                 onSuccess = onSuccess,
                 onError = { _loginErrors.value = it },
             ) {
-                val response = repository.login(email, password)
-                saveToken(context, response.token)
+                val result = repository.login(email, password)
 
-                response
+                saveToken(context, result.token)
+                handleResult(result)
+
+                result
             }
         }
     }
 
-    fun logout(context: Context) {
+    fun register(registerReqDto: RegisterReqDto, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            handleRequest(
+                onSuccess = { onSuccess() },
+                onError = { _registerErrors.value = it },
+            ) { repository.register(registerReqDto) }
+        }
+    }
+
+    fun logout() {
         viewModelScope.launch {
             _user.value = null
             removeToken(context)
@@ -66,8 +83,9 @@ class AuthViewModel @Inject constructor(private val repository: AuthRepository) 
     ) {
         try {
             val result = action()
-            handleResult(result)
             onSuccess(result.token)
+            _loginErrors.value = emptyList()
+            _registerErrors.value = emptyList()
         } catch (e: HttpException) {
             logError(e)
             onError(handleError(e))

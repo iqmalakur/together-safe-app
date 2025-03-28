@@ -11,7 +11,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,7 +33,6 @@ fun LoginForm() {
     var password by remember { mutableStateOf("") }
 
     val navController = LocalNavController.current
-    val context = LocalContext.current
 
     InputTextField(
         label = "Email",
@@ -78,7 +76,6 @@ fun LoginForm() {
         contentColor = Color.White,
         onClick = {
             authViewModel.login(
-                context = context,
                 email = email,
                 password = password,
             ) {

@@ -1,11 +1,7 @@
 package com.togethersafe.app.views.report
 
-import android.content.Context
-import android.graphics.Bitmap
 import android.net.Uri
 import androidx.activity.compose.ManagedActivityResultLauncher
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -43,11 +39,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import coil.compose.rememberAsyncImagePainter
-import java.io.File
+import com.togethersafe.app.components.CameraLauncher
+import com.togethersafe.app.components.GalleryLauncher
 
 @Composable
 fun ImagePicker(
@@ -55,30 +50,8 @@ fun ImagePicker(
     onAddImage: (Uri) -> Unit,
     onDeleteImage: (Uri) -> Unit,
 ) {
-    val context = LocalContext.current
     val listState = rememberLazyListState()
     var shouldScroll by remember { mutableStateOf(false) }
-
-    val galleryLauncher =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri ->
-            uri?.let {
-                if (imageUris.size < 5) {
-                    onAddImage(uri)
-                    shouldScroll = imageUris.size >= 2
-                }
-            }
-        }
-
-    val cameraLauncher =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.TakePicturePreview()) { bitmap ->
-            bitmap?.let {
-                val uri = saveBitmapToCache(context, it)
-                if (imageUris.size < 5) {
-                    onAddImage(uri)
-                    shouldScroll = imageUris.size >= 2
-                }
-            }
-        }
 
     LaunchedEffect(shouldScroll) {
         if (shouldScroll) {
@@ -90,22 +63,31 @@ fun ImagePicker(
     Text(text = "Lampiran Gambar (Maksimal 5)", style = MaterialTheme.typography.bodyMedium)
     Spacer(modifier = Modifier.height(4.dp))
 
-    Button(
-        enabled = imageUris.size < 5,
-        onClick = { cameraLauncher.launch(null) },
-        colors = ButtonColors(
-            containerColor = Color.Black,
-            contentColor = Color.White,
-            disabledContainerColor = Color.Gray,
-            disabledContentColor = Color.LightGray
-        )
-    ) {
-        Icon(
-            imageVector = Icons.Default.PhotoCamera,
-            contentDescription = "Ambil gambar",
-        )
-        Spacer(Modifier.width(8.dp))
-        Text("Ambil gambar")
+    CameraLauncher(
+        onResult = { uri ->
+            if (imageUris.size < 5) {
+                onAddImage(uri)
+                shouldScroll = imageUris.size >= 2
+            }
+        }
+    ) { startLauncher ->
+        Button(
+            enabled = imageUris.size < 5,
+            onClick = { startLauncher() },
+            colors = ButtonColors(
+                containerColor = Color.Black,
+                contentColor = Color.White,
+                disabledContainerColor = Color.Gray,
+                disabledContentColor = Color.LightGray
+            )
+        ) {
+            Icon(
+                imageVector = Icons.Default.PhotoCamera,
+                contentDescription = "Ambil gambar",
+            )
+            Spacer(Modifier.width(8.dp))
+            Text("Ambil gambar")
+        }
     }
 
     Spacer(modifier = Modifier.height(10.dp))
@@ -116,7 +98,16 @@ fun ImagePicker(
     ) {
         items(imageUris) { uri -> ImageItem(uri, onDeleteImage) }
         if (imageUris.size < 5) {
-            item { AddImage(galleryLauncher) }
+            item {
+                GalleryLauncher(
+                    onResult = { uri ->
+                        if (imageUris.size < 5) {
+                            onAddImage(uri)
+                            shouldScroll = imageUris.size >= 2
+                        }
+                    }
+                ) { launcher -> AddImage(launcher) }
+            }
         }
     }
 
@@ -174,13 +165,5 @@ fun AddImage(galleryLauncher: ManagedActivityResultLauncher<String, Uri?>) {
             tint = Color.Gray
         )
     }
-}
-
-fun saveBitmapToCache(context: Context, bitmap: Bitmap): Uri {
-    val file = File(context.cacheDir, "${System.currentTimeMillis()}.jpg")
-    file.outputStream().use { out ->
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
-    }
-    return file.toUri()
 }
 
