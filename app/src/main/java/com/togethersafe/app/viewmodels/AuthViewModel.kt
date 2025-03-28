@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.togethersafe.app.data.dto.AuthResDto
+import com.togethersafe.app.data.dto.RegisterReqDto
 import com.togethersafe.app.data.model.User
 import com.togethersafe.app.repositories.AuthRepository
 import com.togethersafe.app.utils.removeToken
@@ -25,9 +26,11 @@ class AuthViewModel @Inject constructor(
 ) : ViewModel() {
     private val _user = MutableStateFlow<User?>(null)
     private val _loginErrors = MutableStateFlow<List<String>>(emptyList())
+    private val _registerErrors = MutableStateFlow<List<String>>(emptyList())
 
     val user: StateFlow<User?> get() = _user
     val loginErrors: StateFlow<List<String>> get() = _loginErrors
+    val registerErrors: StateFlow<List<String>> get() = _registerErrors
 
     fun login(
         email: String,
@@ -39,11 +42,22 @@ class AuthViewModel @Inject constructor(
                 onSuccess = onSuccess,
                 onError = { _loginErrors.value = it },
             ) {
-                val response = repository.login(email, password)
-                saveToken(context, response.token)
+                val result = repository.login(email, password)
 
-                response
+                saveToken(context, result.token)
+                handleResult(result)
+
+                result
             }
+        }
+    }
+
+    fun register(registerReqDto: RegisterReqDto, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            handleRequest(
+                onSuccess = { onSuccess() },
+                onError = { _registerErrors.value = it },
+            ) { repository.register(registerReqDto) }
         }
     }
 
@@ -69,8 +83,9 @@ class AuthViewModel @Inject constructor(
     ) {
         try {
             val result = action()
-            handleResult(result)
             onSuccess(result.token)
+            _loginErrors.value = emptyList()
+            _registerErrors.value = emptyList()
         } catch (e: HttpException) {
             logError(e)
             onError(handleError(e))
