@@ -105,13 +105,18 @@ class AuthViewModel @Inject constructor(
 
         val errorBody = e.response()?.errorBody()?.string()
         errorBody?.let {
-            val json = JSONObject(it)
+            try {
+                val json = JSONObject(it)
 
-            if (errorCode < 500) {
-                val messageArray = json.getJSONArray("message")
-                errorMessages = List(messageArray.length()) { i -> messageArray.getString(i) }
-            } else {
-                errorMessages = listOf(json.getString("message"))
+                if (errorCode < 500) {
+                    val messageArray = json.getJSONArray("message")
+                    errorMessages = List(messageArray.length()) { i -> messageArray.getString(i) }
+                } else {
+                    errorMessages = listOf(json.getString("message"))
+                }
+            } catch (e: Exception) {
+                logError(e)
+                errorMessages = listOf("Terjadi keasalahan tidak terduga")
             }
         }
 
