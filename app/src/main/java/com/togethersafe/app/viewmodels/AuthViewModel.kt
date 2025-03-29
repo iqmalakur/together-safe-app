@@ -8,8 +8,10 @@ import com.togethersafe.app.data.dto.AuthResDto
 import com.togethersafe.app.data.dto.RegisterReqDto
 import com.togethersafe.app.data.model.User
 import com.togethersafe.app.repositories.AuthRepository
-import com.togethersafe.app.utils.removeToken
-import com.togethersafe.app.utils.saveToken
+import com.togethersafe.app.utils.getToken
+import com.togethersafe.app.utils.getUser
+import com.togethersafe.app.utils.removeUser
+import com.togethersafe.app.utils.saveUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,6 +34,15 @@ class AuthViewModel @Inject constructor(
     val loginErrors: StateFlow<List<String>> get() = _loginErrors
     val registerErrors: StateFlow<List<String>> get() = _registerErrors
 
+    init {
+        viewModelScope.launch {
+            val user = getUser(context)
+            if (user != null) {
+                _user.value = user
+            }
+        }
+    }
+
     fun login(
         email: String,
         password: String,
@@ -40,10 +51,10 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             handleRequest(
                 onSuccess = onSuccess,
-                onError = { _loginErrors.value = it },
+                onError = { errors, _ -> _loginErrors.value = errors },
             ) {
                 val result = repository.login(email, password)
-                saveToken(context, result.token)
+                saveUser(context, result)
                 result
             }
         }
@@ -54,7 +65,7 @@ class AuthViewModel @Inject constructor(
             handleRequest(
                 isHandleResult = false,
                 onSuccess = { onSuccess() },
-                onError = { _registerErrors.value = it },
+                onError = { errors, _ -> _registerErrors.value = errors },
             ) { repository.register(registerReqDto) }
         }
     }
@@ -62,21 +73,32 @@ class AuthViewModel @Inject constructor(
     fun logout() {
         viewModelScope.launch {
             _user.value = null
-            removeToken(context)
+            removeUser(context)
         }
     }
 
-    fun verifyToken(token: String) {
+    fun verifyToken() {
         viewModelScope.launch {
-            handleRequest {
-                repository.validateToken(token)
+            val token = getToken(context)
+
+            if (token != null) {
+                handleRequest(
+                    onError = { _, statusCode ->
+                        if (statusCode == 401) {
+                            removeUser(context)
+                            _user.value = null
+                        }
+                    }
+                ) {
+                    repository.validateToken(token)
+                }
             }
         }
     }
 
     private suspend fun handleRequest(
         onSuccess: (token: String) -> Unit = {},
-        onError: (errors: List<String>) -> Unit = {},
+        onError: suspend (errors: List<String>, statusCode: Int) -> Unit = { _, _ -> },
         isHandleResult: Boolean = true,
         action: suspend () -> AuthResDto
     ) {
@@ -92,10 +114,10 @@ class AuthViewModel @Inject constructor(
             _registerErrors.value = emptyList()
         } catch (e: HttpException) {
             logError(e)
-            onError(handleError(e))
+            onError(handleError(e), e.code())
         } catch (e: Exception) {
             logError(e)
-            onError(listOf("Terjadi keasalahan tidak terduga"))
+            onError(listOf("Terjadi keasalahan tidak terduga"), 500)
         }
     }
 
