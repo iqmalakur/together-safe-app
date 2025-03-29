@@ -39,8 +39,9 @@ suspend fun getMapLocation(context: Context): Point? {
 }
 
 suspend fun saveToken(context: Context, token: String) {
+    val encrypted = SecurityUtils.encrypt(token, KeyStoreAlias.TOKEN_KEY)
     context.datastore.edit { prefs ->
-        prefs[TOKEN_KEY] = token
+        prefs[TOKEN_KEY] = encrypted
     }
 }
 
@@ -52,5 +53,6 @@ suspend fun removeToken(context: Context) {
 
 suspend fun getToken(context: Context): String? {
     val prefs = context.datastore.data.first()
-    return prefs[TOKEN_KEY]
+    val encrypted = prefs[TOKEN_KEY] ?: return null
+    return SecurityUtils.decrypt(encrypted, KeyStoreAlias.TOKEN_KEY)
 }

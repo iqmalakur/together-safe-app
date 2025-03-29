@@ -13,6 +13,7 @@ import com.togethersafe.app.navigation.AppNavigation
 import com.togethersafe.app.utils.getCurrentLocation
 import com.togethersafe.app.utils.getToken
 import com.togethersafe.app.utils.isPermissionGranted
+import com.togethersafe.app.utils.removeToken
 import com.togethersafe.app.viewmodels.AppViewModel
 import com.togethersafe.app.viewmodels.AuthViewModel
 import com.togethersafe.app.viewmodels.IncidentViewModel
