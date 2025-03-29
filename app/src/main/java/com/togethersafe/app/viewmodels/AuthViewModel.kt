@@ -43,10 +43,7 @@ class AuthViewModel @Inject constructor(
                 onError = { _loginErrors.value = it },
             ) {
                 val result = repository.login(email, password)
-
                 saveToken(context, result.token)
-                handleResult(result)
-
                 result
             }
         }
@@ -55,6 +52,7 @@ class AuthViewModel @Inject constructor(
     fun register(registerReqDto: RegisterReqDto, onSuccess: () -> Unit) {
         viewModelScope.launch {
             handleRequest(
+                isHandleResult = false,
                 onSuccess = { onSuccess() },
                 onError = { _registerErrors.value = it },
             ) { repository.register(registerReqDto) }
@@ -79,11 +77,17 @@ class AuthViewModel @Inject constructor(
     private suspend fun handleRequest(
         onSuccess: (token: String) -> Unit = {},
         onError: (errors: List<String>) -> Unit = {},
+        isHandleResult: Boolean = true,
         action: suspend () -> AuthResDto
     ) {
         try {
             val result = action()
             onSuccess(result.token)
+
+            if (isHandleResult) {
+                handleResult(result)
+            }
+
             _loginErrors.value = emptyList()
             _registerErrors.value = emptyList()
         } catch (e: HttpException) {
