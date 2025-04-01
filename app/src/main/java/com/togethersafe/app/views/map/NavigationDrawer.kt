@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import com.togethersafe.app.components.LoginRequired
 import com.togethersafe.app.components.UserProfile
 import com.togethersafe.app.data.model.DialogState
 import com.togethersafe.app.data.model.User
@@ -94,30 +95,23 @@ private fun DrawerContent() {
         onDismiss = {}
     )
 
-    val loginRequiredDialog = DialogState(
-        title = "Login Diperlukan",
-        message = "Anda harus login terlebih dahulu untuk mengakses fitur ini.",
-        confirmText = "Login",
-        onConfirm = {
-            navController.navigate("login")
-            appViewModel.setMenuOpen(false)
-        },
-        onDismiss = {},
-    )
-
     ModalDrawerSheet {
         Column(modifier = Modifier.fillMaxSize()) {
             DrawerHeader()
 
             DrawerItem("Akun Saya") { /* TODO: Handle action */ }
-            DrawerItem("Tambah Laporan") {
-                if (user != null) {
-                    navController.navigate("report")
-                    appViewModel.setMenuOpen(false)
-                } else {
-                    appViewModel.setDialogState(loginRequiredDialog)
+
+            LoginRequired { showDialog ->
+                DrawerItem("Tambah Laporan") {
+                    if (user != null) {
+                        navController.navigate("report")
+                        appViewModel.setMenuOpen(false)
+                    } else {
+                        showDialog()
+                    }
                 }
             }
+
             DrawerItem("Laporan Saya") { /* TODO: Handle action */ }
 
             Spacer(modifier = Modifier.weight(1f))
