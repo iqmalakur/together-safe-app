@@ -21,15 +21,18 @@ import com.togethersafe.app.components.InputTextField
 import com.togethersafe.app.components.OutlinedRoundedButton
 import com.togethersafe.app.components.PasswordTextField
 import com.togethersafe.app.data.dto.RegisterReqDto
+import com.togethersafe.app.data.model.DialogState
 import com.togethersafe.app.navigation.LocalNavController
 import com.togethersafe.app.utils.getViewModel
 import com.togethersafe.app.utils.uriToFile
+import com.togethersafe.app.viewmodels.AppViewModel
 import com.togethersafe.app.viewmodels.AuthViewModel
 import java.io.File
 
 @Composable
 fun RegisterForm() {
     val authViewModel: AuthViewModel = getViewModel()
+    val appViewModel: AppViewModel = getViewModel()
     val context = LocalContext.current
     val navController = LocalNavController.current
 
@@ -39,14 +42,12 @@ fun RegisterForm() {
     var phone by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
-    var showSuccessDialog by remember { mutableStateOf(false) }
 
-    if (showSuccessDialog) {
-        SuccessDialog {
-            showSuccessDialog = false
-            navController.popBackStack()
-        }
-    }
+    val successDialog = DialogState(
+        title = "Pendaftaran Berhasil",
+        message = "Akun Anda berhasil didaftarkan. Silakan login untuk melanjutkan.",
+        onConfirm = { navController.popBackStack() }
+    )
 
     ProfileImagePicker(imageUri = imageUri, onImageSelected = { imageUri = it })
 
@@ -124,7 +125,7 @@ fun RegisterForm() {
                     phone = phone,
                     profilePhoto = profilePhoto
                 ),
-                onSuccess = { showSuccessDialog = true }
+                onSuccess = { appViewModel.setDialogState(successDialog) }
             )
         }
     )

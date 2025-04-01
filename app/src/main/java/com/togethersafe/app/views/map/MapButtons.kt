@@ -1,7 +1,5 @@
 package com.togethersafe.app.views.map
 
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,19 +17,23 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.togethersafe.app.components.RoundedIconButton
 import com.togethersafe.app.utils.getViewModel
+import com.togethersafe.app.utils.isLocationEnabled
+import com.togethersafe.app.utils.promptEnableGPS
 import com.togethersafe.app.viewmodels.AppViewModel
 import com.togethersafe.app.viewmodels.MapViewModel
 
 @Composable
 fun ActionButton(compass: @Composable () -> Unit) {
+    val appViewModel: AppViewModel = getViewModel()
     val mapViewModel: MapViewModel = getViewModel()
     val isTracking by mapViewModel.isTracking.collectAsState()
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -58,7 +60,13 @@ fun ActionButton(compass: @Composable () -> Unit) {
             if (isTracking) Icons.Rounded.MyLocation
             else Icons.Rounded.LocationSearching,
             contentDescription = "Lokasi Saya",
-            onClick = { mapViewModel.startTracking() }
+            onClick = {
+                if (!isLocationEnabled(context)) {
+                    promptEnableGPS(context, appViewModel)
+                } else {
+                    mapViewModel.startTracking()
+                }
+            }
         )
 
         Box { compass() }

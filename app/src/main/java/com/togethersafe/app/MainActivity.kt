@@ -8,6 +8,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.togethersafe.app.components.LocationPermissionHandler
+import com.togethersafe.app.components.SimpleDialog
 import com.togethersafe.app.components.SimpleToast
 import com.togethersafe.app.navigation.AppNavigation
 import com.togethersafe.app.utils.getCurrentLocation
@@ -45,6 +46,7 @@ class MainActivity : ComponentActivity() {
 
             LocationPermissionHandler()
             SimpleToast()
+            SimpleDialog()
         }
     }
 }

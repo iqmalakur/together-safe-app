@@ -1,7 +1,6 @@
 package com.togethersafe.app.views.map
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,13 +9,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.HorizontalDivider
@@ -27,23 +22,18 @@ import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import com.togethersafe.app.components.UserProfile
+import com.togethersafe.app.data.model.DialogState
 import com.togethersafe.app.data.model.User
 import com.togethersafe.app.navigation.LocalNavController
 import com.togethersafe.app.utils.getViewModel
@@ -91,20 +81,43 @@ private fun DrawerContent() {
 
     val navController = LocalNavController.current
 
-    var showLogoutDialog by remember { mutableStateOf(false) }
     val user by authViewModel.user.collectAsState()
     val isLoggedIn = user != null
 
-    if (showLogoutDialog) {
-        LogoutDialog { showLogoutDialog = false }
-    }
+    val logoutDialog = DialogState(
+        title = "Konfirmasi Logout",
+        message = "Apakah Anda yakin ingin logout?",
+        onConfirm = {
+            authViewModel.logout()
+            appViewModel.setToastMessage("Logout berhasil!")
+        },
+        onDismiss = {}
+    )
+
+    val loginRequiredDialog = DialogState(
+        title = "Login Diperlukan",
+        message = "Anda harus login terlebih dahulu untuk mengakses fitur ini.",
+        confirmText = "Login",
+        onConfirm = {
+            navController.navigate("login")
+            appViewModel.setMenuOpen(false)
+        },
+        onDismiss = {},
+    )
 
     ModalDrawerSheet {
         Column(modifier = Modifier.fillMaxSize()) {
             DrawerHeader()
 
             DrawerItem("Akun Saya") { /* TODO: Handle action */ }
-            DrawerItem("Tambah Laporan") { navController.navigate("report") }
+            DrawerItem("Tambah Laporan") {
+                if (user != null) {
+                    navController.navigate("report")
+                    appViewModel.setMenuOpen(false)
+                } else {
+                    appViewModel.setDialogState(loginRequiredDialog)
+                }
+            }
             DrawerItem("Laporan Saya") { /* TODO: Handle action */ }
 
             Spacer(modifier = Modifier.weight(1f))
@@ -112,10 +125,10 @@ private fun DrawerContent() {
             Button(
                 onClick = {
                     if (!isLoggedIn) {
-                        appViewModel.setMenuOpen(false)
                         navController.navigate("login")
+                        appViewModel.setMenuOpen(false)
                     } else {
-                        showLogoutDialog = true
+                        appViewModel.setDialogState(logoutDialog)
                     }
                 },
                 modifier = Modifier
@@ -129,32 +142,6 @@ private fun DrawerContent() {
             }
         }
     }
-}
-
-@Composable
-private fun LogoutDialog(onClose: () -> Unit) {
-    val appViewModel: AppViewModel = getViewModel()
-    val authViewModel: AuthViewModel = getViewModel()
-
-    AlertDialog(
-        onDismissRequest = onClose,
-        title = { Text("Konfirmasi Logout") },
-        text = { Text("Apakah Anda yakin ingin logout?") },
-        confirmButton = {
-            TextButton(onClick = {
-                authViewModel.logout()
-                appViewModel.setToastMessage("Logout berhasil!")
-                onClose()
-            }) {
-                Text("Ya")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onClose) {
-                Text("Batal")
-            }
-        }
-    )
 }
 
 @Composable
