@@ -7,11 +7,15 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.mapbox.geojson.Point
+import com.togethersafe.app.data.dto.AuthResDto
+import com.togethersafe.app.data.model.User
 import kotlinx.coroutines.flow.first
+import org.json.JSONObject
 
 private val Context.datastore: DataStore<Preferences> by preferencesDataStore(name = "TogetherSafe")
 
 private val MAP_LOCATION_KEY = stringPreferencesKey("map")
+private val USER_PROFILE_KEY = stringPreferencesKey("user_profile")
 private val TOKEN_KEY = stringPreferencesKey("token")
 
 suspend fun saveMapLocation(context: Context, location: Point) {
@@ -38,19 +42,44 @@ suspend fun getMapLocation(context: Context): Point? {
     return null
 }
 
-suspend fun saveToken(context: Context, token: String) {
-    context.datastore.edit { prefs ->
-        prefs[TOKEN_KEY] = token
-    }
-}
-
-suspend fun removeToken(context: Context) {
-    context.datastore.edit { prefs ->
-        prefs.remove(TOKEN_KEY)
-    }
-}
-
 suspend fun getToken(context: Context): String? {
     val prefs = context.datastore.data.first()
-    return prefs[TOKEN_KEY]
+    val encrypted = prefs[TOKEN_KEY] ?: return null
+    return SecurityUtils.decrypt(encrypted, KeyStoreAlias.TOKEN_KEY)
+}
+
+suspend fun getUser(context: Context): User? {
+    val prefs = context.datastore.data.first()
+    val encrypted = prefs[USER_PROFILE_KEY] ?: return null
+    val decrypted = SecurityUtils.decrypt(encrypted, KeyStoreAlias.PROFILE_KEY)
+
+    val json = JSONObject(decrypted)
+    return User(
+        name = json.getString("name"),
+        email = json.getString("email"),
+        profilePhoto = json.optString("profilePhoto", "").ifEmpty { null }
+    )
+}
+
+suspend fun saveUser(context: Context, result: AuthResDto) {
+    val userJson = JSONObject().apply {
+        put("name", result.name)
+        put("email", result.email)
+        put("profilePhoto", result.profilePhoto)
+    }.toString()
+
+    val encryptedUser = SecurityUtils.encrypt(userJson, KeyStoreAlias.PROFILE_KEY)
+    val encryptedToken = SecurityUtils.encrypt(result.token, KeyStoreAlias.TOKEN_KEY)
+
+    context.datastore.edit { prefs ->
+        prefs[USER_PROFILE_KEY] = encryptedUser
+        prefs[TOKEN_KEY] = encryptedToken
+    }
+}
+
+suspend fun removeUser(context: Context) {
+    context.datastore.edit { prefs ->
+        prefs.remove(USER_PROFILE_KEY)
+        prefs.remove(TOKEN_KEY)
+    }
 }

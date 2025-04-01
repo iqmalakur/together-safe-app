@@ -1,7 +1,6 @@
 package com.togethersafe.app.components
 
 import android.Manifest
-import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -12,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import com.togethersafe.app.data.model.DialogState
 import com.togethersafe.app.utils.getActivity
 import com.togethersafe.app.utils.getViewModel
 import com.togethersafe.app.utils.isPermissionGranted
@@ -31,7 +31,7 @@ fun LocationPermissionHandler() {
         else {
             mapViewModel.stopTracking()
             appViewModel.completeRequestPermission(false)
-            showGoToSettingsDialog(activity)
+            showGoToSettingsDialog(activity, appViewModel)
         }
     }
 
@@ -48,19 +48,20 @@ fun LocationPermissionHandler() {
     }
 }
 
-private fun showGoToSettingsDialog(context: Context) {
-    AlertDialog.Builder(context)
-        .setTitle("Izin Lokasi Diperlukan")
-        .setMessage(
-            "Anda telah menolak izin lokasi atau menolak izin lokasi secara presisi." +
-                    " Silakan aktifkan secara manual di Pengaturan."
+private fun showGoToSettingsDialog(context: Context, appViewModel: AppViewModel) {
+    appViewModel.setDialogState(
+        DialogState(
+            title = "Izin Lokasi Diperlukan",
+            message = "Anda telah menolak izin lokasi atau menolak izin lokasi secara presisi." +
+                    " Silakan aktifkan secara manual di Pengaturan.",
+            confirmText = "Buka Pengaturan",
+            onConfirm = {
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.fromParts("package", context.packageName, null)
+                }
+                context.startActivity(intent)
+            },
+            onDismiss = {},
         )
-        .setPositiveButton("Buka Pengaturan") { _, _ ->
-            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                data = Uri.fromParts("package", context.packageName, null)
-            }
-            context.startActivity(intent)
-        }
-        .setNegativeButton("Batal") { _, _ -> }
-        .show()
+    )
 }

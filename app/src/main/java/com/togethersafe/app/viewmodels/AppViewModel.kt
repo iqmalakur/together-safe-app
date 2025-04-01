@@ -1,6 +1,7 @@
 package com.togethersafe.app.viewmodels
 
 import androidx.lifecycle.ViewModel
+import com.togethersafe.app.data.model.DialogState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,10 +12,12 @@ class AppViewModel @Inject constructor() : ViewModel() {
     private var _onLocationPermissionResult: (() -> Unit)? = null
     private val _isPermissionRequest = MutableStateFlow(false)
     private val _toastMessage = MutableStateFlow("")
+    private val _dialogState = MutableStateFlow<DialogState?>(null)
     private val _isMenuOpen = MutableStateFlow(false)
 
     val isPermissionRequest: StateFlow<Boolean> get() = _isPermissionRequest
     val toastMessage: StateFlow<String> get() = _toastMessage
+    val dialogState: StateFlow<DialogState?> get() = _dialogState
     val isMenuOpen: StateFlow<Boolean> get() = _isMenuOpen
 
     fun requestPermission(onResult: (() -> Unit)?) {
@@ -29,6 +32,10 @@ class AppViewModel @Inject constructor() : ViewModel() {
 
     fun setToastMessage(message: String) {
         _toastMessage.value = message
+    }
+
+    fun setDialogState(dialogState: DialogState?) {
+        _dialogState.value = dialogState
     }
 
     fun setMenuOpen(isOpen: Boolean) {
