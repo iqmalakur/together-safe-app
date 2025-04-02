@@ -13,11 +13,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.togethersafe.app.components.InputTextField
 import com.togethersafe.app.components.OutlinedRoundedButton
+import com.togethersafe.app.utils.getViewModel
+import com.togethersafe.app.viewmodels.MapViewModel
 
 @Composable
-fun ReportForm() {
+fun ReportForm(enableScroll: () -> Unit, disableScroll: () -> Unit) {
+    val mapViewModel: MapViewModel = getViewModel()
+
     var description by remember { mutableStateOf("") }
-    var location by remember { mutableStateOf("") }
+    var location by remember { mutableStateOf(mapViewModel.cameraPosition.value) }
     var date by remember { mutableStateOf("") }
     var time by remember { mutableStateOf("") }
     var imageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
@@ -31,12 +35,11 @@ fun ReportForm() {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        InputTextField(
-            label = "Lokasi",
+        LocationPicker(
             value = location,
-            onValueChange = { location = it }
-        )
-
+            enableScroll = enableScroll,
+            disableScroll = disableScroll,
+        ) { location = it }
         Spacer(modifier = Modifier.height(16.dp))
 
         DatePickerField(date) { date = it }

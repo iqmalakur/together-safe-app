@@ -1,20 +1,14 @@
 package com.togethersafe.app.views.map
 
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.LocalActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.mapbox.geojson.Point
 import com.mapbox.maps.extension.compose.annotation.generated.CircleAnnotation
-import com.mapbox.maps.extension.compose.annotation.generated.PointAnnotation
-import com.mapbox.maps.extension.compose.annotation.rememberIconImage
-import com.togethersafe.app.R
+import com.togethersafe.app.utils.DestinationAnnotation
 import com.togethersafe.app.utils.getViewModel
 import com.togethersafe.app.viewmodels.IncidentViewModel
 import com.togethersafe.app.viewmodels.MapViewModel
@@ -27,7 +21,7 @@ fun Annotations() {
     val destination by mapViewModel.destination.collectAsState()
 
     if (userPosition != null) UserPosition(mapViewModel)
-    if (destination != null) Destination(mapViewModel)
+    if (destination != null) DestinationAnnotation(destination!!)
     IncidentMarkers()
 }
 
@@ -46,20 +40,6 @@ private fun UserPosition(mapViewModel: MapViewModel) {
         circleColor = Color.Cyan
         circleStrokeWidth = 2.0
         circleStrokeColor = Color.Black
-    }
-}
-
-@Composable
-private fun Destination(mapViewModel: MapViewModel) {
-    val destination by mapViewModel.destination.collectAsState()
-    val markerIconDrawable = R.drawable.ic_marker
-    val marker = rememberIconImage(
-        key = markerIconDrawable,
-        painter = painterResource(markerIconDrawable)
-    )
-
-    PointAnnotation(destination!!) {
-        iconImage = marker
     }
 }
 
