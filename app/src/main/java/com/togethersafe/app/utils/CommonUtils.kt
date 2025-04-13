@@ -53,7 +53,7 @@ inline fun <reified T> parseJson(
     }
 }
 
-fun handleApiError(
+suspend fun handleApiError(
     className: KClass<*>,
     e: Exception,
     onError: ApiErrorCallback,
