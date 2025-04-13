@@ -1,10 +1,15 @@
 package com.togethersafe.app.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.togethersafe.app.data.model.Incident
+import com.mapbox.geojson.Point
+import com.togethersafe.app.data.dto.IncidentDetailResDto
+import com.togethersafe.app.data.dto.IncidentResDto
+import com.togethersafe.app.data.dto.ReportPreviewDto
 import com.togethersafe.app.repositories.IncidentRepository
+import com.togethersafe.app.utils.ApiErrorCallback
+import com.togethersafe.app.utils.ApiSuccessCallback
+import com.togethersafe.app.utils.handleApiError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,27 +19,44 @@ import javax.inject.Inject
 @HiltViewModel
 class IncidentViewModel @Inject constructor(private val repository: IncidentRepository) :
     ViewModel() {
-    private val _incidents = MutableStateFlow<List<Incident>>(emptyList())
-    private val _selectedIncident = MutableStateFlow<Incident?>(null)
-    private val _error = MutableStateFlow<String?>(null)
+    private val _incidents = MutableStateFlow<List<IncidentResDto>>(emptyList())
+    private val _selectedIncident = MutableStateFlow<IncidentDetailResDto?>(null)
 
-    val incidents: StateFlow<List<Incident>> get() = _incidents
-    val selectedIncident: StateFlow<Incident?> get() = _selectedIncident
-    val error: StateFlow<String?> get() = _error
+    val incidents: StateFlow<List<IncidentResDto>> get() = _incidents
+    val selectedIncident: StateFlow<IncidentDetailResDto?> = _selectedIncident
 
-    fun loadIncidents() {
+    fun loadIncidents(location: Point, onError: ApiErrorCallback) {
         viewModelScope.launch {
             try {
-                _incidents.value = repository.getIncidents()
-                _error.value = ""
+                _incidents.value =
+                    repository.getIncidents(location.latitude(), location.longitude())
             } catch (e: Exception) {
-                Log.e("IncidentViewModel", e.toString())
-                _error.value = "Terjadi keasalahn saat mengambil data"
+                handleApiError(this::class, e, onError)
             }
         }
     }
 
-    fun setSelectedIncident(incident: Incident?) {
-        _selectedIncident.value = incident
+    fun getIncidentById(id: String, onError: ApiErrorCallback) {
+        viewModelScope.launch {
+            try {
+                _selectedIncident.value = repository.getDetailIncident(id)
+            } catch (e: Exception) {
+                handleApiError(this::class, e, onError)
+            }
+        }
+    }
+
+    fun getIncidentReports(
+        incidentId: String,
+        onSuccess: ApiSuccessCallback<List<ReportPreviewDto>>,
+        onError: ApiErrorCallback
+    ) {
+        viewModelScope.launch {
+            try {
+                onSuccess(repository.getIncidentReports(incidentId))
+            } catch (e: Exception) {
+                handleApiError(this::class, e, onError)
+            }
+        }
     }
 }
