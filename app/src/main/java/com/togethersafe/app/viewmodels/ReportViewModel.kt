@@ -1,5 +1,6 @@
 package com.togethersafe.app.viewmodels
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.togethersafe.app.data.dto.ReportPreviewDto
@@ -9,15 +10,20 @@ import com.togethersafe.app.data.dto.SuccessCreateDto
 import com.togethersafe.app.repositories.ReportRepository
 import com.togethersafe.app.utils.ApiErrorCallback
 import com.togethersafe.app.utils.ApiSuccessCallback
+import com.togethersafe.app.utils.getToken
 import com.togethersafe.app.utils.handleApiError
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ReportViewModel @Inject constructor(private val repository: ReportRepository) : ViewModel() {
+class ReportViewModel @Inject constructor(
+    private val repository: ReportRepository,
+    @ApplicationContext private val context: Context,
+) : ViewModel() {
     private val _reportList = MutableStateFlow<List<ReportPreviewDto>>(emptyList())
     private val _report = MutableStateFlow<ReportResDto?>(null)
 
@@ -28,10 +34,12 @@ class ReportViewModel @Inject constructor(private val repository: ReportReposito
         _reportList.value = reportList
     }
 
-    fun getUserReports(token: String, onError: ApiErrorCallback) {
+    fun fetchUserReports(onError: ApiErrorCallback) {
         viewModelScope.launch {
             try {
-                _reportList.value = repository.getUserReports(token)
+                withToken(onError) { token ->
+                    _reportList.value = repository.getUserReports(token)
+                }
             } catch (e: Exception) {
                 handleApiError(this::class, e, onError)
             }
@@ -39,27 +47,40 @@ class ReportViewModel @Inject constructor(private val repository: ReportReposito
     }
 
     fun createReport(
-        token: String,
         body: ReportReqDto,
         onSuccess: ApiSuccessCallback<SuccessCreateDto>,
         onError: ApiErrorCallback
     ) {
         viewModelScope.launch {
             try {
-                onSuccess(repository.createReport(token, body))
+                withToken(onError) { token ->
+                    onSuccess(repository.createReport(token, body))
+                }
             } catch (e: Exception) {
                 handleApiError(this::class, e, onError)
             }
         }
     }
 
-    fun getDetailReport(token: String, id: String, onError: ApiErrorCallback) {
+    fun fetchDetailReport(id: String, onError: ApiErrorCallback) {
         viewModelScope.launch {
             try {
-                _report.value = repository.getDetailReport(token, id)
+                withToken(onError) { token ->
+                    _report.value = repository.getDetailReport(token, id)
+                }
             } catch (e: Exception) {
                 handleApiError(this::class, e, onError)
             }
+        }
+    }
+
+    private suspend fun withToken(onError: ApiErrorCallback, action: suspend (token: String) -> Unit) {
+        val token = getToken(context)
+
+        if (token != null) {
+            action(token)
+        } else {
+            onError(401, listOf("token tidak ditemukan"))
         }
     }
 }
