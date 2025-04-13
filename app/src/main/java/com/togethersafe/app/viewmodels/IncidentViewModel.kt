@@ -36,7 +36,7 @@ class IncidentViewModel @Inject constructor(private val repository: IncidentRepo
         }
     }
 
-    fun getIncidentById(id: String, onError: ApiErrorCallback) {
+    fun fetchIncidentById(id: String, onError: ApiErrorCallback) {
         viewModelScope.launch {
             try {
                 _selectedIncident.value = repository.getDetailIncident(id)
@@ -46,7 +46,7 @@ class IncidentViewModel @Inject constructor(private val repository: IncidentRepo
         }
     }
 
-    fun getIncidentReports(
+    fun fetchIncidentReports(
         incidentId: String,
         onSuccess: ApiSuccessCallback<List<ReportPreviewDto>>,
         onError: ApiErrorCallback
