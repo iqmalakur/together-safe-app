@@ -3,8 +3,9 @@ package com.togethersafe.app.repositories
 import com.togethersafe.app.data.dto.AuthResDto
 import com.togethersafe.app.data.dto.LoginReqDto
 import com.togethersafe.app.data.dto.RegisterReqDto
+import com.togethersafe.app.data.dto.SuccessCreateDto
 import com.togethersafe.app.data.dto.ValidateTokenReqDto
-import com.togethersafe.app.data.network.ApiService
+import com.togethersafe.app.data.network.AuthService
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -13,18 +14,18 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class AuthRepository @Inject constructor(private val apiService: ApiService) {
+class AuthRepository @Inject constructor(private val service: AuthService) {
     suspend fun validateToken(token: String): AuthResDto {
         val body = ValidateTokenReqDto(token)
-        return apiService.validateToken(body)
+        return service.validateToken(body)
     }
 
     suspend fun login(email: String, password: String): AuthResDto {
         val body = LoginReqDto(email, password)
-        return apiService.login(body)
+        return service.login(body)
     }
 
-    suspend fun register(registerDto: RegisterReqDto): AuthResDto {
+    suspend fun register(registerDto: RegisterReqDto): SuccessCreateDto {
         val textPlain = "text/plain".toMediaType()
 
         val name = registerDto.name.toRequestBody(textPlain)
@@ -40,7 +41,7 @@ class AuthRepository @Inject constructor(private val apiService: ApiService) {
             profilePhoto = MultipartBody.Part.createFormData("profilePhoto", file.name, requestFile)
         }
 
-        return apiService.register(
+        return service.register(
             name = name,
             email = email,
             phone = phone,

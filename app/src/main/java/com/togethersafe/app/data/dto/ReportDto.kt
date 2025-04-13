@@ -1,6 +1,17 @@
 package com.togethersafe.app.data.dto
 
+import com.mapbox.geojson.Point
+import java.io.File
 import java.util.Date
+
+data class ReportReqDto (
+    val categoryId: Int,
+    val description: String,
+    val location: Point,
+    val date: String,
+    val time: String,
+    val media: List<File>,
+)
 
 data class ReportPreviewDto(
     val id: String,
