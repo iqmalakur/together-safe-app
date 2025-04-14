@@ -30,8 +30,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.togethersafe.app.data.dto.IncidentDetailResDto
+import com.togethersafe.app.navigation.LocalNavController
 import com.togethersafe.app.utils.getViewModel
+import com.togethersafe.app.viewmodels.AppViewModel
 import com.togethersafe.app.viewmodels.IncidentViewModel
+import com.togethersafe.app.viewmodels.ReportViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -110,7 +113,7 @@ private fun BottomSheetMedia(incident: IncidentDetailResDto) {
         }
     }
 
-    SeeMore { /* TODO: Navigasi ke galeri insiden */ }
+    SeeMore(incident.id)
 }
 
 @Composable
@@ -127,7 +130,7 @@ private fun BottomSheetReport(incident: IncidentDetailResDto) {
         }
     }
 
-    SeeMore { /* TODO: Navigasi ke list laporan insiden */ }
+    SeeMore(incident.id)
 }
 
 @Composable
@@ -140,12 +143,27 @@ private fun SectionTitle(title: String) {
 }
 
 @Composable
-private fun SeeMore(onClick: () -> Unit) {
+private fun SeeMore(incidentId: String) {
+    val appViewModel: AppViewModel = getViewModel()
+    val incidentViewModel: IncidentViewModel = getViewModel()
+    val reportViewModel: ReportViewModel = getViewModel()
+    val navController = LocalNavController.current
+
     Text(
         text = "Lihat Selengkapnya...",
         color = MaterialTheme.colorScheme.primary,
         modifier = Modifier
-            .clickable { onClick() }
+            .clickable {
+                appViewModel.setLoading(true)
+                incidentViewModel.fetchIncidentReports(
+                    incidentId = incidentId,
+                    onError = { _, messages -> appViewModel.setToastMessage(messages[0]) },
+                    onComplete = { appViewModel.setLoading(false) }
+                ) { reports ->
+                    reportViewModel.setReportList(reports)
+                    navController.navigate("report-list")
+                }
+            }
             .padding(vertical = 8.dp)
     )
 

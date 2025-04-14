@@ -36,20 +36,22 @@ class IncidentViewModel @Inject constructor(private val repository: IncidentRepo
         }
     }
 
-    fun fetchIncidentById(id: String, onError: ApiErrorCallback) {
+    fun fetchIncidentById(id: String, onError: ApiErrorCallback, onComplete: () -> Unit) {
         viewModelScope.launch {
             try {
                 _selectedIncident.value = repository.getDetailIncident(id)
             } catch (e: Exception) {
                 handleApiError(this::class, e, onError)
             }
+            onComplete()
         }
     }
 
     fun fetchIncidentReports(
         incidentId: String,
+        onError: ApiErrorCallback,
+        onComplete: () -> Unit,
         onSuccess: ApiSuccessCallback<List<ReportPreviewDto>>,
-        onError: ApiErrorCallback
     ) {
         viewModelScope.launch {
             try {
@@ -57,6 +59,7 @@ class IncidentViewModel @Inject constructor(private val repository: IncidentRepo
             } catch (e: Exception) {
                 handleApiError(this::class, e, onError)
             }
+            onComplete()
         }
     }
 
