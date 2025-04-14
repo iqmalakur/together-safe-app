@@ -36,7 +36,7 @@ fun DatePickerField(value: String, onValueChange: (String) -> Unit) {
         context,
         { _, year, month, dayOfMonth ->
             onValueChange(
-                "${zeroPad(dayOfMonth)}/${zeroPad(month + 1)}/${zeroPad(year, 4)}"
+                "${zeroPad(year, 4)}-${zeroPad(month + 1)}-${zeroPad(dayOfMonth)}"
             )
         },
         calendar.get(Calendar.YEAR),

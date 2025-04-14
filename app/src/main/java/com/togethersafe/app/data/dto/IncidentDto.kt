@@ -18,3 +18,8 @@ data class IncidentDetailResDto(
     val mediaUrls: List<String>,
     val reports: List<ReportPreviewDto>,
 )
+
+data class CategoryResDto(
+    val id: Int,
+    val name: String,
+)

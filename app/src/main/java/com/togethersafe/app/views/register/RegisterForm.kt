@@ -110,6 +110,7 @@ fun RegisterForm() {
         containerColor = Color.Black,
         contentColor = Color.White,
         onClick = {
+            appViewModel.setLoading(true)
             var profilePhoto: File? = null
 
             if (imageUri != null) {

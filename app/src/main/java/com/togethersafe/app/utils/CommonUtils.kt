@@ -24,11 +24,12 @@ inline fun <reified VM : ViewModel> getViewModel() = hiltViewModel<VM>(getActivi
 
 fun uriToFile(context: Context, uri: Uri): File? {
     return try {
-        val inputStream = context.contentResolver.openInputStream(uri) ?: return null
         val tempFile = File.createTempFile("upload", ".jpg", context.cacheDir)
-        tempFile.outputStream().use { outputStream ->
-            inputStream.copyTo(outputStream)
-        }
+        context.contentResolver.openInputStream(uri)?.use { inputStream ->
+            tempFile.outputStream().use { outputStream ->
+                inputStream.copyTo(outputStream)
+            }
+        } ?: return null
         tempFile
     } catch (e: Exception) {
         Log.e("uriToFile", e.stackTraceToString())

@@ -1,5 +1,6 @@
 package com.togethersafe.app.repositories
 
+import com.togethersafe.app.data.dto.CategoryResDto
 import com.togethersafe.app.data.dto.IncidentDetailResDto
 import com.togethersafe.app.data.dto.IncidentResDto
 import com.togethersafe.app.data.dto.ReportPreviewDto
@@ -19,5 +20,9 @@ class IncidentRepository @Inject constructor(private val service: IncidentServic
 
     suspend fun getIncidentReports(id: String): List<ReportPreviewDto> {
         return service.fetchIncidentReports(id)
+    }
+
+    suspend fun getIncidentCategories(): List<CategoryResDto> {
+        return service.fetchIncidentCategories()
     }
 }

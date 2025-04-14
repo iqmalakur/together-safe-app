@@ -3,6 +3,7 @@ package com.togethersafe.app.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mapbox.geojson.Point
+import com.togethersafe.app.data.dto.CategoryResDto
 import com.togethersafe.app.data.dto.IncidentDetailResDto
 import com.togethersafe.app.data.dto.IncidentResDto
 import com.togethersafe.app.data.dto.ReportPreviewDto
@@ -21,9 +22,21 @@ class IncidentViewModel @Inject constructor(private val repository: IncidentRepo
     ViewModel() {
     private val _incidents = MutableStateFlow<List<IncidentResDto>>(emptyList())
     private val _selectedIncident = MutableStateFlow<IncidentDetailResDto?>(null)
+    private val _categories = MutableStateFlow<List<CategoryResDto>>(emptyList())
 
     val incidents: StateFlow<List<IncidentResDto>> get() = _incidents
-    val selectedIncident: StateFlow<IncidentDetailResDto?> = _selectedIncident
+    val selectedIncident: StateFlow<IncidentDetailResDto?> get() = _selectedIncident
+    val categories: StateFlow<List<CategoryResDto>> get() = _categories
+
+    init {
+        viewModelScope.launch {
+            try {
+                _categories.value = repository.getIncidentCategories()
+            } catch (e: Exception) {
+                handleApiError(this::class, e) { _, _ -> }
+            }
+        }
+    }
 
     fun loadIncidents(location: Point, onError: ApiErrorCallback) {
         viewModelScope.launch {

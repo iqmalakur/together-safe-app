@@ -6,10 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.togethersafe.app.data.dto.ReportPreviewDto
 import com.togethersafe.app.data.dto.ReportReqDto
 import com.togethersafe.app.data.dto.ReportResDto
-import com.togethersafe.app.data.dto.SuccessCreateDto
 import com.togethersafe.app.repositories.ReportRepository
 import com.togethersafe.app.utils.ApiErrorCallback
-import com.togethersafe.app.utils.ApiSuccessCallback
 import com.togethersafe.app.utils.getToken
 import com.togethersafe.app.utils.handleApiError
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -54,21 +52,29 @@ class ReportViewModel @Inject constructor(
 
     fun createReport(
         body: ReportReqDto,
-        onSuccess: ApiSuccessCallback<SuccessCreateDto>,
-        onError: ApiErrorCallback
+        onError: ApiErrorCallback,
+        onComplete: () -> Unit,
+        onSuccess: () -> Unit,
     ) {
         viewModelScope.launch {
             try {
                 withToken(onError) { token ->
-                    onSuccess(repository.createReport(token, body))
+                    repository.createReport(token, body)
+                    onSuccess()
                 }
             } catch (e: Exception) {
                 handleApiError(this::class, e, onError)
             }
+            onComplete()
         }
     }
 
-    fun fetchDetailReport(id: String, onError: ApiErrorCallback, onComplete: () -> Unit, onSuccess: () -> Unit) {
+    fun fetchDetailReport(
+        id: String,
+        onError: ApiErrorCallback,
+        onComplete: () -> Unit,
+        onSuccess: () -> Unit
+    ) {
         viewModelScope.launch {
             try {
                 _report.value = repository.getDetailReport(id)
@@ -80,7 +86,10 @@ class ReportViewModel @Inject constructor(
         }
     }
 
-    private suspend fun withToken(onError: ApiErrorCallback, action: suspend (token: String) -> Unit) {
+    private suspend fun withToken(
+        onError: ApiErrorCallback,
+        action: suspend (token: String) -> Unit
+    ) {
         val token = getToken(context)
 
         if (token != null) {

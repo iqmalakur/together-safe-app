@@ -15,12 +15,14 @@ class AppViewModel @Inject constructor() : ViewModel() {
     private val _dialogState = MutableStateFlow<DialogState?>(null)
     private val _isMenuOpen = MutableStateFlow(false)
     private val _isLoading = MutableStateFlow(false)
+    private val _isLoadIncident = MutableStateFlow(true)
 
     val isPermissionRequest: StateFlow<Boolean> get() = _isPermissionRequest
     val toastMessage: StateFlow<String> get() = _toastMessage
     val dialogState: StateFlow<DialogState?> get() = _dialogState
     val isMenuOpen: StateFlow<Boolean> get() = _isMenuOpen
     val isLoading: StateFlow<Boolean> get() = _isLoading
+    val isLoadIncident: StateFlow<Boolean> get() = _isLoadIncident
 
     fun requestPermission(onResult: (() -> Unit)?) {
         _isPermissionRequest.value = true
@@ -46,5 +48,9 @@ class AppViewModel @Inject constructor() : ViewModel() {
 
     fun setLoading(isLoading: Boolean) {
         _isLoading.value = isLoading
+    }
+
+    fun setLoadIncident(isLoadIncident: Boolean) {
+        _isLoadIncident.value = isLoadIncident
     }
 }

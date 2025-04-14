@@ -1,5 +1,6 @@
 package com.togethersafe.app.data.network
 
+import com.togethersafe.app.data.dto.CategoryResDto
 import com.togethersafe.app.data.dto.IncidentDetailResDto
 import com.togethersafe.app.data.dto.IncidentResDto
 import com.togethersafe.app.data.dto.ReportPreviewDto
@@ -19,4 +20,7 @@ interface IncidentService {
 
     @GET("incident/{id}/reports")
     suspend fun fetchIncidentReports(@Path("id") id: String): List<ReportPreviewDto>
+
+    @GET("incident/categories")
+    suspend fun fetchIncidentCategories(): List<CategoryResDto>
 }
