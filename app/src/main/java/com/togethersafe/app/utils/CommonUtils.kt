@@ -64,7 +64,7 @@ suspend fun handleApiError(
             val json = e.response()?.errorBody()?.string()
 
             val messages: List<String> = if (statusCode == 400) {
-                parseJson<ApiBadRequestDto>(json, className.simpleName)?.messages ?: emptyList()
+                parseJson<ApiBadRequestDto>(json, className.simpleName)?.message ?: emptyList()
             } else {
                 listOf(
                     parseJson<ApiErrorDto>(json, className.simpleName)?.message

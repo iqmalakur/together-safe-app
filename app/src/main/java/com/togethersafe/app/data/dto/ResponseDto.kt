@@ -6,4 +6,4 @@ data class SuccessCreateDto(
 )
 
 data class ApiErrorDto(val message: String)
-data class ApiBadRequestDto(val messages: List<String>)
+data class ApiBadRequestDto(val message: List<String>)
