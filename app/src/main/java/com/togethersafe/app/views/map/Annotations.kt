@@ -61,9 +61,13 @@ private fun IncidentMarkers() {
             circleStrokeColor = Color.Black
 
             interactionsState.onClicked {
-                incidentViewModel.fetchIncidentById(incident.id) { _, errors ->
-                    appViewModel.setToastMessage(errors[0])
-                }
+                appViewModel.setLoading(true)
+
+                incidentViewModel.fetchIncidentById(
+                    id = incident.id,
+                    onError = { _, errors -> appViewModel.setToastMessage(errors[0]) })
+                { appViewModel.setLoading(false) }
+
                 true
             }
         }
