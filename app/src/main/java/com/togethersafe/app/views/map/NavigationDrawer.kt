@@ -40,6 +40,7 @@ import com.togethersafe.app.navigation.LocalNavController
 import com.togethersafe.app.utils.getViewModel
 import com.togethersafe.app.viewmodels.AppViewModel
 import com.togethersafe.app.viewmodels.AuthViewModel
+import com.togethersafe.app.viewmodels.ReportViewModel
 
 @Composable
 fun NavigationDrawer(screenContent: @Composable () -> Unit) {
@@ -79,6 +80,7 @@ fun NavigationDrawer(screenContent: @Composable () -> Unit) {
 private fun DrawerContent() {
     val appViewModel: AppViewModel = getViewModel()
     val authViewModel: AuthViewModel = getViewModel()
+    val reportViewModel: ReportViewModel = getViewModel()
 
     val navController = LocalNavController.current
 
@@ -103,7 +105,7 @@ private fun DrawerContent() {
 
             LoginRequired { showDialog ->
                 DrawerItem("Tambah Laporan") {
-                    if (user != null) {
+                    if (isLoggedIn) {
                         navController.navigate("report")
                         appViewModel.setMenuOpen(false)
                     } else {
@@ -112,7 +114,22 @@ private fun DrawerContent() {
                 }
             }
 
-            DrawerItem("Laporan Saya") { /* TODO: Handle action */ }
+            LoginRequired { showDialog ->
+                DrawerItem("Laporan Saya") {
+                    if (isLoggedIn) {
+                        appViewModel.setLoading(true)
+                        reportViewModel.fetchUserReports(
+                            onError = { _, messages -> appViewModel.setToastMessage(messages[0]) },
+                            onComplete = { appViewModel.setLoading(false) }
+                        ) {
+                            navController.navigate("report-list")
+                            appViewModel.setMenuOpen(false)
+                        }
+                    } else {
+                        showDialog()
+                    }
+                }
+            }
 
             Spacer(modifier = Modifier.weight(1f))
 

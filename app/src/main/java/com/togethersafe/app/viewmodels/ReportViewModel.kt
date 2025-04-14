@@ -38,15 +38,17 @@ class ReportViewModel @Inject constructor(
         _report.value = null
     }
 
-    fun fetchUserReports(onError: ApiErrorCallback) {
+    fun fetchUserReports(onError: ApiErrorCallback, onComplete: () -> Unit, onSuccess: () -> Unit) {
         viewModelScope.launch {
             try {
                 withToken(onError) { token ->
                     _reportList.value = repository.getUserReports(token)
                 }
+                onSuccess()
             } catch (e: Exception) {
                 handleApiError(this::class, e, onError)
             }
+            onComplete()
         }
     }
 
