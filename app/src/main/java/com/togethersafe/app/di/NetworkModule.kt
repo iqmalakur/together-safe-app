@@ -1,5 +1,6 @@
 package com.togethersafe.app.di
 
+import android.content.Context
 import com.togethersafe.app.data.network.ApiService
 import com.togethersafe.app.data.network.AuthService
 import com.togethersafe.app.data.network.GeocodingService
@@ -8,9 +9,13 @@ import com.togethersafe.app.data.network.ReportService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import okhttp3.Cache
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.File
 import javax.inject.Singleton
 
 @Module
@@ -19,10 +24,20 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(): Retrofit = Retrofit.Builder()
-        .baseUrl("https://stirred-eagle-witty.ngrok-free.app")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
+    fun provideRetrofit(@ApplicationContext context: Context): Retrofit {
+        val cacheSize = (10 * 1024 * 1024).toLong() // 10 MB
+        val cache = Cache(File(context.cacheDir, "http_cache"), cacheSize)
+
+        val okHttpClient = OkHttpClient.Builder()
+            .cache(cache)
+            .build()
+
+        return Retrofit.Builder()
+            .baseUrl("https://stirred-eagle-witty.ngrok-free.app")
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
 
     @Provides
     @Singleton
