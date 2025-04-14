@@ -1,20 +1,21 @@
 package com.togethersafe.app.views.map
 
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
-import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,7 +29,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.togethersafe.app.utils.getViewModel
 import com.togethersafe.app.viewmodels.AppViewModel
 import com.togethersafe.app.viewmodels.GeocodingViewModel
@@ -42,15 +42,13 @@ fun MapHeader() {
     val focusManager = LocalFocusManager.current
 
     val locationResult by geocodingViewModel.locationResult.collectAsState()
-    val error by geocodingViewModel.error.collectAsState()
     var isSearching by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(false) }
     val headerBackgroundAlpha by animateFloatAsState(
         targetValue = if (isSearching) 1f else 0f,
         animationSpec = animationSpec,
         label = "Header Background Alpha",
     )
-
-    LaunchedEffect(error) { if (error != null) appViewModel.setToastMessage(error!!) }
 
     Column(
         modifier = Modifier
@@ -75,8 +73,16 @@ fun MapHeader() {
                 modifier = Modifier
                     .testTag("SearchBar")
                     .weight(1f),
-                setIsSearching = { state -> isSearching = state },
-                onSearch = { keyword -> geocodingViewModel.search(keyword) }
+                isLoading = isLoading,
+                setIsSearching = { isSearching = it },
+                setIsLoading = { isLoading = it },
+                onSearch = {
+                    geocodingViewModel.search(
+                        query = it,
+                        onError = { error -> appViewModel.setToastMessage(error) },
+                        onComplete = { isLoading = false },
+                    )
+                },
             )
         }
 
@@ -91,6 +97,23 @@ fun MapHeader() {
             visible = isSearching,
             enter = fadeIn(animationSpec),
             exit = fadeOut(animationSpec),
-        ) { SearchResult(locationResult) }
+        ) {
+            if (isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.White)
+                        .padding(vertical = 20.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        color = Color.Gray,
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+            } else {
+                SearchResult(locationResult)
+            }
+        }
     }
 }
