@@ -10,6 +10,7 @@ import com.mapbox.geojson.Point
 import com.mapbox.maps.extension.compose.annotation.generated.CircleAnnotation
 import com.togethersafe.app.utils.DestinationAnnotation
 import com.togethersafe.app.utils.getViewModel
+import com.togethersafe.app.viewmodels.AppViewModel
 import com.togethersafe.app.viewmodels.IncidentViewModel
 import com.togethersafe.app.viewmodels.MapViewModel
 
@@ -46,6 +47,7 @@ private fun UserPosition(mapViewModel: MapViewModel) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun IncidentMarkers() {
+    val appViewModel: AppViewModel = getViewModel()
     val incidentViewModel: IncidentViewModel = getViewModel()
     val incidents by incidentViewModel.incidents.collectAsState()
     val selectedIncident by incidentViewModel.selectedIncident.collectAsState()
@@ -59,7 +61,9 @@ private fun IncidentMarkers() {
             circleStrokeColor = Color.Black
 
             interactionsState.onClicked {
-                incidentViewModel.setSelectedIncident(incident)
+                incidentViewModel.fetchIncidentById(incident.id) { _, errors ->
+                    appViewModel.setToastMessage(errors[0])
+                }
                 true
             }
         }

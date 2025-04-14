@@ -1,7 +1,5 @@
 package com.togethersafe.app.views.map
 
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,9 +28,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.togethersafe.app.data.model.Incident
+import com.togethersafe.app.data.dto.IncidentDetailResDto
 import com.togethersafe.app.utils.getViewModel
 import com.togethersafe.app.viewmodels.IncidentViewModel
 
@@ -45,7 +42,7 @@ fun BottomSheet(sheetState: SheetState) {
     ModalBottomSheet(
         modifier = Modifier.testTag("BottomSheet"),
         sheetState = sheetState,
-        onDismissRequest = { incidentViewModel.setSelectedIncident(null) },
+        onDismissRequest = { incidentViewModel.clearSelectedIncident() },
     ) {
         Column(
             modifier = Modifier
@@ -61,7 +58,7 @@ fun BottomSheet(sheetState: SheetState) {
 }
 
 @Composable
-private fun BottomSheetHeader(incident: Incident) {
+private fun BottomSheetHeader(incident: IncidentDetailResDto) {
     Text(
         modifier = Modifier.testTag("IncidentDetail-Kategori"),
         text = incident.category,
@@ -70,17 +67,10 @@ private fun BottomSheetHeader(incident: Incident) {
     )
 
     Spacer(modifier = Modifier.height(8.dp))
-
-//    Text(
-//        text = incident.description,
-//        style = MaterialTheme.typography.bodyMedium
-//    )
-//
-//    Spacer(modifier = Modifier.height(8.dp))
 }
 
 @Composable
-private fun BottomSheetContent(incident: Incident) {
+private fun BottomSheetContent(incident: IncidentDetailResDto) {
     InfoText("Lokasi", incident.location)
     InfoText("Tanggal", incident.date)
     InfoText("Jam", incident.time)
@@ -102,7 +92,7 @@ private fun InfoText(label: String, value: String) {
 }
 
 @Composable
-private fun BottomSheetMedia(incident: Incident) {
+private fun BottomSheetMedia(incident: IncidentDetailResDto) {
     SectionTitle("Bukti Gambar/Video")
 
     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -124,7 +114,7 @@ private fun BottomSheetMedia(incident: Incident) {
 }
 
 @Composable
-private fun BottomSheetReport(incident: Incident) {
+private fun BottomSheetReport(incident: IncidentDetailResDto) {
     SectionTitle("Laporan Terkait")
 
     LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {

@@ -59,4 +59,8 @@ class IncidentViewModel @Inject constructor(private val repository: IncidentRepo
             }
         }
     }
+
+    fun clearSelectedIncident() {
+        _selectedIncident.value = null
+    }
 }
