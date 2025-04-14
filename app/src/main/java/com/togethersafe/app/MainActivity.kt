@@ -39,7 +39,7 @@ class MainActivity : ComponentActivity() {
                     getCurrentLocation(this@MainActivity) {}
                 incidentViewModel.loadIncidents()
 
-                authViewModel.verifyToken()
+                authViewModel.validateToken()
             }
 
             AppNavigation()
