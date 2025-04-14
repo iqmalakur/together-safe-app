@@ -35,6 +35,7 @@ fun GetUserLocation() {
     val activity = LocalActivity.current as ComponentActivity
     val appViewModel: AppViewModel = getViewModel()
     val mapViewModel: MapViewModel = getViewModel()
+    val isLoadingLocation by mapViewModel.isLoadingLocation.collectAsState()
     val isTracking by mapViewModel.isTracking.collectAsState()
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(activity) }
     var lastKnownLocation by remember { mutableStateOf<Location?>(null) }
@@ -46,12 +47,14 @@ fun GetUserLocation() {
         if (isTracking) {
             mapViewModel.setZoomLevel(ZOOM_DEFAULT)
             mapViewModel.setCameraPosition(latitude, longitude)
+            if (isLoadingLocation) mapViewModel.setLoadingLocation(false)
         }
     }
 
     LaunchedEffect(Unit) {
         if (isPermissionGranted(activity)) {
             if (!isLocationEnabled(activity)) {
+                mapViewModel.setLoadingLocation(false)
                 promptEnableGPS(activity, appViewModel)
             }
 

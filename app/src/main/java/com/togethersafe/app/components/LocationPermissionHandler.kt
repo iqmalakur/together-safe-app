@@ -27,6 +27,7 @@ fun LocationPermissionHandler() {
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
+        mapViewModel.setLoadingLocation(false)
         if (isGranted) appViewModel.completeRequestPermission(true)
         else {
             mapViewModel.stopTracking()

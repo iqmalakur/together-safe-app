@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -34,6 +35,7 @@ fun RoundedIconButton(
     imageVector: ImageVector,
     contentDescription: String,
     bordered: Boolean = false,
+    loadingState: Boolean? = null,
     onClick: () -> Unit
 ) {
     IconButton(
@@ -44,9 +46,17 @@ fun RoundedIconButton(
             .then(
                 if (bordered) Modifier.border(1.dp, Color.Gray, CircleShape) else Modifier
             ),
-        onClick = onClick
+        onClick = onClick,
     ) {
-        Icon(imageVector = imageVector, contentDescription = contentDescription)
+        if (loadingState == null || !loadingState) {
+            Icon(imageVector = imageVector, contentDescription = contentDescription)
+        } else {
+            CircularProgressIndicator(
+                modifier = Modifier.size(24.dp),
+                color = Color.Gray,
+                strokeWidth = 2.dp
+            )
+        }
     }
 }
 

@@ -27,6 +27,7 @@ class MapViewModel @Inject constructor(@ApplicationContext private val context: 
     private var job: Job? = null
 
     private val _zoomLevel = MutableStateFlow(ZOOM_DEFAULT)
+    private val _isLoadingLocation = MutableStateFlow(false)
     private val _isTracking = MutableStateFlow(false)
     private val _cameraPosition =
         MutableStateFlow(Point.fromLngLat(LONGITUDE_DEFAULT, LATITUDE_DEFAULT))
@@ -34,6 +35,7 @@ class MapViewModel @Inject constructor(@ApplicationContext private val context: 
     private val _destination = MutableStateFlow<Point?>(null)
 
     val zoomLevel: StateFlow<Double> get() = _zoomLevel
+    val isLoadingLocation: StateFlow<Boolean> get() = _isLoadingLocation
     val isTracking: StateFlow<Boolean> get() = _isTracking
     val cameraPosition: StateFlow<Point> get() = _cameraPosition
     val userPosition: StateFlow<Point?> get() = _userPosition
@@ -61,7 +63,12 @@ class MapViewModel @Inject constructor(@ApplicationContext private val context: 
         if (_zoomLevel.value > ZOOM_MIN) _zoomLevel.value -= ZOOM_STEP
     }
 
+    fun setLoadingLocation(isLoading: Boolean) {
+        _isLoadingLocation.value = isLoading
+    }
+
     fun startTracking() {
+        _isLoadingLocation.value = true
         _isTracking.value = true
     }
 
