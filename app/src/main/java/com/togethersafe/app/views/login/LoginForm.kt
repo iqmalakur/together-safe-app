@@ -74,10 +74,13 @@ fun LoginForm() {
         containerColor = Color.Black,
         contentColor = Color.White,
         onClick = {
+            appViewModel.setLoading(true)
+
             authViewModel.login(
                 email = email,
                 password = password,
-                onError = { _, messages -> errorMessages = messages }
+                onError = { _, messages -> errorMessages = messages },
+                onComplete = { appViewModel.setLoading(false) }
             ) {
                 appViewModel.setToastMessage("Login berhasil!")
                 navController.popBackStack()

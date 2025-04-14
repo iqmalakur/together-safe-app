@@ -1,12 +1,10 @@
 package com.togethersafe.app.views.register
 
 import android.net.Uri
-import android.util.Log
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,10 +47,6 @@ fun RegisterForm() {
         message = "Akun Anda berhasil didaftarkan. Silakan login untuk melanjutkan.",
         onConfirm = { navController.popBackStack() }
     )
-
-    LaunchedEffect(errorMessages) {
-        Log.d("COBAIN", errorMessages.joinToString())
-    }
 
     ProfileImagePicker(imageUri = imageUri, onImageSelected = { imageUri = it })
 
@@ -129,11 +123,8 @@ fun RegisterForm() {
                     phone = phone,
                     profilePhoto = profilePhoto
                 ),
-                onError = { _, messages ->
-                    errorMessages = messages
-                    Log.d("COBAIN-RESPONSE", errorMessages.joinToString())
-                    Log.d("COBAIN", "tes error")
-                }
+                onError = { _, messages -> errorMessages = messages },
+                onComplete = { appViewModel.setLoading(false) }
             ) { appViewModel.setDialogState(successDialog) }
         }
     )

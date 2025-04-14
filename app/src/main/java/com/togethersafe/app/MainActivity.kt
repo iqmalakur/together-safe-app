@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.runtime.LaunchedEffect
+import com.togethersafe.app.components.LoadingOverlay
 import com.togethersafe.app.components.LocationPermissionHandler
 import com.togethersafe.app.components.SimpleDialog
 import com.togethersafe.app.components.SimpleToast
@@ -39,6 +40,8 @@ class MainActivity : ComponentActivity() {
 
                 authViewModel.validateToken()
             }
+
+            LoadingOverlay()
 
             AppNavigation()
 

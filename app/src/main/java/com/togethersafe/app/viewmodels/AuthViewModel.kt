@@ -55,7 +55,7 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun login(email: String, password: String, onError: ApiErrorCallback, onSuccess: () -> Unit) {
+    fun login(email: String, password: String, onError: ApiErrorCallback, onComplete: () -> Unit, onSuccess: () -> Unit) {
         viewModelScope.launch {
             try {
                 val result = repository.login(email, password)
@@ -71,10 +71,11 @@ class AuthViewModel @Inject constructor(
             } catch (e: Exception) {
                 handleApiError(this::class, e, onError)
             }
+            onComplete()
         }
     }
 
-    fun register(registerReqDto: RegisterReqDto, onError: ApiErrorCallback, onSuccess: () -> Unit) {
+    fun register(registerReqDto: RegisterReqDto, onError: ApiErrorCallback, onComplete: () -> Unit, onSuccess: () -> Unit) {
         viewModelScope.launch {
             try {
                 repository.register(registerReqDto)
@@ -82,6 +83,7 @@ class AuthViewModel @Inject constructor(
             } catch (e: Exception) {
                 handleApiError(this::class, e, onError)
             }
+            onComplete()
         }
     }
 
