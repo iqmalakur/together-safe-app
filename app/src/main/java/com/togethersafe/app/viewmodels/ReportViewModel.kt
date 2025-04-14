@@ -34,6 +34,10 @@ class ReportViewModel @Inject constructor(
         _reportList.value = reportList
     }
 
+    fun resetReport() {
+        _report.value = null
+    }
+
     fun fetchUserReports(onError: ApiErrorCallback) {
         viewModelScope.launch {
             try {
@@ -62,15 +66,15 @@ class ReportViewModel @Inject constructor(
         }
     }
 
-    fun fetchDetailReport(id: String, onError: ApiErrorCallback) {
+    fun fetchDetailReport(id: String, onError: ApiErrorCallback, onComplete: () -> Unit, onSuccess: () -> Unit) {
         viewModelScope.launch {
             try {
-                withToken(onError) { token ->
-                    _report.value = repository.getDetailReport(token, id)
-                }
+                _report.value = repository.getDetailReport(id)
+                onSuccess()
             } catch (e: Exception) {
                 handleApiError(this::class, e, onError)
             }
+            onComplete()
         }
     }
 
@@ -78,7 +82,7 @@ class ReportViewModel @Inject constructor(
         val token = getToken(context)
 
         if (token != null) {
-            action(token)
+            action("Bearer $token")
         } else {
             onError(401, listOf("token tidak ditemukan"))
         }

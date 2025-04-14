@@ -29,8 +29,5 @@ interface ReportService {
     ): SuccessCreateDto
 
     @GET("report/{id}")
-    suspend fun fetchDetailReport(
-        @Header("Authorization") token: String,
-        @Path("id") id: String
-    ): ReportResDto
+    suspend fun fetchDetailReport(@Path("id") id: String): ReportResDto
 }

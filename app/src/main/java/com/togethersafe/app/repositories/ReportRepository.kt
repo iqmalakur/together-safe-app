@@ -46,7 +46,7 @@ class ReportRepository @Inject constructor(private val service: ReportService) {
         )
     }
 
-    suspend fun getDetailReport(token: String, id: String): ReportResDto {
-        return service.fetchDetailReport(token, id)
+    suspend fun getDetailReport(id: String): ReportResDto {
+        return service.fetchDetailReport(id)
     }
 }

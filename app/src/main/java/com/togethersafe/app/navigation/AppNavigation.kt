@@ -10,6 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import com.togethersafe.app.views.login.LoginScreen
 import com.togethersafe.app.views.map.MapScreen
 import com.togethersafe.app.views.register.RegisterScreen
+import com.togethersafe.app.views.report.ReportDetailScreen
 import com.togethersafe.app.views.report.ReportListScreen
 import com.togethersafe.app.views.report.ReportScreen
 
@@ -28,6 +29,7 @@ fun AppNavigation() {
             composable("register") { RegisterScreen() }
             composable("report") { ReportScreen() }
             composable("report-list") { ReportListScreen() }
+            composable("report-detail") { ReportDetailScreen() }
         }
     }
 }

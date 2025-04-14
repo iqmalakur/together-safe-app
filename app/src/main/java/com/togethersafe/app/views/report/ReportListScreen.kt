@@ -27,13 +27,15 @@ import androidx.compose.ui.unit.dp
 import com.togethersafe.app.components.AppHeader
 import com.togethersafe.app.navigation.LocalNavController
 import com.togethersafe.app.utils.getViewModel
+import com.togethersafe.app.viewmodels.AppViewModel
 import com.togethersafe.app.viewmodels.ReportViewModel
 
 @Composable
 fun ReportListScreen() {
+    val appViewModel: AppViewModel = getViewModel()
     val reportViewModel: ReportViewModel = getViewModel()
-    val navController = LocalNavController.current
 
+    val navController = LocalNavController.current
     val reports by reportViewModel.reportList.collectAsState()
 
     Column(
@@ -61,7 +63,12 @@ fun ReportListScreen() {
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                /* TODO: handle detail report */
+                                appViewModel.setLoading(true)
+                                reportViewModel.fetchDetailReport(
+                                    id = report.id,
+                                    onError = { _, messages -> appViewModel.setToastMessage(messages[0]) },
+                                    onComplete = { appViewModel.setLoading(false) }
+                                ) { navController.navigate("report-detail") }
                             },
                         shape = RoundedCornerShape(12.dp),
                         elevation = CardDefaults.cardElevation(4.dp)
