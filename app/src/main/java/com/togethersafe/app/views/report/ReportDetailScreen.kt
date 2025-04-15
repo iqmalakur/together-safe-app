@@ -115,6 +115,7 @@ fun ReportDetailScreen() {
                             text = "Lampiran:",
                             fontWeight = FontWeight.SemiBold
                         )
+                        Spacer(Modifier.height(4.dp))
                         LazyRow(
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
