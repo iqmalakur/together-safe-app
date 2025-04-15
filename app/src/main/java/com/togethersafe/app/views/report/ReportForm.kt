@@ -97,6 +97,7 @@ fun ReportForm(enableScroll: () -> Unit, disableScroll: () -> Unit) {
                     onError = { _, messages -> errorMessages = messages },
                     onComplete = { appViewModel.setLoading(false) },
                     onSuccess = {
+                        appViewModel.setToastMessage("Berhasil membuat laporan insiden")
                         appViewModel.setLoadIncident(true)
                         navController.popBackStack()
                     },
