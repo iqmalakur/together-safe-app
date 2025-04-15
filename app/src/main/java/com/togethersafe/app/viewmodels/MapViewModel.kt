@@ -10,6 +10,7 @@ import com.togethersafe.app.constants.MapConstants.ZOOM_DEFAULT
 import com.togethersafe.app.constants.MapConstants.ZOOM_MAX
 import com.togethersafe.app.constants.MapConstants.ZOOM_MIN
 import com.togethersafe.app.constants.MapConstants.ZOOM_STEP
+import com.togethersafe.app.data.model.GeocodingLocation
 import com.togethersafe.app.utils.getMapLocation
 import com.togethersafe.app.utils.saveMapLocation
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,14 +33,14 @@ class MapViewModel @Inject constructor(@ApplicationContext private val context: 
     private val _cameraPosition =
         MutableStateFlow(Point.fromLngLat(LONGITUDE_DEFAULT, LATITUDE_DEFAULT))
     private val _userPosition = MutableStateFlow<Point?>(null)
-    private val _destination = MutableStateFlow<Point?>(null)
+    private val _searchedLocation = MutableStateFlow<GeocodingLocation?>(null)
 
     val zoomLevel: StateFlow<Double> get() = _zoomLevel
     val isLoadingLocation: StateFlow<Boolean> get() = _isLoadingLocation
     val isTracking: StateFlow<Boolean> get() = _isTracking
     val cameraPosition: StateFlow<Point> get() = _cameraPosition
     val userPosition: StateFlow<Point?> get() = _userPosition
-    val destination: StateFlow<Point?> get() = _destination
+    val searchedLocation: StateFlow<GeocodingLocation?> get() = _searchedLocation
 
     init {
         viewModelScope.launch {
@@ -84,10 +85,6 @@ class MapViewModel @Inject constructor(@ApplicationContext private val context: 
         _userPosition.value = Point.fromLngLat(longitude, latitude)
     }
 
-    fun setDestination(destination: Point) {
-        _destination.value = destination
-    }
-
     fun cancelScheduledMapSave() {
         job?.cancel()
     }
@@ -97,5 +94,9 @@ class MapViewModel @Inject constructor(@ApplicationContext private val context: 
             delay(2000)
             saveMapLocation(context, position)
         }
+    }
+
+    fun setSearchedLocation(searchedLocation: GeocodingLocation?) {
+        _searchedLocation.value = searchedLocation
     }
 }

@@ -19,10 +19,10 @@ fun Annotations() {
     val mapViewModel: MapViewModel = getViewModel()
 
     val userPosition by mapViewModel.userPosition.collectAsState()
-    val destination by mapViewModel.destination.collectAsState()
+    val searchedLocation by mapViewModel.searchedLocation.collectAsState()
 
     if (userPosition != null) UserPosition(mapViewModel)
-    if (destination != null) DestinationAnnotation(destination!!)
+    if (searchedLocation != null) DestinationAnnotation(searchedLocation!!.getLocationPoint())
     IncidentMarkers()
 }
 

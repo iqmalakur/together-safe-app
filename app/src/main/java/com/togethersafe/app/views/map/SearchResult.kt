@@ -30,7 +30,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.mapbox.geojson.Point
 import com.togethersafe.app.constants.MapConstants.ZOOM_DEFAULT
 import com.togethersafe.app.data.model.GeocodingLocation
 import com.togethersafe.app.utils.getViewModel
@@ -97,7 +96,7 @@ private fun LocationItem(
                 handleLocationClick(
                     focusManager = focusManager,
                     mapViewModel = mapViewModel,
-                    location = geocodingLocation.getLocationPoint(),
+                    location = geocodingLocation,
                 )
             }
     ) {
@@ -129,12 +128,13 @@ private fun LocationItem(
 fun handleLocationClick(
     focusManager: FocusManager,
     mapViewModel: MapViewModel,
-    location: Point,
+    location: GeocodingLocation,
 ) {
-    mapViewModel.setDestination(location)
+    mapViewModel.setSearchedLocation(location)
+    val locationPoint = location.getLocationPoint()
     mapViewModel.setZoomLevel(ZOOM_DEFAULT)
     mapViewModel.setCameraPosition(
-        location.latitude(), location.longitude()
+        locationPoint.latitude(), locationPoint.longitude()
     )
 
     focusManager.clearFocus()
