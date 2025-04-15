@@ -1,21 +1,16 @@
 package com.togethersafe.app.views.map
 
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.LocalActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.mapbox.geojson.Point
 import com.mapbox.maps.extension.compose.annotation.generated.CircleAnnotation
-import com.mapbox.maps.extension.compose.annotation.generated.PointAnnotation
-import com.mapbox.maps.extension.compose.annotation.rememberIconImage
-import com.togethersafe.app.R
+import com.togethersafe.app.utils.DestinationAnnotation
 import com.togethersafe.app.utils.getViewModel
+import com.togethersafe.app.viewmodels.AppViewModel
 import com.togethersafe.app.viewmodels.IncidentViewModel
 import com.togethersafe.app.viewmodels.MapViewModel
 
@@ -27,7 +22,7 @@ fun Annotations() {
     val destination by mapViewModel.destination.collectAsState()
 
     if (userPosition != null) UserPosition(mapViewModel)
-    if (destination != null) Destination(mapViewModel)
+    if (destination != null) DestinationAnnotation(destination!!)
     IncidentMarkers()
 }
 
@@ -49,23 +44,10 @@ private fun UserPosition(mapViewModel: MapViewModel) {
     }
 }
 
-@Composable
-private fun Destination(mapViewModel: MapViewModel) {
-    val destination by mapViewModel.destination.collectAsState()
-    val markerIconDrawable = R.drawable.ic_marker
-    val marker = rememberIconImage(
-        key = markerIconDrawable,
-        painter = painterResource(markerIconDrawable)
-    )
-
-    PointAnnotation(destination!!) {
-        iconImage = marker
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun IncidentMarkers() {
+    val appViewModel: AppViewModel = getViewModel()
     val incidentViewModel: IncidentViewModel = getViewModel()
     val incidents by incidentViewModel.incidents.collectAsState()
     val selectedIncident by incidentViewModel.selectedIncident.collectAsState()
@@ -79,7 +61,13 @@ private fun IncidentMarkers() {
             circleStrokeColor = Color.Black
 
             interactionsState.onClicked {
-                incidentViewModel.setSelectedIncident(incident)
+                appViewModel.setLoading(true)
+
+                incidentViewModel.fetchIncidentById(
+                    id = incident.id,
+                    onError = { _, errors -> appViewModel.setToastMessage(errors[0]) })
+                { appViewModel.setLoading(false) }
+
                 true
             }
         }

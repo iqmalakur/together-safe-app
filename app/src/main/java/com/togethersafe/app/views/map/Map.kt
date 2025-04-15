@@ -13,26 +13,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import com.mapbox.android.gestures.MoveGestureDetector
 import com.mapbox.android.gestures.StandardScaleGestureDetector
-import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraBoundsOptions
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapView
 import com.mapbox.maps.Style
 import com.mapbox.maps.extension.compose.MapEffect
 import com.mapbox.maps.extension.compose.MapboxMap
-import com.mapbox.maps.extension.compose.animation.viewport.MapViewportState
-import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
 import com.mapbox.maps.extension.compose.style.MapStyle
 import com.mapbox.maps.plugin.gestures.OnMoveListener
 import com.mapbox.maps.plugin.gestures.OnScaleListener
 import com.mapbox.maps.plugin.gestures.addOnMoveListener
 import com.mapbox.maps.plugin.gestures.addOnScaleListener
-import com.togethersafe.app.constants.MapConstants.BEARING
-import com.togethersafe.app.constants.MapConstants.PITCH
-import com.togethersafe.app.constants.MapConstants.ZOOM_DEFAULT
 import com.togethersafe.app.constants.MapConstants.ZOOM_MAX
 import com.togethersafe.app.constants.MapConstants.ZOOM_MIN
 import com.togethersafe.app.utils.GetUserLocation
+import com.togethersafe.app.utils.createMapViewportState
 import com.togethersafe.app.utils.getViewModel
 import com.togethersafe.app.viewmodels.AppViewModel
 import com.togethersafe.app.viewmodels.MapViewModel
@@ -102,18 +97,6 @@ private fun Tracking(mapViewModel: MapViewModel) {
 
         if (isLocationPermissionGranted) {
             GetUserLocation()
-        }
-    }
-}
-
-@Composable
-private fun createMapViewportState(location: Point): MapViewportState {
-    return rememberMapViewportState {
-        setCameraOptions {
-            zoom(ZOOM_DEFAULT)
-            center(location)
-            pitch(PITCH)
-            bearing(BEARING)
         }
     }
 }

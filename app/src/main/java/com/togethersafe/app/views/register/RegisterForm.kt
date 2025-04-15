@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,7 +35,7 @@ fun RegisterForm() {
     val context = LocalContext.current
     val navController = LocalNavController.current
 
-    val errorMessages by authViewModel.registerErrors.collectAsState()
+    var errorMessages by remember { mutableStateOf<List<String>>(emptyList()) }
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
@@ -111,12 +110,12 @@ fun RegisterForm() {
         containerColor = Color.Black,
         contentColor = Color.White,
         onClick = {
+            appViewModel.setLoading(true)
             var profilePhoto: File? = null
 
             if (imageUri != null) {
                 profilePhoto = uriToFile(context, imageUri!!)
             }
-
             authViewModel.register(
                 RegisterReqDto(
                     name = name,
@@ -125,8 +124,9 @@ fun RegisterForm() {
                     phone = phone,
                     profilePhoto = profilePhoto
                 ),
-                onSuccess = { appViewModel.setDialogState(successDialog) }
-            )
+                onError = { _, messages -> errorMessages = messages },
+                onComplete = { appViewModel.setLoading(false) }
+            ) { appViewModel.setDialogState(successDialog) }
         }
     )
 }

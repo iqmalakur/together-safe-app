@@ -26,7 +26,9 @@ import kotlinx.coroutines.delay
 @Composable
 fun SearchBar(
     modifier: Modifier = Modifier,
+    isLoading: Boolean,
     setIsSearching: (state: Boolean) -> Unit,
+    setIsLoading: (isLoading: Boolean) -> Unit,
     onSearch: (String) -> Unit
 ) {
     var searchValue by rememberSaveable { mutableStateOf("") }
@@ -42,7 +44,10 @@ fun SearchBar(
 
     TextField(
         value = searchValue,
-        onValueChange = { searchValue = it },
+        onValueChange = {
+            if (!isLoading) setIsLoading(true)
+            searchValue = it
+        },
         placeholder = { Text("Telusuri di sini") },
         singleLine = true,
         colors = TextFieldDefaults.colors(

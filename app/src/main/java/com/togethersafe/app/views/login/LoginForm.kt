@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,8 +26,8 @@ import com.togethersafe.app.viewmodels.AuthViewModel
 fun LoginForm() {
     val appViewModel: AppViewModel = getViewModel()
     val authViewModel: AuthViewModel = getViewModel()
-    val errorMessages by authViewModel.loginErrors.collectAsState()
 
+    var errorMessages by remember { mutableStateOf<List<String>>(emptyList()) }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -75,9 +74,13 @@ fun LoginForm() {
         containerColor = Color.Black,
         contentColor = Color.White,
         onClick = {
+            appViewModel.setLoading(true)
+
             authViewModel.login(
                 email = email,
                 password = password,
+                onError = { _, messages -> errorMessages = messages },
+                onComplete = { appViewModel.setLoading(false) }
             ) {
                 appViewModel.setToastMessage("Login berhasil!")
                 navController.popBackStack()

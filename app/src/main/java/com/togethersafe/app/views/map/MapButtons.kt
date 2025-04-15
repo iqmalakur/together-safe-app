@@ -32,6 +32,8 @@ import com.togethersafe.app.viewmodels.MapViewModel
 fun ActionButton(compass: @Composable () -> Unit) {
     val appViewModel: AppViewModel = getViewModel()
     val mapViewModel: MapViewModel = getViewModel()
+
+    val isLoadingLocation by mapViewModel.isLoadingLocation.collectAsState()
     val isTracking by mapViewModel.isTracking.collectAsState()
     val context = LocalContext.current
 
@@ -60,6 +62,7 @@ fun ActionButton(compass: @Composable () -> Unit) {
             if (isTracking) Icons.Rounded.MyLocation
             else Icons.Rounded.LocationSearching,
             contentDescription = "Lokasi Saya",
+            loadingState = isLoadingLocation,
             onClick = {
                 if (!isLocationEnabled(context)) {
                     promptEnableGPS(context, appViewModel)

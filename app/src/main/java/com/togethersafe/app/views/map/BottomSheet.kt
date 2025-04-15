@@ -1,7 +1,5 @@
 package com.togethersafe.app.views.map
 
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,11 +28,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.togethersafe.app.data.model.Incident
+import com.togethersafe.app.data.dto.IncidentDetailResDto
+import com.togethersafe.app.navigation.LocalNavController
 import com.togethersafe.app.utils.getViewModel
+import com.togethersafe.app.viewmodels.AppViewModel
 import com.togethersafe.app.viewmodels.IncidentViewModel
+import com.togethersafe.app.viewmodels.ReportViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,7 +45,7 @@ fun BottomSheet(sheetState: SheetState) {
     ModalBottomSheet(
         modifier = Modifier.testTag("BottomSheet"),
         sheetState = sheetState,
-        onDismissRequest = { incidentViewModel.setSelectedIncident(null) },
+        onDismissRequest = { incidentViewModel.clearSelectedIncident() },
     ) {
         Column(
             modifier = Modifier
@@ -61,7 +61,7 @@ fun BottomSheet(sheetState: SheetState) {
 }
 
 @Composable
-private fun BottomSheetHeader(incident: Incident) {
+private fun BottomSheetHeader(incident: IncidentDetailResDto) {
     Text(
         modifier = Modifier.testTag("IncidentDetail-Kategori"),
         text = incident.category,
@@ -70,17 +70,10 @@ private fun BottomSheetHeader(incident: Incident) {
     )
 
     Spacer(modifier = Modifier.height(8.dp))
-
-//    Text(
-//        text = incident.description,
-//        style = MaterialTheme.typography.bodyMedium
-//    )
-//
-//    Spacer(modifier = Modifier.height(8.dp))
 }
 
 @Composable
-private fun BottomSheetContent(incident: Incident) {
+private fun BottomSheetContent(incident: IncidentDetailResDto) {
     InfoText("Lokasi", incident.location)
     InfoText("Tanggal", incident.date)
     InfoText("Jam", incident.time)
@@ -102,7 +95,7 @@ private fun InfoText(label: String, value: String) {
 }
 
 @Composable
-private fun BottomSheetMedia(incident: Incident) {
+private fun BottomSheetMedia(incident: IncidentDetailResDto) {
     SectionTitle("Bukti Gambar/Video")
 
     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -120,11 +113,11 @@ private fun BottomSheetMedia(incident: Incident) {
         }
     }
 
-    SeeMore { /* TODO: Navigasi ke galeri insiden */ }
+    SeeMore(incident.id)
 }
 
 @Composable
-private fun BottomSheetReport(incident: Incident) {
+private fun BottomSheetReport(incident: IncidentDetailResDto) {
     SectionTitle("Laporan Terkait")
 
     LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -137,7 +130,7 @@ private fun BottomSheetReport(incident: Incident) {
         }
     }
 
-    SeeMore { /* TODO: Navigasi ke list laporan insiden */ }
+    SeeMore(incident.id)
 }
 
 @Composable
@@ -150,12 +143,27 @@ private fun SectionTitle(title: String) {
 }
 
 @Composable
-private fun SeeMore(onClick: () -> Unit) {
+private fun SeeMore(incidentId: String) {
+    val appViewModel: AppViewModel = getViewModel()
+    val incidentViewModel: IncidentViewModel = getViewModel()
+    val reportViewModel: ReportViewModel = getViewModel()
+    val navController = LocalNavController.current
+
     Text(
         text = "Lihat Selengkapnya...",
         color = MaterialTheme.colorScheme.primary,
         modifier = Modifier
-            .clickable { onClick() }
+            .clickable {
+                appViewModel.setLoading(true)
+                incidentViewModel.fetchIncidentReports(
+                    incidentId = incidentId,
+                    onError = { _, messages -> appViewModel.setToastMessage(messages[0]) },
+                    onComplete = { appViewModel.setLoading(false) }
+                ) { reports ->
+                    reportViewModel.setReportList(reports)
+                    navController.navigate("report-list")
+                }
+            }
             .padding(vertical = 8.dp)
     )
 
