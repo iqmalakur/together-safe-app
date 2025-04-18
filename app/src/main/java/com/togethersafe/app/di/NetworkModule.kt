@@ -1,9 +1,7 @@
 package com.togethersafe.app.di
 
 import android.content.Context
-import android.util.Log
 import com.togethersafe.app.BuildConfig
-import com.togethersafe.app.data.network.ApiService
 import com.togethersafe.app.data.network.AuthService
 import com.togethersafe.app.data.network.GeocodingService
 import com.togethersafe.app.data.network.IncidentService
@@ -60,22 +58,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideApiService(): ApiService {
-        return Retrofit.Builder()
-            .baseUrl("https://stirred-eagle-witty.ngrok-free.app")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(ApiService::class.java)
-    }
-
-    @Provides
-    @Singleton
-    fun provideGeocodingService(): GeocodingService {
-        return Retrofit.Builder()
-            .baseUrl("https://nominatim.openstreetmap.org")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(GeocodingService::class.java)
-    }
+    fun provideGeocodingService(retrofit: Retrofit): GeocodingService =
+        retrofit.create(GeocodingService::class.java)
 
 }

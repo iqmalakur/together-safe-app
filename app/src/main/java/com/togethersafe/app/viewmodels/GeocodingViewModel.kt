@@ -2,7 +2,7 @@ package com.togethersafe.app.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.togethersafe.app.data.model.GeocodingLocation
+import com.togethersafe.app.data.dto.GeocodingResDto
 import com.togethersafe.app.repositories.GeocodingRepository
 import com.togethersafe.app.utils.handleApiError
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,8 +15,8 @@ import javax.inject.Inject
 class GeocodingViewModel @Inject constructor(private val geocodingRepository: GeocodingRepository) :
     ViewModel() {
 
-    private val _locationResult = MutableStateFlow<List<GeocodingLocation>>(emptyList())
-    val locationResult: StateFlow<List<GeocodingLocation>> get() = _locationResult
+    private val _locationResult = MutableStateFlow<List<GeocodingResDto>>(emptyList())
+    val locationResult: StateFlow<List<GeocodingResDto>> get() = _locationResult
 
     fun search(query: String, onError: (String) -> Unit, onComplete: () -> Unit) {
         viewModelScope.launch {

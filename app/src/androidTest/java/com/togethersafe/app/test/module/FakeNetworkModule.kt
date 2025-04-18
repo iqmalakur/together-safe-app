@@ -2,7 +2,7 @@ package com.togethersafe.app.test.module
 
 import com.togethersafe.app.constants.MapConstants.LATITUDE_DEFAULT
 import com.togethersafe.app.constants.MapConstants.LONGITUDE_DEFAULT
-import com.togethersafe.app.data.model.GeocodingLocation
+import com.togethersafe.app.data.dto.GeocodingLocation
 import com.togethersafe.app.data.model.Incident
 import com.togethersafe.app.data.model.IncidentReport
 import com.togethersafe.app.data.network.ApiService

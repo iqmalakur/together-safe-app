@@ -10,7 +10,7 @@ import com.togethersafe.app.constants.MapConstants.ZOOM_DEFAULT
 import com.togethersafe.app.constants.MapConstants.ZOOM_MAX
 import com.togethersafe.app.constants.MapConstants.ZOOM_MIN
 import com.togethersafe.app.constants.MapConstants.ZOOM_STEP
-import com.togethersafe.app.data.model.GeocodingLocation
+import com.togethersafe.app.data.dto.GeocodingResDto
 import com.togethersafe.app.utils.getMapLocation
 import com.togethersafe.app.utils.saveMapLocation
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,14 +33,16 @@ class MapViewModel @Inject constructor(@ApplicationContext private val context: 
     private val _cameraPosition =
         MutableStateFlow(Point.fromLngLat(LONGITUDE_DEFAULT, LATITUDE_DEFAULT))
     private val _userPosition = MutableStateFlow<Point?>(null)
-    private val _searchedLocation = MutableStateFlow<GeocodingLocation?>(null)
+    private val _searchedLocation = MutableStateFlow<GeocodingResDto?>(null)
+    private val _isStartRoute = MutableStateFlow(false)
 
     val zoomLevel: StateFlow<Double> get() = _zoomLevel
     val isLoadingLocation: StateFlow<Boolean> get() = _isLoadingLocation
     val isTracking: StateFlow<Boolean> get() = _isTracking
     val cameraPosition: StateFlow<Point> get() = _cameraPosition
     val userPosition: StateFlow<Point?> get() = _userPosition
-    val searchedLocation: StateFlow<GeocodingLocation?> get() = _searchedLocation
+    val searchedLocation: StateFlow<GeocodingResDto?> get() = _searchedLocation
+    val isStartRoute: StateFlow<Boolean> get() = _isStartRoute
 
     init {
         viewModelScope.launch {
@@ -96,7 +98,11 @@ class MapViewModel @Inject constructor(@ApplicationContext private val context: 
         }
     }
 
-    fun setSearchedLocation(searchedLocation: GeocodingLocation?) {
+    fun setSearchedLocation(searchedLocation: GeocodingResDto?) {
         _searchedLocation.value = searchedLocation
+    }
+
+    fun setStartRoute(isStart: Boolean) {
+        _isStartRoute.value = isStart
     }
 }

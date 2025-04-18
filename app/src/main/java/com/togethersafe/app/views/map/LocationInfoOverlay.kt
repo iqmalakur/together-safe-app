@@ -46,8 +46,11 @@ fun BoxScope.LocationInfoOverlay() {
                 Column {
                     HeaderSection(
                         name = location.name,
-                        address = location.display_name,
-                        onClose = { mapViewModel.setSearchedLocation(null) }
+                        address = location.fullName,
+                        onClose = {
+                            mapViewModel.setSearchedLocation(null)
+                            mapViewModel.setStartRoute(false)
+                        }
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     ActionButtons()
@@ -115,18 +118,20 @@ private fun HeaderSection(
 
 @Composable
 private fun ActionButtons() {
+    val mapViewModel: MapViewModel = getViewModel()
+
     Row(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Button(
-            onClick = {},
+            onClick = { mapViewModel.setStartRoute(true) },
             modifier = Modifier.weight(1f)
         ) {
             Text("Rute")
         }
         Button(
-            onClick = {},
+            onClick = { mapViewModel.setStartRoute(true) },
             modifier = Modifier.weight(1f)
         ) {
             Text("Mulai")
