@@ -1,6 +1,8 @@
 package com.togethersafe.app.di
 
 import android.content.Context
+import android.util.Log
+import com.togethersafe.app.BuildConfig
 import com.togethersafe.app.data.network.ApiService
 import com.togethersafe.app.data.network.AuthService
 import com.togethersafe.app.data.network.GeocodingService
@@ -32,8 +34,10 @@ object NetworkModule {
             .cache(cache)
             .build()
 
+        val apiUrl = BuildConfig.API_URL
+
         return Retrofit.Builder()
-            .baseUrl("https://stirred-eagle-witty.ngrok-free.app")
+            .baseUrl(apiUrl)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
