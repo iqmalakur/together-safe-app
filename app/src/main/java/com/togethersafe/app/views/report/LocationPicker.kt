@@ -6,8 +6,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -33,11 +39,23 @@ fun LocationPicker(
     onChange: (location: Point) -> Unit,
 ) {
     val mapViewportState = createMapViewportState(value)
+    var selectedLocation by remember { mutableStateOf(value) }
+
+    LaunchedEffect(selectedLocation) {
+        onChange(selectedLocation)
+    }
 
     Text(
         text = "Lokasi Insiden",
         fontSize = 16.sp,
-        modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
+        modifier = Modifier.padding(top = 4.dp)
+    )
+
+    Text(
+        text = "(tekan lama pada peta untuk memilih lokasi)",
+        fontSize = 14.sp,
+        color = Color.Gray,
+        modifier = Modifier.padding(bottom = 8.dp)
     )
 
     Box(
@@ -51,6 +69,10 @@ fun LocationPicker(
     ) {
         MapboxMap(
             mapViewportState = mapViewportState,
+            onMapLongClickListener = {
+                selectedLocation = it
+                false
+            },
             scaleBar = {},
             compass = {},
             attribution = {},
@@ -61,12 +83,11 @@ fun LocationPicker(
                 setupMapBounds(mapView)
                 handleOnMoveListener(
                     mapView = mapView,
-                    onMove = onChange,
                     onMoveEnd = enableScroll,
                 )
             }
 
-            DestinationAnnotation(value)
+            DestinationAnnotation(selectedLocation)
         }
     }
 }
@@ -82,17 +103,11 @@ private fun setupMapBounds(mapView: MapView) {
 
 private fun handleOnMoveListener(
     mapView: MapView,
-    onMove: (Point) -> Unit,
     onMoveEnd: () -> Unit,
 ) {
     mapView.mapboxMap.addOnMoveListener(
         object : OnMoveListener {
-            override fun onMove(detector: MoveGestureDetector): Boolean {
-                val center = mapView.mapboxMap.cameraState.center
-                onMove(center)
-                return false
-            }
-
+            override fun onMove(detector: MoveGestureDetector) = false
             override fun onMoveBegin(detector: MoveGestureDetector) {}
 
             override fun onMoveEnd(detector: MoveGestureDetector) {

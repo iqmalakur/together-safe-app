@@ -73,6 +73,8 @@ fun ActionButton(compass: @Composable () -> Unit) {
         )
 
         Box { compass() }
+
+        Box { LocationInfoOverlay() }
     }
 }
 

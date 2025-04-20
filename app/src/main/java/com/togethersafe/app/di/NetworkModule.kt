@@ -1,9 +1,9 @@
 package com.togethersafe.app.di
 
 import android.content.Context
-import com.togethersafe.app.data.network.ApiService
+import com.togethersafe.app.BuildConfig
 import com.togethersafe.app.data.network.AuthService
-import com.togethersafe.app.data.network.GeocodingService
+import com.togethersafe.app.data.network.GeolocationService
 import com.togethersafe.app.data.network.IncidentService
 import com.togethersafe.app.data.network.ReportService
 import dagger.Module
@@ -32,8 +32,10 @@ object NetworkModule {
             .cache(cache)
             .build()
 
+        val apiUrl = BuildConfig.API_URL
+
         return Retrofit.Builder()
-            .baseUrl("https://stirred-eagle-witty.ngrok-free.app")
+            .baseUrl(apiUrl)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -56,22 +58,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideApiService(): ApiService {
-        return Retrofit.Builder()
-            .baseUrl("https://stirred-eagle-witty.ngrok-free.app")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(ApiService::class.java)
-    }
-
-    @Provides
-    @Singleton
-    fun provideGeocodingService(): GeocodingService {
-        return Retrofit.Builder()
-            .baseUrl("https://nominatim.openstreetmap.org")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(GeocodingService::class.java)
-    }
+    fun provideGeolocationService(retrofit: Retrofit): GeolocationService =
+        retrofit.create(GeolocationService::class.java)
 
 }

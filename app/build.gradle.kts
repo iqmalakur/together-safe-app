@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -6,6 +8,14 @@ plugins {
     id("dagger.hilt.android.plugin")
     kotlin("kapt")
 }
+
+val configProperties = File(rootDir, "config.properties")
+val config = Properties()
+if (configProperties.exists()) {
+    config.load(configProperties.inputStream())
+}
+
+val apiUrl = config.getProperty("API_URL") ?: ""
 
 android {
     namespace = "com.togethersafe.app"
@@ -19,6 +29,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "com.togethersafe.app.test.setup.HiltTestRunner"
+
+        buildConfigField("String", "API_URL", "\"$apiUrl\"")
     }
 
     buildTypes {
@@ -39,6 +51,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     packaging {
         resources.excludes.addAll(

@@ -31,17 +31,18 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.togethersafe.app.utils.getViewModel
 import com.togethersafe.app.viewmodels.AppViewModel
-import com.togethersafe.app.viewmodels.GeocodingViewModel
+import com.togethersafe.app.viewmodels.GeolocationViewModel
 
 @Composable
 fun MapHeader() {
-    val geocodingViewModel: GeocodingViewModel = getViewModel()
+    val geolocationViewModel: GeolocationViewModel = getViewModel()
     val appViewModel: AppViewModel = getViewModel()
 
     val animationSpec = tween<Float>(durationMillis = 200)
     val focusManager = LocalFocusManager.current
 
-    val locationResult by geocodingViewModel.locationResult.collectAsState()
+    val locationResult by geolocationViewModel.locationResult.collectAsState()
+
     var isSearching by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
     val headerBackgroundAlpha by animateFloatAsState(
@@ -77,7 +78,7 @@ fun MapHeader() {
                 setIsSearching = { isSearching = it },
                 setIsLoading = { isLoading = it },
                 onSearch = {
-                    geocodingViewModel.search(
+                    geolocationViewModel.search(
                         query = it,
                         onError = { error -> appViewModel.setToastMessage(error) },
                         onComplete = { isLoading = false },

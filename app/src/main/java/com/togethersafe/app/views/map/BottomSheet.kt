@@ -96,13 +96,13 @@ private fun InfoText(label: String, value: String) {
 
 @Composable
 private fun BottomSheetMedia(incident: IncidentDetailResDto) {
-    SectionTitle("Bukti Gambar/Video")
+    SectionTitle("Lampiran Gambar")
 
     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         itemsIndexed(incident.mediaUrls.take(3)) { index, mediaUrl ->
             AsyncImage(
                 model = mediaUrl,
-                contentDescription = "Bukti Insiden",
+                contentDescription = "Lampiran Gambar",
                 modifier = Modifier
                     .testTag("IncidentDetail-Image-$index")
                     .size(120.dp)

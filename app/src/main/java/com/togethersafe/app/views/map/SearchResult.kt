@@ -30,14 +30,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.mapbox.geojson.Point
 import com.togethersafe.app.constants.MapConstants.ZOOM_DEFAULT
-import com.togethersafe.app.data.model.GeocodingLocation
+import com.togethersafe.app.data.dto.GeocodingResDto
 import com.togethersafe.app.utils.getViewModel
 import com.togethersafe.app.viewmodels.MapViewModel
 
 @Composable
-fun SearchResult(locationResult: List<GeocodingLocation>) {
+fun SearchResult(locationResult: List<GeocodingResDto>) {
     if (locationResult.isEmpty()) NoSearchResult()
     else LocationList(locationResult)
 }
@@ -61,7 +60,7 @@ private fun NoSearchResult() {
 }
 
 @Composable
-private fun LocationList(locationResult: List<GeocodingLocation>) {
+private fun LocationList(locationResult: List<GeocodingResDto>) {
     LazyColumn(
         modifier = Modifier
             .background(Color.White)
@@ -83,7 +82,7 @@ private fun LocationList(locationResult: List<GeocodingLocation>) {
 @Composable
 private fun LocationItem(
     tag: String,
-    geocodingLocation: GeocodingLocation,
+    geocodingLocation: GeocodingResDto,
 ) {
     val mapViewModel: MapViewModel = getViewModel()
     val focusManager = LocalFocusManager.current
@@ -97,7 +96,7 @@ private fun LocationItem(
                 handleLocationClick(
                     focusManager = focusManager,
                     mapViewModel = mapViewModel,
-                    location = geocodingLocation.getLocationPoint(),
+                    location = geocodingLocation,
                 )
             }
     ) {
@@ -118,7 +117,7 @@ private fun LocationItem(
             )
 
             Text(
-                text = geocodingLocation.display_name,
+                text = geocodingLocation.fullName,
                 fontSize = 12.sp, color = Color.Gray,
                 modifier = Modifier.testTag("DisplayName-$tag"),
             )
@@ -129,12 +128,12 @@ private fun LocationItem(
 fun handleLocationClick(
     focusManager: FocusManager,
     mapViewModel: MapViewModel,
-    location: Point,
+    location: GeocodingResDto,
 ) {
-    mapViewModel.setDestination(location)
+    mapViewModel.setSearchedLocation(location)
     mapViewModel.setZoomLevel(ZOOM_DEFAULT)
     mapViewModel.setCameraPosition(
-        location.latitude(), location.longitude()
+        location.latitude, location.longitude
     )
 
     focusManager.clearFocus()
