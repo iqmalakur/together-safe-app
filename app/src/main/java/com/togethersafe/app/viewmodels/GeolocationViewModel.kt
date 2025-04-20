@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.mapbox.geojson.Point
 import com.togethersafe.app.data.dto.GeocodingResDto
 import com.togethersafe.app.repositories.GeolocationRepository
+import com.togethersafe.app.utils.ApiSuccessCallback
 import com.togethersafe.app.utils.handleApiError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,7 +36,26 @@ class GeolocationViewModel @Inject constructor(private val geolocationRepository
         }
     }
 
-    fun getSafeRoute(
+    fun fetchLocation(
+        latitude: Double,
+        longitude: Double,
+        onError: (String) -> Unit,
+        onComplete: () -> Unit,
+        onSuccess: ApiSuccessCallback<GeocodingResDto>
+    ) {
+        viewModelScope.launch {
+            try {
+                onSuccess(geolocationRepository.findLocationByLatLon(latitude, longitude))
+            } catch (e: Exception) {
+                handleApiError(this::class, e) { _, errors ->
+                    onError(errors[0])
+                }
+            }
+            onComplete()
+        }
+    }
+
+    fun fetchSafeRoutes(
         startLocation: Point,
         endLocation: Point,
         onError: (String) -> Unit,
