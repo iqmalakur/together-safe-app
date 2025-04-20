@@ -133,7 +133,7 @@ private fun ActionButtons() {
         val destination = Point.fromLngLat(searchedLocation.longitude, searchedLocation.latitude)
 
         appViewModel.setLoading(true)
-        geolocationViewModel.getSafeRoute(userLocation, destination, {
+        geolocationViewModel.fetchSafeRoutes(userLocation, destination, {
             appViewModel.setToastMessage(it)
         }) { appViewModel.setLoading(false) }
     }

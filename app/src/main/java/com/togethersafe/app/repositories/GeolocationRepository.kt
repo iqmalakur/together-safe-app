@@ -12,6 +12,10 @@ class GeolocationRepository @Inject constructor(private val geolocationService: 
         return geolocationService.searchLocation(query)
     }
 
+    suspend fun findLocationByLatLon(latitude: Double, longitude: Double): GeocodingResDto {
+        return geolocationService.findLocationByLatLon(latitude.toString(), longitude.toString())
+    }
+
     suspend fun findSafeRoute(startLocation: Point, endLocation: Point): List<List<Point>> {
         val startLatLon = "${startLocation.latitude()},${startLocation.longitude()}"
         val endLatLon = "${endLocation.latitude()},${endLocation.longitude()}"

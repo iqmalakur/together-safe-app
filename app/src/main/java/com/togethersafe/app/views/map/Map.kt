@@ -30,11 +30,14 @@ import com.togethersafe.app.utils.GetUserLocation
 import com.togethersafe.app.utils.createMapViewportState
 import com.togethersafe.app.utils.getViewModel
 import com.togethersafe.app.viewmodels.AppViewModel
+import com.togethersafe.app.viewmodels.GeolocationViewModel
 import com.togethersafe.app.viewmodels.MapViewModel
 
 @Composable
 fun Map() {
+    val appViewModel: AppViewModel = getViewModel()
     val mapViewModel: MapViewModel = getViewModel()
+    val geolocationViewModel: GeolocationViewModel = getViewModel()
 
     val cameraPosition by mapViewModel.cameraPosition.collectAsState()
     val zoomLevel by mapViewModel.zoomLevel.collectAsState()
@@ -55,6 +58,17 @@ fun Map() {
         mapViewportState = mapViewportState,
         onMapClickListener = {
             focusManager.clearFocus()
+            false
+        },
+        onMapLongClickListener = {
+            appViewModel.setLoading(true)
+            geolocationViewModel.fetchLocation(
+                latitude = it.latitude(),
+                longitude = it.longitude(),
+                onError = { error -> appViewModel.setToastMessage(error) },
+                onComplete = { appViewModel.setLoading(false) },
+                onSuccess = { location -> mapViewModel.setSearchedLocation(location) }
+            )
             false
         },
         scaleBar = { },
