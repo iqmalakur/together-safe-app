@@ -10,7 +10,6 @@ fun MapScreen() {
         Box {
             Map()
             MapHeader()
-            LocationInfoOverlay()
         }
     }
 

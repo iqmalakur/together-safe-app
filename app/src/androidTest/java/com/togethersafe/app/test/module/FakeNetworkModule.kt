@@ -6,7 +6,7 @@ import com.togethersafe.app.data.dto.GeocodingLocation
 import com.togethersafe.app.data.model.Incident
 import com.togethersafe.app.data.model.IncidentReport
 import com.togethersafe.app.data.network.ApiService
-import com.togethersafe.app.data.network.GeocodingService
+import com.togethersafe.app.data.network.GeolocationService
 import com.togethersafe.app.di.NetworkModule
 import dagger.Module
 import dagger.Provides
@@ -54,8 +54,8 @@ object FakeNetworkModule {
 
     @Provides
     @Singleton
-    fun provideGeocodingService(): GeocodingService {
-        return object : GeocodingService {
+    fun provideGeocodingService(): GeolocationService {
+        return object : GeolocationService {
             override suspend fun searchLocation(query: String): List<GeocodingLocation> {
                 return when (query) {
                     "Testing" -> listOf(

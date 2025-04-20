@@ -27,12 +27,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
+import com.mapbox.geojson.Point
 import com.togethersafe.app.utils.getViewModel
+import com.togethersafe.app.viewmodels.AppViewModel
+import com.togethersafe.app.viewmodels.GeolocationViewModel
 import com.togethersafe.app.viewmodels.MapViewModel
 
 @Composable
 fun BoxScope.LocationInfoOverlay() {
     val mapViewModel: MapViewModel = getViewModel()
+    val geolocationViewModel: GeolocationViewModel = getViewModel()
+
     val searchedLocation by mapViewModel.searchedLocation.collectAsState()
 
     searchedLocation?.let { location ->
@@ -49,7 +54,7 @@ fun BoxScope.LocationInfoOverlay() {
                         address = location.fullName,
                         onClose = {
                             mapViewModel.setSearchedLocation(null)
-                            mapViewModel.setStartRoute(false)
+                            geolocationViewModel.clearRoutes()
                         }
                     )
                     Spacer(modifier = Modifier.height(8.dp))
@@ -118,20 +123,33 @@ private fun HeaderSection(
 
 @Composable
 private fun ActionButtons() {
+    val appViewModel: AppViewModel = getViewModel()
     val mapViewModel: MapViewModel = getViewModel()
+    val geolocationViewModel: GeolocationViewModel = getViewModel()
+
+    val onClick = {
+        val userLocation = mapViewModel.userPosition.value!!
+        val searchedLocation = mapViewModel.searchedLocation.value!!
+        val destination = Point.fromLngLat(searchedLocation.longitude, searchedLocation.latitude)
+
+        appViewModel.setLoading(true)
+        geolocationViewModel.getSafeRoute(userLocation, destination, {
+            appViewModel.setToastMessage(it)
+        }) { appViewModel.setLoading(false) }
+    }
 
     Row(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Button(
-            onClick = { mapViewModel.setStartRoute(true) },
+            onClick = onClick,
             modifier = Modifier.weight(1f)
         ) {
             Text("Rute")
         }
         Button(
-            onClick = { mapViewModel.setStartRoute(true) },
+            onClick = onClick,
             modifier = Modifier.weight(1f)
         ) {
             Text("Mulai")

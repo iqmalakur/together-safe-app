@@ -3,7 +3,7 @@ package com.togethersafe.app.di
 import android.content.Context
 import com.togethersafe.app.BuildConfig
 import com.togethersafe.app.data.network.AuthService
-import com.togethersafe.app.data.network.GeocodingService
+import com.togethersafe.app.data.network.GeolocationService
 import com.togethersafe.app.data.network.IncidentService
 import com.togethersafe.app.data.network.ReportService
 import dagger.Module
@@ -58,7 +58,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideGeocodingService(retrofit: Retrofit): GeocodingService =
-        retrofit.create(GeocodingService::class.java)
+    fun provideGeolocationService(retrofit: Retrofit): GeolocationService =
+        retrofit.create(GeolocationService::class.java)
 
 }

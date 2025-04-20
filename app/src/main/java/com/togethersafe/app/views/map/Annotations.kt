@@ -8,22 +8,38 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import com.mapbox.geojson.Point
 import com.mapbox.maps.extension.compose.annotation.generated.CircleAnnotation
+import com.mapbox.maps.extension.compose.annotation.generated.PolylineAnnotation
 import com.togethersafe.app.utils.DestinationAnnotation
 import com.togethersafe.app.utils.getViewModel
 import com.togethersafe.app.viewmodels.AppViewModel
+import com.togethersafe.app.viewmodels.GeolocationViewModel
 import com.togethersafe.app.viewmodels.IncidentViewModel
 import com.togethersafe.app.viewmodels.MapViewModel
 
 @Composable
 fun Annotations() {
     val mapViewModel: MapViewModel = getViewModel()
+    val geolocationViewModel: GeolocationViewModel = getViewModel()
 
     val userPosition by mapViewModel.userPosition.collectAsState()
     val searchedLocation by mapViewModel.searchedLocation.collectAsState()
+    val routes by geolocationViewModel.routes.collectAsState()
 
     if (userPosition != null) UserPosition(mapViewModel)
-    if (searchedLocation != null) DestinationAnnotation(searchedLocation!!.getLocationPoint())
+    if (searchedLocation != null) {
+        val point = Point.fromLngLat(searchedLocation!!.longitude, searchedLocation!!.latitude)
+        DestinationAnnotation(point)
+    }
     IncidentMarkers()
+
+    if (routes.isNotEmpty()) {
+        routes.forEach {
+            PolylineAnnotation(it) {
+                lineColor = Color.Red
+                lineWidth = 5.0
+            }
+        }
+    }
 }
 
 @Composable

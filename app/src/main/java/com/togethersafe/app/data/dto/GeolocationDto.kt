@@ -6,3 +6,7 @@ data class GeocodingResDto(
     val latitude: Double,
     val longitude: Double,
 )
+
+data class SafeRouteResDto(
+    val routes: List<List<List<Double>>>
+)

@@ -1,11 +1,11 @@
 package com.togethersafe.app.di
 
 import com.togethersafe.app.data.network.AuthService
-import com.togethersafe.app.data.network.GeocodingService
+import com.togethersafe.app.data.network.GeolocationService
 import com.togethersafe.app.data.network.IncidentService
 import com.togethersafe.app.data.network.ReportService
 import com.togethersafe.app.repositories.AuthRepository
-import com.togethersafe.app.repositories.GeocodingRepository
+import com.togethersafe.app.repositories.GeolocationRepository
 import com.togethersafe.app.repositories.IncidentRepository
 import com.togethersafe.app.repositories.ReportRepository
 import dagger.Module
@@ -26,8 +26,8 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideGeocodingRepository(service: GeocodingService): GeocodingRepository {
-        return GeocodingRepository(service)
+    fun provideGeolocationRepository(service: GeolocationService): GeolocationRepository {
+        return GeolocationRepository(service)
     }
 
     @Provides

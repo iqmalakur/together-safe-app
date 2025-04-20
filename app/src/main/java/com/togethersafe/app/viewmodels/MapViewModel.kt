@@ -34,7 +34,6 @@ class MapViewModel @Inject constructor(@ApplicationContext private val context: 
         MutableStateFlow(Point.fromLngLat(LONGITUDE_DEFAULT, LATITUDE_DEFAULT))
     private val _userPosition = MutableStateFlow<Point?>(null)
     private val _searchedLocation = MutableStateFlow<GeocodingResDto?>(null)
-    private val _isStartRoute = MutableStateFlow(false)
 
     val zoomLevel: StateFlow<Double> get() = _zoomLevel
     val isLoadingLocation: StateFlow<Boolean> get() = _isLoadingLocation
@@ -42,7 +41,6 @@ class MapViewModel @Inject constructor(@ApplicationContext private val context: 
     val cameraPosition: StateFlow<Point> get() = _cameraPosition
     val userPosition: StateFlow<Point?> get() = _userPosition
     val searchedLocation: StateFlow<GeocodingResDto?> get() = _searchedLocation
-    val isStartRoute: StateFlow<Boolean> get() = _isStartRoute
 
     init {
         viewModelScope.launch {
@@ -100,9 +98,5 @@ class MapViewModel @Inject constructor(@ApplicationContext private val context: 
 
     fun setSearchedLocation(searchedLocation: GeocodingResDto?) {
         _searchedLocation.value = searchedLocation
-    }
-
-    fun setStartRoute(isStart: Boolean) {
-        _isStartRoute.value = isStart
     }
 }
