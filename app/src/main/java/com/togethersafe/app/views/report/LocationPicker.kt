@@ -71,6 +71,7 @@ fun LocationPicker(
             mapViewportState = mapViewportState,
             onMapLongClickListener = {
                 selectedLocation = it
+                enableScroll()
                 false
             },
             scaleBar = {},
