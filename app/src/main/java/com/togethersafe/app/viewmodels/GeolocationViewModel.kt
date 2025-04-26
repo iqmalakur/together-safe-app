@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class GeolocationViewModel @Inject constructor(private val geolocationRepository: GeolocationRepository) :
+class GeolocationViewModel @Inject constructor(private val repository: GeolocationRepository) :
     ViewModel() {
 
     private val _locationResult = MutableStateFlow<List<GeocodingResDto>>(emptyList())
@@ -26,7 +26,7 @@ class GeolocationViewModel @Inject constructor(private val geolocationRepository
     fun search(query: String, onError: (String) -> Unit, onComplete: () -> Unit) {
         viewModelScope.launch {
             try {
-                _locationResult.value = geolocationRepository.findLocation(query)
+                _locationResult.value = repository.findLocation(query)
             } catch (e: Exception) {
                 handleApiError(this::class, e) { _, errors ->
                     onError(errors[0])
@@ -45,7 +45,7 @@ class GeolocationViewModel @Inject constructor(private val geolocationRepository
     ) {
         viewModelScope.launch {
             try {
-                onSuccess(geolocationRepository.findLocationByLatLon(latitude, longitude))
+                onSuccess(repository.findLocationByLatLon(latitude, longitude))
             } catch (e: Exception) {
                 handleApiError(this::class, e) { _, errors ->
                     onError(errors[0])
@@ -63,7 +63,7 @@ class GeolocationViewModel @Inject constructor(private val geolocationRepository
     ) {
         viewModelScope.launch {
             try {
-                _routes.value = geolocationRepository.findSafeRoute(startLocation, endLocation)
+                _routes.value = repository.findSafeRoute(startLocation, endLocation)
             } catch (e: Exception) {
                 handleApiError(this::class, e) { _, errors -> onError(errors[0]) }
             }
