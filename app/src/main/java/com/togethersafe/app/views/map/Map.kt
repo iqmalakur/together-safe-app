@@ -26,6 +26,7 @@ import com.mapbox.maps.plugin.gestures.addOnMoveListener
 import com.mapbox.maps.plugin.gestures.addOnScaleListener
 import com.togethersafe.app.constants.MapConstants.ZOOM_MAX
 import com.togethersafe.app.constants.MapConstants.ZOOM_MIN
+import com.togethersafe.app.data.dto.GeocodingResDto
 import com.togethersafe.app.utils.GetUserLocation
 import com.togethersafe.app.utils.createMapViewportState
 import com.togethersafe.app.utils.getViewModel
@@ -67,7 +68,12 @@ fun Map() {
                 longitude = it.longitude(),
                 onError = { error -> appViewModel.setToastMessage(error) },
                 onComplete = { appViewModel.setLoading(false) },
-                onSuccess = { location -> mapViewModel.setSearchedLocation(location) }
+                onSuccess = { location -> mapViewModel.setSearchedLocation(GeocodingResDto(
+                    latitude = it.latitude(),
+                    longitude = it.longitude(),
+                    name = location.name,
+                    fullName = location.fullName,
+                )) }
             )
             false
         },
