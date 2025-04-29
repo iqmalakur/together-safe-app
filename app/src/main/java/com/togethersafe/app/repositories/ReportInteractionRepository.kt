@@ -10,6 +10,10 @@ import javax.inject.Singleton
 
 @Singleton
 class ReportInteractionRepository @Inject constructor(private val service: ReportInteractionService) {
+    suspend fun findUserVote(token: String, reportId: String): VoteResDto {
+        return service.findUserVote(token, reportId)
+    }
+
     suspend fun vote(token: String, reportId: String, voteType: String?): VoteResDto {
         return service.vote(token, reportId, VoteReqDto(voteType))
     }

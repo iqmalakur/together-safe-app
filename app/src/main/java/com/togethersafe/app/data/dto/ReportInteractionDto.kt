@@ -5,7 +5,7 @@ data class VoteReqDto(val voteType: String?)
 data class VoteResDto(
     val userEmail: String,
     val reportId: String,
-    val voteType: String?,
+    val type: String?,
 )
 
 data class CommentReqDto(val comment: String)

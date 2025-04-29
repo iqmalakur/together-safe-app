@@ -6,12 +6,19 @@ import com.togethersafe.app.data.dto.VoteReqDto
 import com.togethersafe.app.data.dto.VoteResDto
 import retrofit2.http.Body
 import retrofit2.http.DELETE
+import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface ReportInteractionService {
+    @GET("report/{reportId}/vote")
+    suspend fun findUserVote(
+        @Header("Authorization") token: String,
+        @Path("reportId") reportId: String,
+    ): VoteResDto
+
     @PATCH("report/{reportId}/vote")
     suspend fun vote(
         @Header("Authorization") token: String,
