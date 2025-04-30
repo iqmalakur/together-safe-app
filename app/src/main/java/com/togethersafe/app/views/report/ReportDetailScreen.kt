@@ -62,6 +62,7 @@ fun ReportDetailScreen() {
 
     val report by reportViewModel.report.collectAsState()
 
+    var isLoggedIn by remember { mutableStateOf(false) }
     var isUserOwnReport by remember { mutableStateOf(false) }
     var upvoteCount by remember { mutableIntStateOf(0) }
     var downvoteCount by remember { mutableIntStateOf(0) }
@@ -73,13 +74,14 @@ fun ReportDetailScreen() {
             downvoteCount = report!!.downvote
 
             authViewModel.user.value?.let {
+                isLoggedIn = true
                 isUserOwnReport = report!!.user.email == it.email
-            }
 
-            reportInteractionViewModel.findUserVote(
-                report!!.id,
-                onError = { _, messages -> appViewModel.setToastMessage(messages[0]) },
-            ) { currentVote = it }
+                reportInteractionViewModel.findUserVote(
+                    report!!.id,
+                    onError = { _, messages -> appViewModel.setToastMessage(messages[0]) },
+                ) { currentVote = it }
+            }
         }
     }
 
@@ -106,7 +108,7 @@ fun ReportDetailScreen() {
                         text = "👍 $upvoteCount",
                         reportId = report.id,
                         currentVote = currentVote,
-                        enabled = !isUserOwnReport,
+                        enabled = isLoggedIn && !isUserOwnReport,
                     ) {
                         when (currentVote) {
                             null -> upvoteCount++
@@ -125,7 +127,7 @@ fun ReportDetailScreen() {
                         text = "👎 $downvoteCount",
                         reportId = report.id,
                         currentVote = currentVote,
-                        enabled = !isUserOwnReport,
+                        enabled = isLoggedIn && !isUserOwnReport,
                     ) {
                         when (currentVote) {
                             null -> downvoteCount++
