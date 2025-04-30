@@ -45,6 +45,7 @@ import com.togethersafe.app.data.dto.ReportResDto
 import com.togethersafe.app.navigation.LocalNavController
 import com.togethersafe.app.utils.getViewModel
 import com.togethersafe.app.viewmodels.AppViewModel
+import com.togethersafe.app.viewmodels.AuthViewModel
 import com.togethersafe.app.viewmodels.ReportInteractionViewModel
 import com.togethersafe.app.viewmodels.ReportViewModel
 import java.text.SimpleDateFormat
@@ -53,11 +54,15 @@ import java.util.Locale
 @Composable
 fun ReportDetailScreen() {
     val navController = LocalNavController.current
+
     val appViewModel: AppViewModel = getViewModel()
+    val authViewModel: AuthViewModel = getViewModel()
     val reportViewModel: ReportViewModel = getViewModel()
     val reportInteractionViewModel: ReportInteractionViewModel = getViewModel()
+
     val report by reportViewModel.report.collectAsState()
 
+    var isUserOwnReport by remember { mutableStateOf(false) }
     var upvoteCount by remember { mutableIntStateOf(0) }
     var downvoteCount by remember { mutableIntStateOf(0) }
     var currentVote by remember { mutableStateOf<String?>(null) }
@@ -66,6 +71,10 @@ fun ReportDetailScreen() {
         if (report != null) {
             upvoteCount = report!!.upvote
             downvoteCount = report!!.downvote
+
+            authViewModel.user.value?.let {
+                isUserOwnReport = report!!.user.email == it.email
+            }
 
             reportInteractionViewModel.findUserVote(
                 report!!.id,
@@ -97,6 +106,7 @@ fun ReportDetailScreen() {
                         text = "👍 $upvoteCount",
                         reportId = report.id,
                         currentVote = currentVote,
+                        enabled = !isUserOwnReport,
                     ) {
                         when (currentVote) {
                             null -> upvoteCount++
@@ -115,6 +125,7 @@ fun ReportDetailScreen() {
                         text = "👎 $downvoteCount",
                         reportId = report.id,
                         currentVote = currentVote,
+                        enabled = !isUserOwnReport,
                     ) {
                         when (currentVote) {
                             null -> downvoteCount++
@@ -280,6 +291,7 @@ private fun VoteButton(
     text: String,
     reportId: String,
     currentVote: String?,
+    enabled: Boolean,
     onSuccessVote: (newVote: String?) -> Unit
 ) {
     val appViewModel: AppViewModel = getViewModel()
@@ -297,6 +309,7 @@ private fun VoteButton(
             },
         ),
         border = BorderStroke(1.dp, Color.Black.copy(0.2f)),
+        enabled = enabled,
         onClick = {
             appViewModel.setLoading(true)
             reportInteractionViewModel.vote(

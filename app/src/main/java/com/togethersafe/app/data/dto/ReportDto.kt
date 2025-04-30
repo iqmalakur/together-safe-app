@@ -36,6 +36,7 @@ data class ReportResDto(
 )
 
 data class ReportUserDto (
+    val email: String,
     val name: String,
     val profilePhoto: String?,
     val reputation: Int,
