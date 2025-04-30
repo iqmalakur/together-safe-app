@@ -3,6 +3,7 @@ package com.togethersafe.app.viewmodels
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.togethersafe.app.data.dto.CommentResDto
 import com.togethersafe.app.repositories.ReportInteractionRepository
 import com.togethersafe.app.utils.ApiErrorCallback
 import com.togethersafe.app.utils.handleApiError
@@ -53,6 +54,25 @@ class ReportInteractionViewModel @Inject constructor(
                 withToken(context, onError) { token ->
                     val result = repository.vote(token, reportId, voteType)
                     onSuccess(result.type)
+                }
+            } catch (e: Exception) {
+                handleApiError(this::class, e, onError)
+            }
+            onComplete()
+        }
+    }
+
+    fun createComment(
+        reportId: String,
+        comment: String,
+        onError: ApiErrorCallback,
+        onSuccess: suspend (comment: CommentResDto) -> Unit,
+        onComplete: () -> Unit,
+    ) {
+        viewModelScope.launch {
+            try {
+                withToken(context, onError) { token ->
+                    onSuccess(repository.createComment(token, reportId, comment))
                 }
             } catch (e: Exception) {
                 handleApiError(this::class, e, onError)

@@ -2,6 +2,7 @@ package com.togethersafe.app.views.report
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,12 +18,19 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -35,12 +43,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.togethersafe.app.components.AppHeader
 import com.togethersafe.app.components.UserProfile
+import com.togethersafe.app.data.dto.CommentResDto
 import com.togethersafe.app.data.dto.ReportResDto
 import com.togethersafe.app.navigation.LocalNavController
 import com.togethersafe.app.utils.getViewModel
@@ -54,6 +65,7 @@ import java.util.Locale
 @Composable
 fun ReportDetailScreen() {
     val navController = LocalNavController.current
+    val focusManager = LocalFocusManager.current
 
     val appViewModel: AppViewModel = getViewModel()
     val authViewModel: AuthViewModel = getViewModel()
@@ -62,16 +74,20 @@ fun ReportDetailScreen() {
 
     val report by reportViewModel.report.collectAsState()
 
+    val listState = rememberLazyListState()
     var isLoggedIn by remember { mutableStateOf(false) }
     var isUserOwnReport by remember { mutableStateOf(false) }
     var upvoteCount by remember { mutableIntStateOf(0) }
     var downvoteCount by remember { mutableIntStateOf(0) }
     var currentVote by remember { mutableStateOf<String?>(null) }
+    var comments by remember { mutableStateOf<List<CommentResDto>>(emptyList()) }
+    var commentText by remember { mutableStateOf("") }
 
     LaunchedEffect(report) {
         if (report != null) {
             upvoteCount = report!!.upvote
             downvoteCount = report!!.downvote
+            comments = report!!.comments
 
             authViewModel.user.value?.let {
                 isLoggedIn = true
@@ -85,69 +101,131 @@ fun ReportDetailScreen() {
         }
     }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
+            .pointerInput(Unit) {
+                detectTapGestures { focusManager.clearFocus() }
+            }
     ) {
-        AppHeader("Detail Laporan Insiden") {
-            navController.popBackStack()
-            reportViewModel.resetReport()
-        }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            AppHeader("Detail Laporan Insiden") {
+                navController.popBackStack()
+                reportViewModel.resetReport()
+            }
 
-        report?.let { report ->
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                reportDetailContent(report) {
-                    VoteButton(
-                        type = "upvote",
-                        text = "👍 $upvoteCount",
-                        reportId = report.id,
-                        currentVote = currentVote,
-                        enabled = isLoggedIn && !isUserOwnReport,
-                    ) {
-                        when (currentVote) {
-                            null -> upvoteCount++
-                            "upvote" -> upvoteCount--
-                            else -> {
-                                upvoteCount++
-                                downvoteCount--
+            report?.let { report ->
+                LazyColumn(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    state = listState,
+                ) {
+                    reportDetailContent(report, comments) {
+                        VoteButton(
+                            type = "upvote",
+                            text = "👍 $upvoteCount",
+                            reportId = report.id,
+                            currentVote = currentVote,
+                            enabled = isLoggedIn && !isUserOwnReport,
+                        ) {
+                            when (currentVote) {
+                                null -> upvoteCount++
+                                "upvote" -> upvoteCount--
+                                else -> {
+                                    upvoteCount++
+                                    downvoteCount--
+                                }
                             }
+
+                            currentVote = it
                         }
 
-                        currentVote = it
-                    }
-
-                    VoteButton(
-                        type = "downvote",
-                        text = "👎 $downvoteCount",
-                        reportId = report.id,
-                        currentVote = currentVote,
-                        enabled = isLoggedIn && !isUserOwnReport,
-                    ) {
-                        when (currentVote) {
-                            null -> downvoteCount++
-                            "downvote" -> downvoteCount--
-                            else -> {
-                                downvoteCount++
-                                upvoteCount--
+                        VoteButton(
+                            type = "downvote",
+                            text = "👎 $downvoteCount",
+                            reportId = report.id,
+                            currentVote = currentVote,
+                            enabled = isLoggedIn && !isUserOwnReport,
+                        ) {
+                            when (currentVote) {
+                                null -> downvoteCount++
+                                "downvote" -> downvoteCount--
+                                else -> {
+                                    downvoteCount++
+                                    upvoteCount--
+                                }
                             }
-                        }
 
-                        currentVote = it
+                            currentVote = it
+                        }
                     }
                 }
-            }
-        } ?: run {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("Tidak ada data laporan.")
+
+                if (isLoggedIn) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color.White)
+                            .padding(horizontal = 16.dp)
+                    ) {
+                        OutlinedTextField(
+                            value = commentText,
+                            onValueChange = { commentText = it },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 16.dp),
+                            placeholder = { Text("Tulis komentar...") },
+                            shape = RoundedCornerShape(24.dp),
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.White,
+                                unfocusedContainerColor = Color.White,
+                                disabledContainerColor = Color.White,
+                            ),
+                            maxLines = 5,
+                            trailingIcon = {
+                                IconButton(
+                                    onClick = {
+                                        if (commentText.isNotBlank()) {
+                                            appViewModel.setLoading(true)
+                                            reportInteractionViewModel.createComment(
+                                                reportId = report.id,
+                                                comment = commentText,
+                                                onError = { _, messages ->
+                                                    appViewModel.setToastMessage(messages[0])
+                                                },
+                                                onSuccess = {
+                                                    commentText = ""
+                                                    comments += it
+                                                    listState.scrollToItem(listState.layoutInfo.totalItemsCount - 1)
+                                                }
+                                            ) { appViewModel.setLoading(false) }
+                                        }
+                                    },
+                                    enabled = commentText.isNotBlank()
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.Send,
+                                        contentDescription = "Kirim komentar",
+                                        tint = if (commentText.isNotBlank()) MaterialTheme.colorScheme.primary else Color.Gray
+                                    )
+                                }
+                            }
+                        )
+                    }
+                }
+            } ?: run {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("Tidak ada data laporan.")
+                }
             }
         }
     }
@@ -155,6 +233,7 @@ fun ReportDetailScreen() {
 
 private fun LazyListScope.reportDetailContent(
     report: ReportResDto,
+    comments: List<CommentResDto>,
     voteButtons: @Composable () -> Unit
 ) {
     item {
@@ -246,7 +325,7 @@ private fun LazyListScope.reportDetailContent(
         )
     }
 
-    items(report.comments) { comment ->
+    items(comments) { comment ->
         Column(
             modifier = Modifier
                 .fillMaxWidth()
