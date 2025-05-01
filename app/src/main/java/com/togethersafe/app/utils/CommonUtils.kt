@@ -87,3 +87,17 @@ suspend fun handleApiError(
         }
     }
 }
+
+suspend fun withToken(
+    context: Context,
+    onError: ApiErrorCallback,
+    action: suspend (token: String) -> Unit
+) {
+    val token = getToken(context)
+
+    if (token != null) {
+        action("Bearer $token")
+    } else {
+        onError(401, listOf("token tidak ditemukan"))
+    }
+}

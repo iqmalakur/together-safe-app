@@ -5,6 +5,7 @@ import com.togethersafe.app.BuildConfig
 import com.togethersafe.app.data.network.AuthService
 import com.togethersafe.app.data.network.GeolocationService
 import com.togethersafe.app.data.network.IncidentService
+import com.togethersafe.app.data.network.ReportInteractionService
 import com.togethersafe.app.data.network.ReportService
 import dagger.Module
 import dagger.Provides
@@ -55,6 +56,11 @@ object NetworkModule {
     @Singleton
     fun provideReportService(retrofit: Retrofit): ReportService =
         retrofit.create(ReportService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideReportInteractionService(retrofit: Retrofit): ReportInteractionService =
+        retrofit.create(ReportInteractionService::class.java)
 
     @Provides
     @Singleton

@@ -2,7 +2,6 @@ package com.togethersafe.app.data.dto
 
 import com.mapbox.geojson.Point
 import java.io.File
-import java.util.Date
 
 data class ReportReqDto (
     val categoryId: Int,
@@ -30,23 +29,9 @@ data class ReportResDto(
     val latitude: Double,
     val longitude: Double,
     val attachments: List<String>,
-    val comments: List<CommentDto>,
+    val comments: List<CommentResDto>,
     val upvote: Int,
     val downvote: Int,
-)
-
-data class ReportUserDto (
-    val name: String,
-    val profilePhoto: String?,
-    val reputation: Int,
-)
-
-data class CommentDto (
-    val id: Int,
-    val comment: String,
-    val createdAt: Date,
-    val isEdited: Boolean,
-    val user: ReportUserDto,
 )
 
 data class IncidentDto (

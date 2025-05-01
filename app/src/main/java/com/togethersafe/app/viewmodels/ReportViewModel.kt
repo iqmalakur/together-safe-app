@@ -10,6 +10,7 @@ import com.togethersafe.app.repositories.ReportRepository
 import com.togethersafe.app.utils.ApiErrorCallback
 import com.togethersafe.app.utils.getToken
 import com.togethersafe.app.utils.handleApiError
+import com.togethersafe.app.utils.withToken
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,7 +40,7 @@ class ReportViewModel @Inject constructor(
     fun fetchUserReports(onError: ApiErrorCallback, onComplete: () -> Unit, onSuccess: () -> Unit) {
         viewModelScope.launch {
             try {
-                withToken(onError) { token ->
+                withToken(context, onError) { token ->
                     _reportList.value = repository.getUserReports(token)
                 }
                 onSuccess()
@@ -58,7 +59,7 @@ class ReportViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             try {
-                withToken(onError) { token ->
+                withToken(context, onError) { token ->
                     repository.createReport(token, body)
                     onSuccess()
                 }
@@ -83,19 +84,6 @@ class ReportViewModel @Inject constructor(
                 handleApiError(this::class, e, onError)
             }
             onComplete()
-        }
-    }
-
-    private suspend fun withToken(
-        onError: ApiErrorCallback,
-        action: suspend (token: String) -> Unit
-    ) {
-        val token = getToken(context)
-
-        if (token != null) {
-            action("Bearer $token")
-        } else {
-            onError(401, listOf("token tidak ditemukan"))
         }
     }
 }

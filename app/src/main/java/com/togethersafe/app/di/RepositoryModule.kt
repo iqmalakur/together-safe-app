@@ -3,10 +3,12 @@ package com.togethersafe.app.di
 import com.togethersafe.app.data.network.AuthService
 import com.togethersafe.app.data.network.GeolocationService
 import com.togethersafe.app.data.network.IncidentService
+import com.togethersafe.app.data.network.ReportInteractionService
 import com.togethersafe.app.data.network.ReportService
 import com.togethersafe.app.repositories.AuthRepository
 import com.togethersafe.app.repositories.GeolocationRepository
 import com.togethersafe.app.repositories.IncidentRepository
+import com.togethersafe.app.repositories.ReportInteractionRepository
 import com.togethersafe.app.repositories.ReportRepository
 import dagger.Module
 import dagger.Provides
@@ -40,6 +42,12 @@ object RepositoryModule {
     @Singleton
     fun provideReportRepository(service: ReportService): ReportRepository {
         return ReportRepository(service)
+    }
+
+    @Provides
+    @Singleton
+    fun provideReportInteractionRepository(service: ReportInteractionService): ReportInteractionRepository {
+        return ReportInteractionRepository(service)
     }
 
 }
