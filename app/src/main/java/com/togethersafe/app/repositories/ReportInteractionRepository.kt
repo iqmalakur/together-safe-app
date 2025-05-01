@@ -26,7 +26,7 @@ class ReportInteractionRepository @Inject constructor(private val service: Repor
         return service.updateComment(token, id, CommentReqDto(comment))
     }
 
-    suspend fun deleteComment(token: String, id: String): CommentResDto {
+    suspend fun deleteComment(token: String, id: Int): CommentResDto {
         return service.deleteComment(token, id)
     }
 }

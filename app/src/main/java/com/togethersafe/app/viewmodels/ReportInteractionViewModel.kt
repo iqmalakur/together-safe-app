@@ -81,4 +81,23 @@ class ReportInteractionViewModel @Inject constructor(
         }
     }
 
+    fun deleteComment(
+        id: Int,
+        onError: ApiErrorCallback,
+        onSuccess: suspend (id: Int) -> Unit,
+        onComplete: () -> Unit,
+    ) {
+        viewModelScope.launch {
+            try {
+                withToken(context, onError) { token ->
+                    val result = repository.deleteComment(token, id)
+                    onSuccess(result.id)
+                }
+            } catch (e: Exception) {
+                handleApiError(this::class, e, onError)
+            }
+            onComplete()
+        }
+    }
+
 }

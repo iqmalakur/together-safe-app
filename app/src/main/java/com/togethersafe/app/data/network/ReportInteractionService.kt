@@ -43,6 +43,6 @@ interface ReportInteractionService {
     @DELETE("report/comment/{id}")
     suspend fun deleteComment(
         @Header("Authorization") token: String,
-        @Path("id") id: String,
+        @Path("id") id: Int,
     ): CommentResDto
 }

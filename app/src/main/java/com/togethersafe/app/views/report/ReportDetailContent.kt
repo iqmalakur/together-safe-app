@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -36,15 +35,21 @@ import com.togethersafe.app.components.UserProfile
 import com.togethersafe.app.data.dto.CommentResDto
 import com.togethersafe.app.data.dto.ReportResDto
 import com.togethersafe.app.utils.getViewModel
+import com.togethersafe.app.viewmodels.AppViewModel
 import com.togethersafe.app.viewmodels.AuthViewModel
+import com.togethersafe.app.viewmodels.ReportInteractionViewModel
 
 @Composable
 fun ColumnScope.ReportDetailContent(report: ReportResDto) {
     val listState = rememberLazyListState()
+
+    val appViewModel: AppViewModel = getViewModel()
     val authViewModel: AuthViewModel = getViewModel()
+    val reportInteractionViewModel: ReportInteractionViewModel = getViewModel()
 
     var isLoggedIn by remember { mutableStateOf(false) }
     var isUserOwnReport by remember { mutableStateOf(false) }
+    var userEmail by remember { mutableStateOf("") }
     var comments by remember { mutableStateOf<List<CommentResDto>>(emptyList()) }
 
     LaunchedEffect(report) {
@@ -53,6 +58,7 @@ fun ColumnScope.ReportDetailContent(report: ReportResDto) {
         authViewModel.user.value?.let { user ->
             isLoggedIn = true
             isUserOwnReport = report.user.email == user.email
+            userEmail = user.email
         }
     }
 
@@ -63,7 +69,113 @@ fun ColumnScope.ReportDetailContent(report: ReportResDto) {
         verticalArrangement = Arrangement.spacedBy(16.dp),
         state = listState,
     ) {
-        reportDetailItems(report, comments) { VoteButtons(report, isLoggedIn, isUserOwnReport) }
+        item {
+            Text(
+                text = report.incident.category,
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "${report.date} • ${report.time}",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.Gray
+            )
+        }
+
+        item {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                UserProfile(
+                    imageModel = report.user.profilePhoto,
+                    size = 48.dp
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Column {
+                    Text(text = report.user.name, fontWeight = FontWeight.Bold)
+                    Text(
+                        text = "Reputasi: ${report.user.reputation}",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+            }
+        }
+
+        item {
+            Text(
+                text = "Deskripsi:",
+                fontWeight = FontWeight.SemiBold
+            )
+            Text(text = report.description)
+        }
+
+        item {
+            Text(
+                text = "Lokasi:",
+                fontWeight = FontWeight.SemiBold
+            )
+            Text(text = report.location)
+        }
+
+        if (report.attachments.isNotEmpty()) {
+            item {
+                Text(
+                    text = "Lampiran:",
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(Modifier.height(4.dp))
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(report.attachments) { attachmentUrl ->
+                        AsyncImage(
+                            model = attachmentUrl,
+                            contentDescription = "Lampiran",
+                            modifier = Modifier
+                                .size(120.dp)
+                                .clip(RoundedCornerShape(8.dp)),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                }
+            }
+        }
+
+        item {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                VoteButtons(report, isLoggedIn, isUserOwnReport)
+                Text("Status: ${report.status}")
+            }
+        }
+
+        item {
+            Text(
+                text = "Komentar:",
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+
+        items(comments) { comment ->
+            CommentItem(
+                comment = comment,
+                loggedInUserEmail = userEmail,
+                appViewModel = appViewModel,
+                onDelete = {
+                    appViewModel.setLoading(true)
+                    reportInteractionViewModel.deleteComment(
+                        id = comment.id,
+                        onError = { _, messages -> appViewModel.setToastMessage(messages[0]) },
+                        onSuccess = { id ->
+                            comments = comments.filter { it.id != id }
+                            appViewModel.setToastMessage("Komentar berhasil dihapus")
+                        }
+                    ) { appViewModel.setLoading(false) }
+                }
+            )
+        }
     }
 
     if (isLoggedIn) {
@@ -73,101 +185,3 @@ fun ColumnScope.ReportDetailContent(report: ReportResDto) {
         }
     }
 }
-
-private fun LazyListScope.reportDetailItems(
-    report: ReportResDto,
-    comments: List<CommentResDto>,
-    voteButtons: @Composable () -> Unit
-) {
-    item {
-        Text(
-            text = report.incident.category,
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = "${report.date} • ${report.time}",
-            style = MaterialTheme.typography.bodySmall,
-            color = Color.Gray
-        )
-    }
-
-    item {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            UserProfile(
-                imageModel = report.user.profilePhoto,
-                size = 48.dp
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Column {
-                Text(text = report.user.name, fontWeight = FontWeight.Bold)
-                Text(
-                    text = "Reputasi: ${report.user.reputation}",
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
-        }
-    }
-
-    item {
-        Text(
-            text = "Deskripsi:",
-            fontWeight = FontWeight.SemiBold
-        )
-        Text(text = report.description)
-    }
-
-    item {
-        Text(
-            text = "Lokasi:",
-            fontWeight = FontWeight.SemiBold
-        )
-        Text(text = report.location)
-    }
-
-    if (report.attachments.isNotEmpty()) {
-        item {
-            Text(
-                text = "Lampiran:",
-                fontWeight = FontWeight.SemiBold
-            )
-            Spacer(Modifier.height(4.dp))
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(report.attachments) { attachmentUrl ->
-                    AsyncImage(
-                        model = attachmentUrl,
-                        contentDescription = "Lampiran",
-                        modifier = Modifier
-                            .size(120.dp)
-                            .clip(RoundedCornerShape(8.dp)),
-                        contentScale = ContentScale.Crop
-                    )
-                }
-            }
-        }
-    }
-
-    item {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            voteButtons()
-            Text("Status: ${report.status}")
-        }
-    }
-
-    item {
-        Text(
-            text = "Komentar:",
-            fontWeight = FontWeight.SemiBold
-        )
-    }
-
-    items(comments) { CommentItem(it) }
-}
-

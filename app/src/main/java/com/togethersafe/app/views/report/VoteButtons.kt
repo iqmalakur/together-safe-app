@@ -31,10 +31,12 @@ fun VoteButtons(report: ReportResDto, isLoggedIn: Boolean, isUserOwnReport: Bool
         upvoteCount = report.upvote
         downvoteCount = report.downvote
 
-        reportInteractionViewModel.findUserVote(
-            report.id,
-            onError = { _, messages -> appViewModel.setToastMessage(messages[0]) },
-        ) { currentVote = it }
+        if (isLoggedIn) {
+            reportInteractionViewModel.findUserVote(
+                report.id,
+                onError = { _, messages -> appViewModel.setToastMessage(messages[0]) },
+            ) { currentVote = it }
+        }
     }
 
     VoteButton(

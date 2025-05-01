@@ -44,9 +44,7 @@ fun ReportDetailScreen() {
                 reportViewModel.resetReport()
             }
 
-            report?.let { report ->
-                ReportDetailContent(report)
-            } ?: run {
+            report?.let {  ReportDetailContent(it) } ?: run {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
