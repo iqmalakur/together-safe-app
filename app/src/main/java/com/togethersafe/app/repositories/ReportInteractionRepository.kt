@@ -22,7 +22,7 @@ class ReportInteractionRepository @Inject constructor(private val service: Repor
         return service.createComment(token, reportId, CommentReqDto(comment))
     }
 
-    suspend fun updateComment(token: String, id: String, comment: String): CommentResDto {
+    suspend fun updateComment(token: String, id: Int, comment: String): CommentResDto {
         return service.updateComment(token, id, CommentReqDto(comment))
     }
 

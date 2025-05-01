@@ -12,7 +12,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -105,8 +108,12 @@ fun CommentItem(
     comment: CommentResDto,
     loggedInUserEmail: String,
     appViewModel: AppViewModel,
-    onDelete: (id: Int) -> Unit,
+    onDelete: () -> Unit,
+    onEdit: (newComment: String) -> Unit
 ) {
+    var isEditing by remember { mutableStateOf(false) }
+    var editedText by remember { mutableStateOf(comment.comment) }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -134,31 +141,69 @@ fun CommentItem(
             }
 
             if (comment.user.email == loggedInUserEmail) {
-                IconButton(
-                    onClick = {
-                        appViewModel.setDialogState(
-                            DialogState(
-                                title = "Hapus Komentar",
-                                message = "Apakah Anda yakin ingin menghapus komentar ini?",
-                                confirmText = "Hapus",
-                                dismissText = "Batal",
-                                onConfirm = { onDelete(comment.id) },
-                                onDismiss = {}
-                            )
+                Row {
+                    IconButton(
+                        onClick = { isEditing = !isEditing },
+                        modifier = Modifier.size(24.dp)
+                    ) {
+                        Icon(
+                            imageVector = if (isEditing) Icons.Default.Close else Icons.Default.Edit,
+                            contentDescription = "Edit komentar",
+                            tint = MaterialTheme.colorScheme.primary
                         )
-                    },
-                    modifier = Modifier.size(24.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Hapus komentar",
-                        tint = MaterialTheme.colorScheme.error
-                    )
+                    }
+
+                    IconButton(
+                        onClick = {
+                            appViewModel.setDialogState(
+                                DialogState(
+                                    title = "Hapus Komentar",
+                                    message = "Apakah Anda yakin ingin menghapus komentar ini?",
+                                    confirmText = "Hapus",
+                                    dismissText = "Batal",
+                                    onConfirm = onDelete,
+                                    onDismiss = {}
+                                )
+                            )
+                        },
+                        modifier = Modifier.size(24.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Hapus komentar",
+                            tint = MaterialTheme.colorScheme.error
+                        )
+                    }
                 }
             }
         }
         Spacer(modifier = Modifier.height(4.dp))
-        Text(text = comment.comment)
+
+        if (isEditing) {
+            OutlinedTextField(
+                value = editedText,
+                onValueChange = { editedText = it },
+                modifier = Modifier.fillMaxWidth(),
+                maxLines = 3,
+                trailingIcon = {
+                    IconButton(
+                        onClick = {
+                            onEdit(editedText)
+                            isEditing = false
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = "Simpan perubahan",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+            )
+        } else {
+            Text(text = comment.comment)
+        }
+
         Text(
             text = "${
                 SimpleDateFormat(

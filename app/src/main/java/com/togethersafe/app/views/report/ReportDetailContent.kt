@@ -173,6 +173,23 @@ fun ColumnScope.ReportDetailContent(report: ReportResDto) {
                             appViewModel.setToastMessage("Komentar berhasil dihapus")
                         }
                     ) { appViewModel.setLoading(false) }
+                },
+                onEdit = { newComment ->
+                    appViewModel.setLoading(true)
+                    reportInteractionViewModel.editComment(
+                        id = comment.id,
+                        comment = newComment,
+                        onError = { _, messages -> appViewModel.setToastMessage(messages[0]) },
+                        onSuccess = { comment ->
+                            comments = comments.map {
+                                when (it.id) {
+                                    comment.id -> comment
+                                    else -> it
+                                }
+                            }
+                            appViewModel.setToastMessage("Komentar berhasil diedit")
+                        }
+                    ) { appViewModel.setLoading(false) }
                 }
             )
         }

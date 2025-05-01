@@ -36,7 +36,7 @@ interface ReportInteractionService {
     @PATCH("report/comment/{id}")
     suspend fun updateComment(
         @Header("Authorization") token: String,
-        @Path("id") id: String,
+        @Path("id") id: Int,
         @Body body: CommentReqDto
     ): CommentResDto
 

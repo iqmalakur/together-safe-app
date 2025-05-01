@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.togethersafe.app.data.dto.CommentResDto
 import com.togethersafe.app.repositories.ReportInteractionRepository
 import com.togethersafe.app.utils.ApiErrorCallback
+import com.togethersafe.app.utils.ApiSuccessCallback
 import com.togethersafe.app.utils.handleApiError
 import com.togethersafe.app.utils.withToken
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -81,10 +82,29 @@ class ReportInteractionViewModel @Inject constructor(
         }
     }
 
+    fun editComment(
+        id: Int,
+        comment: String,
+        onError: ApiErrorCallback,
+        onSuccess: ApiSuccessCallback<CommentResDto>,
+        onComplete: () -> Unit,
+    ) {
+        viewModelScope.launch {
+            try {
+                withToken(context, onError) { token ->
+                    onSuccess(repository.updateComment(token, id, comment))
+                }
+            } catch (e: Exception) {
+                handleApiError(this::class, e, onError)
+            }
+            onComplete()
+        }
+    }
+
     fun deleteComment(
         id: Int,
         onError: ApiErrorCallback,
-        onSuccess: suspend (id: Int) -> Unit,
+        onSuccess: (id: Int) -> Unit,
         onComplete: () -> Unit,
     ) {
         viewModelScope.launch {
