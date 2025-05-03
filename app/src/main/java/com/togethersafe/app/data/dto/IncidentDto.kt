@@ -2,6 +2,7 @@ package com.togethersafe.app.data.dto
 
 data class IncidentResDto(
     val id: String,
+    val radius: Double,
     val latitude: Double,
     val longitude: Double,
     val riskLevel: String
