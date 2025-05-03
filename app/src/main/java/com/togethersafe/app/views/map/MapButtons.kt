@@ -10,6 +10,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.rounded.LocationSearching
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material.icons.rounded.MyLocation
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.ZoomIn
 import androidx.compose.material.icons.rounded.ZoomOut
 import androidx.compose.runtime.Composable
@@ -26,14 +27,17 @@ import com.togethersafe.app.utils.getViewModel
 import com.togethersafe.app.utils.isLocationEnabled
 import com.togethersafe.app.utils.promptEnableGPS
 import com.togethersafe.app.viewmodels.AppViewModel
+import com.togethersafe.app.viewmodels.IncidentViewModel
 import com.togethersafe.app.viewmodels.MapViewModel
 
 @Composable
 fun ActionButton(compass: @Composable () -> Unit) {
     val appViewModel: AppViewModel = getViewModel()
+    val incidentViewModel: IncidentViewModel = getViewModel()
     val mapViewModel: MapViewModel = getViewModel()
 
     val isLoadingLocation by mapViewModel.isLoadingLocation.collectAsState()
+    val isLoadingIncident by incidentViewModel.isLoadingIncident.collectAsState()
     val isTracking by mapViewModel.isTracking.collectAsState()
     val context = LocalContext.current
 
@@ -44,6 +48,18 @@ fun ActionButton(compass: @Composable () -> Unit) {
         horizontalAlignment = Alignment.End,
         verticalArrangement = Arrangement.Bottom,
     ) {
+        RoundedIconButton(
+            imageVector = Icons.Rounded.Refresh,
+            contentDescription = "Refresh Incident",
+            loadingState = isLoadingIncident,
+            onClick = {
+                val cameraPosition = mapViewModel.cameraPosition.value
+                incidentViewModel.loadIncidents(cameraPosition) { _, errors ->
+                    appViewModel.setToastMessage(errors[0])
+                }
+            }
+        )
+
         RoundedIconButton(
             imageVector = Icons.Rounded.ZoomIn,
             contentDescription = "Perbesar Peta",
