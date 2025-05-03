@@ -101,7 +101,7 @@ private fun DrawerContent() {
         Column(modifier = Modifier.fillMaxSize()) {
             DrawerHeader()
 
-            DrawerItem("Akun Saya") { /* TODO: Handle action */ }
+            DrawerItem("Insiden Terdekat") { navController.navigate("incident-list") }
 
             LoginRequired { showDialog ->
                 DrawerItem("Tambah Laporan") {
@@ -112,9 +112,7 @@ private fun DrawerContent() {
                         showDialog()
                     }
                 }
-            }
 
-            LoginRequired { showDialog ->
                 DrawerItem("Laporan Saya") {
                     if (isLoggedIn) {
                         appViewModel.setLoading(true)
