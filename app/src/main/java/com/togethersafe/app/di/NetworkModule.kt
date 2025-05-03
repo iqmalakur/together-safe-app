@@ -1,6 +1,7 @@
 package com.togethersafe.app.di
 
 import android.content.Context
+import android.util.Log
 import com.togethersafe.app.BuildConfig
 import com.togethersafe.app.data.network.AuthService
 import com.togethersafe.app.data.network.GeolocationService
@@ -34,6 +35,7 @@ object NetworkModule {
             .build()
 
         val apiUrl = BuildConfig.API_URL
+        Log.d("API_URL", apiUrl)
 
         return Retrofit.Builder()
             .baseUrl(apiUrl)
