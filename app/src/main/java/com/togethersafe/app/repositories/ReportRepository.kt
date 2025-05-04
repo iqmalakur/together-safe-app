@@ -1,6 +1,6 @@
 package com.togethersafe.app.repositories
 
-import com.togethersafe.app.data.dto.ReportPreviewDto
+import com.togethersafe.app.data.dto.ReportItemDto
 import com.togethersafe.app.data.dto.ReportReqDto
 import com.togethersafe.app.data.dto.ReportResDto
 import com.togethersafe.app.data.dto.SuccessCreateDto
@@ -14,7 +14,7 @@ import javax.inject.Singleton
 
 @Singleton
 class ReportRepository @Inject constructor(private val service: ReportService) {
-    suspend fun getUserReports(token: String): List<ReportPreviewDto> {
+    suspend fun getUserReports(token: String): List<ReportItemDto> {
         return service.fetchUserReport(token)
     }
 

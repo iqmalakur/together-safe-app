@@ -17,7 +17,7 @@ data class IncidentDetailResDto(
     val time: String,
     val status: String,
     val mediaUrls: List<String>,
-    val reports: List<ReportItemDto>,
+    val reports: List<ReportPreviewDto>,
 )
 
 data class CategoryResDto(

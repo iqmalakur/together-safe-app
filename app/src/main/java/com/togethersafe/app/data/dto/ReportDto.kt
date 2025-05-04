@@ -3,7 +3,7 @@ package com.togethersafe.app.data.dto
 import com.mapbox.geojson.Point
 import java.io.File
 
-data class ReportReqDto (
+data class ReportReqDto(
     val categoryId: Int,
     val description: String,
     val location: Point,
@@ -12,9 +12,14 @@ data class ReportReqDto (
     val media: List<File>,
 )
 
-data class ReportPreviewDto(
+data class ReportItemDto(
     val id: String,
     val description: String,
+    val category: String,
+    val location: String,
+    val date: String,
+    val time: String,
+    val status: String,
 )
 
 data class ReportResDto(
@@ -34,7 +39,7 @@ data class ReportResDto(
     val downvote: Int,
 )
 
-data class IncidentDto (
+data class IncidentDto(
     val id: String,
     val category: String,
 )

@@ -6,7 +6,7 @@ import com.mapbox.geojson.Point
 import com.togethersafe.app.data.dto.CategoryResDto
 import com.togethersafe.app.data.dto.IncidentDetailResDto
 import com.togethersafe.app.data.dto.IncidentResDto
-import com.togethersafe.app.data.dto.ReportPreviewDto
+import com.togethersafe.app.data.dto.ReportItemDto
 import com.togethersafe.app.repositories.IncidentRepository
 import com.togethersafe.app.utils.ApiErrorCallback
 import com.togethersafe.app.utils.ApiSuccessCallback
@@ -68,7 +68,7 @@ class IncidentViewModel @Inject constructor(private val repository: IncidentRepo
         incidentId: String,
         onError: ApiErrorCallback,
         onComplete: () -> Unit,
-        onSuccess: ApiSuccessCallback<List<ReportPreviewDto>>,
+        onSuccess: ApiSuccessCallback<List<ReportItemDto>>,
     ) {
         viewModelScope.launch {
             try {

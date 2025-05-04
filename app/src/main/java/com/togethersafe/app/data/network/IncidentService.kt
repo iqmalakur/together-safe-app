@@ -3,7 +3,7 @@ package com.togethersafe.app.data.network
 import com.togethersafe.app.data.dto.CategoryResDto
 import com.togethersafe.app.data.dto.IncidentDetailResDto
 import com.togethersafe.app.data.dto.IncidentResDto
-import com.togethersafe.app.data.dto.ReportPreviewDto
+import com.togethersafe.app.data.dto.ReportItemDto
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -19,7 +19,7 @@ interface IncidentService {
     suspend fun fetchDetailIncident(@Path("id") id: String): IncidentDetailResDto
 
     @GET("incident/{id}/reports")
-    suspend fun fetchIncidentReports(@Path("id") id: String): List<ReportPreviewDto>
+    suspend fun fetchIncidentReports(@Path("id") id: String): List<ReportItemDto>
 
     @GET("incident/categories")
     suspend fun fetchIncidentCategories(): List<CategoryResDto>

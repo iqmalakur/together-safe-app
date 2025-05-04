@@ -6,8 +6,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -56,7 +59,7 @@ fun ReportListScreen() {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(reports) { report ->
                     Card(
@@ -70,16 +73,60 @@ fun ReportListScreen() {
                                     onComplete = { appViewModel.setLoading(false) }
                                 ) { navController.navigate("report-detail") }
                             },
-                        shape = RoundedCornerShape(12.dp),
-                        elevation = CardDefaults.cardElevation(4.dp)
+                        shape = RoundedCornerShape(16.dp),
+                        elevation = CardDefaults.cardElevation(6.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.White)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
+                                text = report.category,
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    color = Color.Blue
+                                )
+                            )
+
+                            Spacer(modifier = Modifier.height(4.dp))
+
+                            Text(
                                 text = report.description,
-                                style = MaterialTheme.typography.bodyMedium,
+                                style = MaterialTheme.typography.titleMedium,
                                 maxLines = 2,
                                 overflow = TextOverflow.Ellipsis
                             )
+
+                            Spacer(modifier = Modifier.height(6.dp))
+
+                            Text(
+                                text = report.location,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.Gray,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "${report.date} • ${report.time}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color.Gray
+                                )
+
+                                Text(
+                                    text = report.status.uppercase(),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = when (report.status) {
+                                        "verified" -> Color.Green
+                                        "invalid" -> Color.Red
+                                        else -> Color.Blue
+                                    }
+                                )
+                            }
                         }
                     }
                 }
@@ -87,3 +134,4 @@ fun ReportListScreen() {
         }
     }
 }
+
