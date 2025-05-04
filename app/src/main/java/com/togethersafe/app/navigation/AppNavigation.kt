@@ -7,6 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.togethersafe.app.views.incident.IncidentListScreen
 import com.togethersafe.app.views.login.LoginScreen
 import com.togethersafe.app.views.map.MapScreen
 import com.togethersafe.app.views.register.RegisterScreen
@@ -29,6 +30,7 @@ fun AppNavigation() {
             composable("register") { RegisterScreen() }
             composable("report") { ReportScreen() }
             composable("report-list") { ReportListScreen() }
+            composable("incident-list") { IncidentListScreen() }
             composable("report-detail") { ReportDetailScreen() }
         }
     }
