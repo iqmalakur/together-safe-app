@@ -26,7 +26,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.mapbox.geojson.Point
 import com.togethersafe.app.utils.getViewModel
@@ -121,6 +120,7 @@ private fun HeaderSection(
     }
 }
 
+
 @Composable
 private fun ActionButtons() {
     val appViewModel: AppViewModel = getViewModel()
@@ -130,37 +130,24 @@ private fun ActionButtons() {
     val userLocation by mapViewModel.userPosition.collectAsState()
     val searchedLocation by mapViewModel.searchedLocation.collectAsState()
 
-    Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.fillMaxWidth()
+        Button(
+            onClick = {
+                val destination =
+                    Point.fromLngLat(searchedLocation!!.longitude, searchedLocation!!.latitude)
+
+                appViewModel.setLoading(true)
+                geolocationViewModel.fetchSafeRoutes(userLocation!!, destination, {
+                    appViewModel.setToastMessage(it)
+                }) { appViewModel.setLoading(false) }
+            },
+            enabled = userLocation != null && searchedLocation != null,
+            modifier = Modifier.weight(1f),
         ) {
-            Button(
-                onClick = {
-                    val destination =
-                        Point.fromLngLat(searchedLocation!!.longitude, searchedLocation!!.latitude)
-
-                    appViewModel.setLoading(true)
-                    geolocationViewModel.fetchSafeRoutes(userLocation!!, destination, {
-                        appViewModel.setToastMessage(it)
-                    }) { appViewModel.setLoading(false) }
-                },
-                enabled = userLocation != null && searchedLocation != null,
-                modifier = Modifier.weight(1f),
-            ) {
-                Text("Cari Rute Aman")
-            }
-        }
-
-        if (userLocation == null || searchedLocation == null) {
-            Text(
-                text = "Lokasi pengguna dan destinasi harus tersedia untuk mencari rute.",
-                color = Color.Gray,
-                style = MaterialTheme.typography.bodySmall
-            )
+            Text("Cari Rute Aman")
         }
     }
 }
