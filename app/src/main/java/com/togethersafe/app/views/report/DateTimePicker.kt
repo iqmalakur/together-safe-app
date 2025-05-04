@@ -1,7 +1,7 @@
 package com.togethersafe.app.views.report
 
-import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -16,40 +16,84 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 
 @Composable
-fun DatePickerField(value: String, onValueChange: (String) -> Unit) {
-    val context = LocalContext.current
+fun DatePickerField(
+    value: String,
+    onValueChange: (String) -> Unit
+) {
     val calendar = Calendar.getInstance()
-    val datePickerDialog = DatePickerDialog(
-        context,
-        { _, year, month, dayOfMonth ->
-            onValueChange(
-                "${zeroPad(year, 4)}-${zeroPad(month + 1)}-${zeroPad(dayOfMonth)}"
-            )
-        },
-        calendar.get(Calendar.YEAR),
-        calendar.get(Calendar.MONTH),
-        calendar.get(Calendar.DAY_OF_MONTH)
-    )
+    val today = calendar.time
+    val yesterday = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -1) }.time
 
-    DatePickerBox(
-        value = value,
-        imageVector = Icons.Default.DateRange,
-        placeholder = "Pilih Tanggal",
-        onClick = { datePickerDialog.show() }
-    )
+    val dateFormatValue = SimpleDateFormat("yyyy-MM-dd", Locale("id", "ID"))
+    val dateFormatLabel = SimpleDateFormat("dd MMMM yyyy", Locale("id", "ID"))
+
+    val todayPair = dateFormatValue.format(today) to "${dateFormatLabel.format(today)} (Hari ini)"
+    val yesterdayPair =
+        dateFormatValue.format(yesterday) to "${dateFormatLabel.format(yesterday)} (Kemarin)"
+    val options = listOf(yesterdayPair, todayPair)
+
+    var expanded by remember { mutableStateOf(false) }
+
+    val selectedLabel = options.find { it.first == value }?.second ?: "Pilih Tanggal"
+
+    LaunchedEffect(Unit) {
+        value.ifEmpty { onValueChange(todayPair.first) }
+    }
+
+    PickerFieldContainer(
+        label = selectedLabel,
+        icon = Icons.Default.DateRange,
+        onClick = { expanded = true },
+    ) {
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            options.forEach { (dateValue, label) ->
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = label,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = Color.Black
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.White)
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    onClick = {
+                        onValueChange(dateValue)
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
 }
 
 @Composable
@@ -66,20 +110,27 @@ fun TimePickerField(value: String, onValueChange: (String) -> Unit) {
         true
     )
 
-    DatePickerBox(
-        value = value,
-        imageVector = Icons.Default.AccessTime,
-        placeholder = "Pilih Waktu",
+    LaunchedEffect(Unit) {
+        value.ifEmpty {
+            val hour = calendar.get(Calendar.HOUR_OF_DAY)
+            val minute = calendar.get(Calendar.MINUTE)
+            onValueChange("${zeroPad(hour)}:${zeroPad(minute)}")
+        }
+    }
+
+    PickerFieldContainer(
+        label = value.ifEmpty { "Pilih Waktu" },
+        icon = Icons.Default.AccessTime,
         onClick = { timePickerDialog.show() }
     )
 }
 
 @Composable
-private fun DatePickerBox(
-    value: String,
-    imageVector: ImageVector,
-    placeholder: String,
-    onClick: () -> Unit
+private fun PickerFieldContainer(
+    label: String,
+    icon: ImageVector,
+    onClick: () -> Unit,
+    block: (@Composable () -> Unit)? = null,
 ) {
     Box(
         modifier = Modifier
@@ -98,18 +149,19 @@ private fun DatePickerBox(
             modifier = Modifier.fillMaxSize()
         ) {
             Text(
-                text = value.ifEmpty { placeholder },
-                color = if (value.isEmpty()) Color.Gray else Color.Black
+                text = label,
+                color = if (label.contains("Pilih")) Color.Gray else Color.Black
             )
             Spacer(modifier = Modifier.weight(1f))
             Icon(
-                imageVector = imageVector,
-                contentDescription = placeholder,
+                imageVector = icon,
+                contentDescription = null,
                 tint = Color.Black
             )
         }
+
+        block?.invoke()
     }
 }
 
-private fun zeroPad(number: Int, length: Int = 2) =
-    number.toString().padStart(length, '0')
+private fun zeroPad(number: Int, length: Int = 2) = number.toString().padStart(length, '0')
