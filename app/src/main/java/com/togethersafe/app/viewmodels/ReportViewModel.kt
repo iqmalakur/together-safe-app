@@ -3,12 +3,11 @@ package com.togethersafe.app.viewmodels
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.togethersafe.app.data.dto.ReportPreviewDto
+import com.togethersafe.app.data.dto.ReportItemDto
 import com.togethersafe.app.data.dto.ReportReqDto
 import com.togethersafe.app.data.dto.ReportResDto
 import com.togethersafe.app.repositories.ReportRepository
 import com.togethersafe.app.utils.ApiErrorCallback
-import com.togethersafe.app.utils.getToken
 import com.togethersafe.app.utils.handleApiError
 import com.togethersafe.app.utils.withToken
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,13 +22,13 @@ class ReportViewModel @Inject constructor(
     private val repository: ReportRepository,
     @ApplicationContext private val context: Context,
 ) : ViewModel() {
-    private val _reportList = MutableStateFlow<List<ReportPreviewDto>>(emptyList())
+    private val _reportList = MutableStateFlow<List<ReportItemDto>>(emptyList())
     private val _report = MutableStateFlow<ReportResDto?>(null)
 
-    val reportList: StateFlow<List<ReportPreviewDto>> get() = _reportList
+    val reportList: StateFlow<List<ReportItemDto>> get() = _reportList
     val report: StateFlow<ReportResDto?> get() = _report
 
-    fun setReportList(reportList: List<ReportPreviewDto>) {
+    fun setReportList(reportList: List<ReportItemDto>) {
         _reportList.value = reportList
     }
 

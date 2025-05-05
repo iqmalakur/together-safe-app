@@ -107,6 +107,7 @@ private fun DrawerContent() {
                 DrawerItem("Tambah Laporan") {
                     if (isLoggedIn) {
                         navController.navigate("report")
+                        appViewModel.setMenuOpen(false)
                     } else {
                         showDialog()
                     }
@@ -118,7 +119,10 @@ private fun DrawerContent() {
                         reportViewModel.fetchUserReports(
                             onError = { _, messages -> appViewModel.setToastMessage(messages[0]) },
                             onComplete = { appViewModel.setLoading(false) }
-                        ) { navController.navigate("report-list") }
+                        ) {
+                            navController.navigate("report-list")
+                            appViewModel.setMenuOpen(false)
+                        }
                     } else {
                         showDialog()
                     }

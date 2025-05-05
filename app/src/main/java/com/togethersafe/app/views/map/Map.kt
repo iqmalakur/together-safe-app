@@ -12,7 +12,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import com.mapbox.android.gestures.MoveGestureDetector
-import com.mapbox.android.gestures.StandardScaleGestureDetector
 import com.mapbox.maps.CameraBoundsOptions
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapView
@@ -21,15 +20,14 @@ import com.mapbox.maps.extension.compose.MapEffect
 import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.style.MapStyle
 import com.mapbox.maps.plugin.gestures.OnMoveListener
-import com.mapbox.maps.plugin.gestures.OnScaleListener
 import com.mapbox.maps.plugin.gestures.addOnMoveListener
-import com.mapbox.maps.plugin.gestures.addOnScaleListener
 import com.togethersafe.app.constants.MapConstants.ZOOM_MAX
 import com.togethersafe.app.constants.MapConstants.ZOOM_MIN
 import com.togethersafe.app.data.dto.GeocodingResDto
 import com.togethersafe.app.utils.GetUserLocation
 import com.togethersafe.app.utils.createMapViewportState
 import com.togethersafe.app.utils.getViewModel
+import com.togethersafe.app.utils.handleOnScale
 import com.togethersafe.app.viewmodels.AppViewModel
 import com.togethersafe.app.viewmodels.GeolocationViewModel
 import com.togethersafe.app.viewmodels.MapViewModel
@@ -68,12 +66,16 @@ fun Map() {
                 longitude = it.longitude(),
                 onError = { error -> appViewModel.setToastMessage(error) },
                 onComplete = { appViewModel.setLoading(false) },
-                onSuccess = { location -> mapViewModel.setSearchedLocation(GeocodingResDto(
-                    latitude = it.latitude(),
-                    longitude = it.longitude(),
-                    name = location.name,
-                    fullName = location.fullName,
-                )) }
+                onSuccess = { location ->
+                    mapViewModel.setSearchedLocation(
+                        GeocodingResDto(
+                            latitude = it.latitude(),
+                            longitude = it.longitude(),
+                            name = location.name,
+                            fullName = location.fullName,
+                        )
+                    )
+                }
             )
             false
         },
@@ -100,7 +102,7 @@ private fun MapSetup(mapViewModel: MapViewModel) {
     MapEffect(Unit) { mapView ->
         configureMapBounds(mapView)
         handleOnMove(mapView, mapViewModel)
-        handleOnScale(mapView, mapViewModel)
+        handleOnScale(mapView) { mapViewModel.setZoomLevel(it) }
     }
 }
 
@@ -144,19 +146,6 @@ private fun handleOnMove(mapView: MapView, mapViewModel: MapViewModel) {
                 val center = mapView.mapboxMap.cameraState.center
                 mapViewModel.setCameraPosition(center.latitude(), center.longitude())
                 mapViewModel.scheduleMapSave(center)
-            }
-        }
-    )
-}
-
-private fun handleOnScale(mapView: MapView, mapViewModel: MapViewModel) {
-    mapView.mapboxMap.addOnScaleListener(
-        object : OnScaleListener {
-            override fun onScale(detector: StandardScaleGestureDetector) {}
-            override fun onScaleBegin(detector: StandardScaleGestureDetector) {}
-
-            override fun onScaleEnd(detector: StandardScaleGestureDetector) {
-                mapViewModel.setZoomLevel(mapView.mapboxMap.cameraState.zoom)
             }
         }
     )

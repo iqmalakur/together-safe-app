@@ -6,7 +6,7 @@ import com.mapbox.geojson.Point
 import com.togethersafe.app.data.dto.CategoryResDto
 import com.togethersafe.app.data.dto.IncidentDetailResDto
 import com.togethersafe.app.data.dto.IncidentResDto
-import com.togethersafe.app.data.dto.ReportPreviewDto
+import com.togethersafe.app.data.dto.ReportItemDto
 import com.togethersafe.app.repositories.IncidentRepository
 import com.togethersafe.app.utils.ApiErrorCallback
 import com.togethersafe.app.utils.ApiSuccessCallback
@@ -23,10 +23,12 @@ class IncidentViewModel @Inject constructor(private val repository: IncidentRepo
     private val _incidents = MutableStateFlow<List<IncidentResDto>>(emptyList())
     private val _selectedIncident = MutableStateFlow<IncidentDetailResDto?>(null)
     private val _categories = MutableStateFlow<List<CategoryResDto>>(emptyList())
+    private val _isLoadingIncident = MutableStateFlow<Boolean>(false)
 
     val incidents: StateFlow<List<IncidentResDto>> get() = _incidents
     val selectedIncident: StateFlow<IncidentDetailResDto?> get() = _selectedIncident
     val categories: StateFlow<List<CategoryResDto>> get() = _categories
+    val isLoadingIncident: StateFlow<Boolean> get() = _isLoadingIncident
 
     init {
         viewModelScope.launch {
@@ -41,11 +43,13 @@ class IncidentViewModel @Inject constructor(private val repository: IncidentRepo
     fun loadIncidents(location: Point, onError: ApiErrorCallback) {
         viewModelScope.launch {
             try {
+                _isLoadingIncident.value = true
                 _incidents.value =
                     repository.getIncidents(location.latitude(), location.longitude())
             } catch (e: Exception) {
                 handleApiError(this::class, e, onError)
             }
+            _isLoadingIncident.value = false
         }
     }
 
@@ -64,7 +68,7 @@ class IncidentViewModel @Inject constructor(private val repository: IncidentRepo
         incidentId: String,
         onError: ApiErrorCallback,
         onComplete: () -> Unit,
-        onSuccess: ApiSuccessCallback<List<ReportPreviewDto>>,
+        onSuccess: ApiSuccessCallback<List<ReportItemDto>>,
     ) {
         viewModelScope.launch {
             try {

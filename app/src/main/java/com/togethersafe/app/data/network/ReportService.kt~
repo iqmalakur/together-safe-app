@@ -1,6 +1,6 @@
 package com.togethersafe.app.data.network
 
-import com.togethersafe.app.data.dto.ReportItemDto
+import com.togethersafe.app.data.dto.ReportPreviewDto
 import com.togethersafe.app.data.dto.ReportResDto
 import com.togethersafe.app.data.dto.SuccessCreateDto
 import okhttp3.MultipartBody
@@ -14,7 +14,7 @@ import retrofit2.http.Path
 
 interface ReportService {
     @GET("report")
-    suspend fun fetchUserReport(@Header("Authorization") token: String): List<ReportItemDto>
+    suspend fun fetchUserReport(@Header("Authorization") token: String): List<ReportPreviewDto>
 
     @Multipart
     @POST("report")

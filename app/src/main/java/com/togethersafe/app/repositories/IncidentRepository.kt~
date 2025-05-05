@@ -3,7 +3,7 @@ package com.togethersafe.app.repositories
 import com.togethersafe.app.data.dto.CategoryResDto
 import com.togethersafe.app.data.dto.IncidentDetailResDto
 import com.togethersafe.app.data.dto.IncidentResDto
-import com.togethersafe.app.data.dto.ReportItemDto
+import com.togethersafe.app.data.dto.ReportPreviewDto
 import com.togethersafe.app.data.network.IncidentService
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -18,7 +18,7 @@ class IncidentRepository @Inject constructor(private val service: IncidentServic
         return service.fetchDetailIncident(id)
     }
 
-    suspend fun getIncidentReports(id: String): List<ReportItemDto> {
+    suspend fun getIncidentReports(id: String): List<ReportPreviewDto> {
         return service.fetchIncidentReports(id)
     }
 

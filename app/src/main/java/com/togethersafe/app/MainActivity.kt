@@ -12,6 +12,8 @@ import com.togethersafe.app.components.LocationPermissionHandler
 import com.togethersafe.app.components.SimpleDialog
 import com.togethersafe.app.components.SimpleToast
 import com.togethersafe.app.navigation.AppNavigation
+import com.togethersafe.app.utils.NetworkConnectivity
+import com.togethersafe.app.utils.NetworkMonitor
 import com.togethersafe.app.utils.getCurrentLocation
 import com.togethersafe.app.utils.isPermissionGranted
 import com.togethersafe.app.viewmodels.AppViewModel
@@ -29,6 +31,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val networkMonitor = NetworkMonitor(applicationContext)
 
         setContent {
             val isLoadIncident by appViewModel.isLoadIncident.collectAsState()
@@ -55,6 +58,7 @@ class MainActivity : ComponentActivity() {
 
             AppNavigation()
 
+            NetworkConnectivity(networkMonitor)
             LocationPermissionHandler()
             SimpleToast()
             SimpleDialog()
