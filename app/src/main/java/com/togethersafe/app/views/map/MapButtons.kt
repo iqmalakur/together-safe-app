@@ -80,10 +80,12 @@ fun ActionButton(compass: @Composable () -> Unit) {
             contentDescription = "Lokasi Saya",
             loadingState = isLoadingLocation,
             onClick = {
-                if (!isLocationEnabled(context)) {
-                    promptEnableGPS(context, appViewModel)
-                } else {
-                    mapViewModel.startTracking()
+                if (!isTracking) {
+                    if (!isLocationEnabled(context)) {
+                        promptEnableGPS(context, appViewModel)
+                    } else {
+                        mapViewModel.startTracking()
+                    }
                 }
             }
         )
