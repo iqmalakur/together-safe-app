@@ -7,6 +7,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Fullscreen
+import androidx.compose.material.icons.rounded.FullscreenExit
+import androidx.compose.material.icons.rounded.ZoomIn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,6 +37,7 @@ import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.style.MapStyle
 import com.mapbox.maps.plugin.gestures.OnMoveListener
 import com.mapbox.maps.plugin.gestures.addOnMoveListener
+import com.togethersafe.app.components.RoundedIconButton
 import com.togethersafe.app.components.ZoomButton
 import com.togethersafe.app.constants.MapConstants.ZOOM_DEFAULT
 import com.togethersafe.app.constants.MapConstants.ZOOM_STEP
@@ -51,6 +56,7 @@ fun LocationPicker(
     val mapViewportState = createMapViewportState(value)
     var selectedLocation by remember { mutableStateOf(value) }
     var zoomLevel by remember { mutableDoubleStateOf(ZOOM_DEFAULT) }
+    var isExpanded by remember { mutableStateOf(false) }
 
     LaunchedEffect(selectedLocation) {
         onChange(selectedLocation)
@@ -80,7 +86,12 @@ fun LocationPicker(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp)
+            .height(
+                when (isExpanded) {
+                    true -> 500.dp
+                    false -> 200.dp
+                }
+            )
             .pointerInteropFilter {
                 disableScroll()
                 false
@@ -119,9 +130,35 @@ fun LocationPicker(
             verticalArrangement = Arrangement.Bottom,
         ) {
             ZoomButton(
-                onZoomIn = { if (zoomLevel < 20.0) zoomLevel += ZOOM_STEP },
-                onZoomOut = { if (zoomLevel > 10.0) zoomLevel -= ZOOM_STEP },
+                onZoomIn = {
+                    if (zoomLevel < 20.0) zoomLevel += ZOOM_STEP
+                    enableScroll()
+                },
+                onZoomOut = {
+                    if (zoomLevel > 10.0) zoomLevel -= ZOOM_STEP
+                    enableScroll()
+                },
             )
+
+            if (!isExpanded) {
+                RoundedIconButton(
+                    imageVector = Icons.Rounded.Fullscreen,
+                    contentDescription = "Luaskan Peta",
+                    onClick = {
+                        isExpanded = true
+                        enableScroll()
+                    }
+                )
+            } else {
+                RoundedIconButton(
+                    imageVector = Icons.Rounded.FullscreenExit,
+                    contentDescription = "Kecilkan Peta",
+                    onClick = {
+                        isExpanded = false
+                        enableScroll()
+                    }
+                )
+            }
         }
     }
 }
