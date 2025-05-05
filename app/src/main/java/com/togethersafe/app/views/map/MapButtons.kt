@@ -23,6 +23,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.togethersafe.app.components.RoundedIconButton
+import com.togethersafe.app.components.ZoomButton
 import com.togethersafe.app.utils.getViewModel
 import com.togethersafe.app.utils.isLocationEnabled
 import com.togethersafe.app.utils.promptEnableGPS
@@ -55,16 +56,9 @@ fun ActionButton(compass: @Composable () -> Unit) {
             onClick = { appViewModel.setLoadIncident(true) }
         )
 
-        RoundedIconButton(
-            imageVector = Icons.Rounded.ZoomIn,
-            contentDescription = "Perbesar Peta",
-            onClick = { mapViewModel.zoomIn() }
-        )
-
-        RoundedIconButton(
-            imageVector = Icons.Rounded.ZoomOut,
-            contentDescription = "Perkecil Peta",
-            onClick = { mapViewModel.zoomOut() }
+        ZoomButton(
+            onZoomIn = { mapViewModel.zoomIn() },
+            onZoomOut = { mapViewModel.zoomOut() }
         )
 
         RoundedIconButton(

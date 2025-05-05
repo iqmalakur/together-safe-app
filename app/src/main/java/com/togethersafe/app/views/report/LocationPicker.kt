@@ -1,6 +1,9 @@
 package com.togethersafe.app.views.report
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -8,9 +11,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import com.mapbox.android.gestures.MoveGestureDetector
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraBoundsOptions
+import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapView
 import com.mapbox.maps.Style
 import com.mapbox.maps.extension.compose.MapEffect
@@ -27,6 +33,11 @@ import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.style.MapStyle
 import com.mapbox.maps.plugin.gestures.OnMoveListener
 import com.mapbox.maps.plugin.gestures.addOnMoveListener
+import com.togethersafe.app.components.ZoomButton
+import com.togethersafe.app.constants.MapConstants.ZOOM_DEFAULT
+import com.togethersafe.app.constants.MapConstants.ZOOM_MAX
+import com.togethersafe.app.constants.MapConstants.ZOOM_MIN
+import com.togethersafe.app.constants.MapConstants.ZOOM_STEP
 import com.togethersafe.app.utils.DestinationAnnotation
 import com.togethersafe.app.utils.createMapViewportState
 
@@ -40,9 +51,18 @@ fun LocationPicker(
 ) {
     val mapViewportState = createMapViewportState(value)
     var selectedLocation by remember { mutableStateOf(value) }
+    var zoomLevel by remember { mutableDoubleStateOf(ZOOM_DEFAULT) }
 
     LaunchedEffect(selectedLocation) {
         onChange(selectedLocation)
+    }
+
+    LaunchedEffect(zoomLevel) {
+        mapViewportState.flyTo(
+            CameraOptions.Builder()
+                .zoom(zoomLevel)
+                .build()
+        )
     }
 
     Text(
@@ -89,6 +109,19 @@ fun LocationPicker(
             }
 
             DestinationAnnotation(selectedLocation)
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(4.dp),
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.Bottom,
+        ) {
+            ZoomButton(
+                onZoomIn = { if (zoomLevel < ZOOM_MAX) zoomLevel += ZOOM_STEP },
+                onZoomOut = { if (zoomLevel > ZOOM_MIN) zoomLevel -= ZOOM_STEP },
+            )
         }
     }
 }
