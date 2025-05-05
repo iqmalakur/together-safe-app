@@ -35,11 +35,10 @@ import com.mapbox.maps.plugin.gestures.OnMoveListener
 import com.mapbox.maps.plugin.gestures.addOnMoveListener
 import com.togethersafe.app.components.ZoomButton
 import com.togethersafe.app.constants.MapConstants.ZOOM_DEFAULT
-import com.togethersafe.app.constants.MapConstants.ZOOM_MAX
-import com.togethersafe.app.constants.MapConstants.ZOOM_MIN
 import com.togethersafe.app.constants.MapConstants.ZOOM_STEP
 import com.togethersafe.app.utils.DestinationAnnotation
 import com.togethersafe.app.utils.createMapViewportState
+import com.togethersafe.app.utils.handleOnScale
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -106,6 +105,7 @@ fun LocationPicker(
                     mapView = mapView,
                     onMoveEnd = enableScroll,
                 )
+                handleOnScale(mapView) { zoomLevel = it }
             }
 
             DestinationAnnotation(selectedLocation)
@@ -119,8 +119,8 @@ fun LocationPicker(
             verticalArrangement = Arrangement.Bottom,
         ) {
             ZoomButton(
-                onZoomIn = { if (zoomLevel < ZOOM_MAX) zoomLevel += ZOOM_STEP },
-                onZoomOut = { if (zoomLevel > ZOOM_MIN) zoomLevel -= ZOOM_STEP },
+                onZoomIn = { if (zoomLevel < 20.0) zoomLevel += ZOOM_STEP },
+                onZoomOut = { if (zoomLevel > 10.0) zoomLevel -= ZOOM_STEP },
             )
         }
     }
