@@ -52,12 +52,7 @@ fun ActionButton(compass: @Composable () -> Unit) {
             imageVector = Icons.Rounded.Refresh,
             contentDescription = "Refresh Incident",
             loadingState = isLoadingIncident,
-            onClick = {
-                val cameraPosition = mapViewModel.cameraPosition.value
-                incidentViewModel.loadIncidents(cameraPosition) { _, errors ->
-                    appViewModel.setToastMessage(errors[0])
-                }
-            }
+            onClick = { appViewModel.setLoadIncident(true) }
         )
 
         RoundedIconButton(
