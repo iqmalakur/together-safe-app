@@ -6,6 +6,7 @@ import java.io.File
 data class ReportReqDto(
     val categoryId: Int,
     val description: String,
+    val isAnonymous: Boolean,
     val location: Point,
     val date: String,
     val time: String,
@@ -26,6 +27,7 @@ data class ReportResDto(
     val id: String,
     val incident: IncidentDto,
     val user: ReportUserDto,
+    val isAnonymous: Boolean,
     val description: String,
     val date: String,
     val time: String,
