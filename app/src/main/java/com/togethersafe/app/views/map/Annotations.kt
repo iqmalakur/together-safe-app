@@ -19,6 +19,7 @@ import com.mapbox.maps.plugin.annotation.generated.PolygonAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PolygonAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPolygonAnnotationManager
 import com.mapbox.maps.plugin.gestures.gestures
+import com.togethersafe.app.constants.MapConstants.EARTH_RADIUS_METERS
 import com.togethersafe.app.utils.DestinationAnnotation
 import com.togethersafe.app.utils.getViewModel
 import com.togethersafe.app.viewmodels.AppViewModel
@@ -133,16 +134,15 @@ private fun IncidentMarkers() {
 
 fun createCircleCoordinates(center: Point, radiusInMeters: Double, steps: Int = 64): List<Point> {
     val coordinates = mutableListOf<Point>()
-    val earthRadius = 6371000.0
 
     for (i in 0 until steps) {
         val angle = 2.0 * Math.PI * i / steps
         val dx = radiusInMeters * cos(angle)
         val dy = radiusInMeters * sin(angle)
 
-        val latitude = center.latitude() + (dy / earthRadius) * (180 / Math.PI)
+        val latitude = center.latitude() + (dy / EARTH_RADIUS_METERS) * (180 / Math.PI)
         val longitude = center.longitude() +
-                (dx / (earthRadius * cos(center.latitude() * Math.PI / 180))) *
+                (dx / (EARTH_RADIUS_METERS * cos(center.latitude() * Math.PI / 180))) *
                 (180 / Math.PI)
 
         coordinates.add(Point.fromLngLat(longitude, latitude))

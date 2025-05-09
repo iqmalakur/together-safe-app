@@ -9,4 +9,5 @@ object MapConstants {
     const val BEARING = 0.0
     const val LATITUDE_DEFAULT = -6.8789
     const val LONGITUDE_DEFAULT = 107.5420
+    const val EARTH_RADIUS_METERS = 6371000.0
 }

@@ -8,6 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import com.mapbox.geojson.Point
+import com.togethersafe.app.constants.MapConstants.EARTH_RADIUS_METERS
 import com.togethersafe.app.utils.IncidentSoundPlayer
 import com.togethersafe.app.utils.getViewModel
 import com.togethersafe.app.viewmodels.IncidentViewModel
@@ -55,12 +56,11 @@ fun IncidentWarning() {
 }
 
 fun Point.distanceTo(latitude: Double, longitude: Double): Double {
-    val R = 6371000.0
     val dLat = Math.toRadians(latitude - this.latitude())
     val dLon = Math.toRadians(longitude - this.longitude())
     val a = sin(dLat / 2) * sin(dLat / 2) +
             cos(Math.toRadians(this.latitude())) * cos(Math.toRadians(latitude)) *
             sin(dLon / 2) * sin(dLon / 2)
     val c = 2 * atan2(sqrt(a), sqrt(1 - a))
-    return R * c
+    return EARTH_RADIUS_METERS * c
 }
