@@ -5,12 +5,9 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import com.mapbox.geojson.Point
-import com.togethersafe.app.data.dto.IncidentResDto
 import com.togethersafe.app.utils.IncidentSoundPlayer
 import com.togethersafe.app.utils.getViewModel
 import com.togethersafe.app.viewmodels.IncidentViewModel
@@ -28,9 +25,8 @@ fun IncidentWarning() {
     val mapViewModel: MapViewModel = getViewModel()
 
     val userPosition by mapViewModel.userPosition.collectAsState()
+    val activeIncidentArea by incidentViewModel.activeIncidentArea.collectAsState()
     val incidents by incidentViewModel.incidents.collectAsState()
-
-    var incidentArea by remember { mutableStateOf<IncidentResDto?>(null) }
 
     val soundPlayer = remember { IncidentSoundPlayer(context) }
 
@@ -40,14 +36,14 @@ fun IncidentWarning() {
                 val distance = location.distanceTo(incident.latitude, incident.longitude)
 
                 if (distance <= incident.radius) {
-                    if (incidentArea != incident) {
-                        incidentArea = incident
+                    if (activeIncidentArea != incident) {
+                        incidentViewModel.setActiveIncidentArea(incident)
                         soundPlayer.playWarning(incident.riskLevel)
                     }
                     return@let
                 }
             }
-            if (incidentArea != null) incidentArea = null
+            if (activeIncidentArea != null) incidentViewModel.setActiveIncidentArea(null)
         }
     }
 
