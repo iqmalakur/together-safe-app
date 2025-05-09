@@ -1,15 +1,18 @@
 package com.togethersafe.app.components
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import com.mapbox.geojson.Point
+import com.togethersafe.app.data.dto.IncidentResDto
+import com.togethersafe.app.utils.IncidentSoundPlayer
 import com.togethersafe.app.utils.getViewModel
-import com.togethersafe.app.viewmodels.AppViewModel
 import com.togethersafe.app.viewmodels.IncidentViewModel
 import com.togethersafe.app.viewmodels.MapViewModel
 import kotlin.math.atan2
@@ -19,13 +22,17 @@ import kotlin.math.sqrt
 
 @Composable
 fun IncidentWarning() {
-    val appViewModel: AppViewModel = getViewModel()
+    val context = LocalContext.current
+
     val incidentViewModel: IncidentViewModel = getViewModel()
     val mapViewModel: MapViewModel = getViewModel()
 
     val userPosition by mapViewModel.userPosition.collectAsState()
     val incidents by incidentViewModel.incidents.collectAsState()
-    var isShowToast by remember { mutableStateOf(false) }
+
+    var incidentArea by remember { mutableStateOf<IncidentResDto?>(null) }
+
+    val soundPlayer = remember { IncidentSoundPlayer(context) }
 
     LaunchedEffect(userPosition) {
         userPosition?.let { location ->
@@ -33,17 +40,20 @@ fun IncidentWarning() {
                 val distance = location.distanceTo(incident.latitude, incident.longitude)
 
                 if (distance <= incident.radius) {
-                    isShowToast = true
+                    if (incidentArea != incident) {
+                        incidentArea = incident
+                        soundPlayer.playWarning(incident.riskLevel)
+                    }
                     return@let
                 }
             }
-            isShowToast = false
+            if (incidentArea != null) incidentArea = null
         }
     }
 
-    LaunchedEffect(isShowToast) {
-        if (isShowToast) {
-            appViewModel.setToastMessage("Anda Memasuki Wilayah Insiden")
+    DisposableEffect(Unit) {
+        onDispose {
+            soundPlayer.release()
         }
     }
 }
