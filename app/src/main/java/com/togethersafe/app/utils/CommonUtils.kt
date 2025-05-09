@@ -101,3 +101,12 @@ suspend fun withToken(
         onError(401, listOf("token tidak ditemukan"))
     }
 }
+
+fun getFormattedIncidentRisk(incidentRisk: String): String {
+    return when (incidentRisk) {
+        "high" -> "Tinggi"
+        "medium" -> "Sedang"
+        "low" -> "Rendah"
+        else -> "-"
+    }
+}

@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.togethersafe.app.utils.getFormattedIncidentRisk
 import com.togethersafe.app.utils.getViewModel
 import com.togethersafe.app.viewmodels.IncidentViewModel
 
@@ -66,7 +67,7 @@ fun IncidentWarningCard() {
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text("Kategori Insiden: ${incident.category}")
-                    Text("Level Risiko: ${incident.riskLevel}")
+                    Text("Level Risiko: ${getFormattedIncidentRisk(incident.riskLevel)}")
                 }
 
                 IconButton(
