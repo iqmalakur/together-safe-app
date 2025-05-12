@@ -30,7 +30,9 @@ fun VoteButtons(report: ReportResDto, isLoggedIn: Boolean, isUserOwnReport: Bool
     LaunchedEffect(report) {
         upvoteCount = report.upvote
         downvoteCount = report.downvote
+    }
 
+    LaunchedEffect(isLoggedIn) {
         if (isLoggedIn) {
             reportInteractionViewModel.findUserVote(
                 report.id,
