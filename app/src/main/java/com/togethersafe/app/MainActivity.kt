@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import com.togethersafe.app.components.IncidentWarning
 import com.togethersafe.app.components.LoadingOverlay
 import com.togethersafe.app.components.LocationPermissionHandler
 import com.togethersafe.app.components.SimpleDialog
@@ -14,8 +15,6 @@ import com.togethersafe.app.components.SimpleToast
 import com.togethersafe.app.navigation.AppNavigation
 import com.togethersafe.app.utils.NetworkConnectivity
 import com.togethersafe.app.utils.NetworkMonitor
-import com.togethersafe.app.utils.getCurrentLocation
-import com.togethersafe.app.utils.isPermissionGranted
 import com.togethersafe.app.viewmodels.AppViewModel
 import com.togethersafe.app.viewmodels.AuthViewModel
 import com.togethersafe.app.viewmodels.IncidentViewModel
@@ -37,9 +36,6 @@ class MainActivity : ComponentActivity() {
             val isLoadIncident by appViewModel.isLoadIncident.collectAsState()
 
             LaunchedEffect(Unit) {
-                if (isPermissionGranted(this@MainActivity))
-                    getCurrentLocation(this@MainActivity) {}
-
                 authViewModel.validateToken()
             }
 
@@ -59,6 +55,7 @@ class MainActivity : ComponentActivity() {
             AppNavigation()
 
             NetworkConnectivity(networkMonitor)
+            IncidentWarning()
             LocationPermissionHandler()
             SimpleToast()
             SimpleDialog()

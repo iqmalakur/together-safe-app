@@ -21,6 +21,8 @@ data class IncidentDetailResDto(
     val date: String,
     val time: String,
     val status: String,
+    val upvoteCount: Int,
+    val downvoteCount: Int,
     val mediaUrls: List<String>,
     val reports: List<ReportItemDto>,
 )

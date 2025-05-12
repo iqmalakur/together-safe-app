@@ -22,6 +22,7 @@ class ReportRepository @Inject constructor(private val service: ReportService) {
         val textPlain = "text/plain".toMediaType()
 
         val categoryId = body.categoryId.toString().toRequestBody(textPlain)
+        val isAnonymous = body.isAnonymous.toString().toRequestBody(textPlain)
         val description = body.description.toRequestBody(textPlain)
 
         val locationString = "${body.location.latitude()},${body.location.longitude()}"
@@ -38,6 +39,7 @@ class ReportRepository @Inject constructor(private val service: ReportService) {
         return service.createReport(
             token = token,
             categoryId = categoryId,
+            isAnonymous = isAnonymous,
             description = description,
             location = location,
             date = date,

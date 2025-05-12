@@ -86,14 +86,18 @@ fun ColumnScope.ReportDetailContent(report: ReportResDto) {
         item {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 UserProfile(
-                    imageModel = report.user.profilePhoto,
+                    imageModel = if (report.isAnonymous) null else report.user.profilePhoto,
                     size = 48.dp
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
-                    Text(text = report.user.name, fontWeight = FontWeight.Bold)
                     Text(
-                        text = "Reputasi: ${report.user.reputation}",
+                        text = if (report.isAnonymous) "Anonymous" else report.user.name,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "Reputasi: " +
+                                if (report.isAnonymous) "-" else report.user.reputation,
                         style = MaterialTheme.typography.bodySmall
                     )
                 }

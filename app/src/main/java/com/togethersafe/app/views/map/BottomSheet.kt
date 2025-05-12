@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.togethersafe.app.data.dto.IncidentDetailResDto
 import com.togethersafe.app.navigation.LocalNavController
+import com.togethersafe.app.utils.getFormattedIncidentRisk
 import com.togethersafe.app.utils.getViewModel
 import com.togethersafe.app.viewmodels.AppViewModel
 import com.togethersafe.app.viewmodels.IncidentViewModel
@@ -77,8 +78,10 @@ private fun BottomSheetContent(incident: IncidentDetailResDto) {
     InfoText("Lokasi", incident.location)
     InfoText("Tanggal", incident.date)
     InfoText("Jam", incident.time)
-    InfoText("Tingkat Risiko", incident.riskLevel)
+    InfoText("Tingkat Risiko", getFormattedIncidentRisk(incident.riskLevel))
     InfoText("Status", incident.status)
+    InfoText("Total Upvote", "${incident.upvoteCount}")
+    InfoText("Total Downvote", "${incident.downvoteCount}")
     InfoText("Jumlah Laporan", "${incident.reports.size}")
 
     Spacer(modifier = Modifier.height(16.dp))
@@ -161,6 +164,7 @@ private fun SeeMore(incidentId: String) {
                     onComplete = { appViewModel.setLoading(false) }
                 ) { reports ->
                     reportViewModel.setReportList(reports)
+                    incidentViewModel.clearSelectedIncident()
                     navController.navigate("report-list")
                 }
             }

@@ -21,11 +21,13 @@ import javax.inject.Inject
 class IncidentViewModel @Inject constructor(private val repository: IncidentRepository) :
     ViewModel() {
     private val _incidents = MutableStateFlow<List<IncidentResDto>>(emptyList())
+    private val _activeIncidentArea = MutableStateFlow<IncidentResDto?>(null)
     private val _selectedIncident = MutableStateFlow<IncidentDetailResDto?>(null)
     private val _categories = MutableStateFlow<List<CategoryResDto>>(emptyList())
     private val _isLoadingIncident = MutableStateFlow<Boolean>(false)
 
     val incidents: StateFlow<List<IncidentResDto>> get() = _incidents
+    val activeIncidentArea: StateFlow<IncidentResDto?> get() = _activeIncidentArea
     val selectedIncident: StateFlow<IncidentDetailResDto?> get() = _selectedIncident
     val categories: StateFlow<List<CategoryResDto>> get() = _categories
     val isLoadingIncident: StateFlow<Boolean> get() = _isLoadingIncident
@@ -38,6 +40,10 @@ class IncidentViewModel @Inject constructor(private val repository: IncidentRepo
                 handleApiError(this::class, e) { _, _ -> }
             }
         }
+    }
+
+    fun setActiveIncidentArea(incident: IncidentResDto?) {
+        _activeIncidentArea.value = incident
     }
 
     fun loadIncidents(location: Point, onError: ApiErrorCallback) {

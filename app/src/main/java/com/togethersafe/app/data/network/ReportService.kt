@@ -21,6 +21,7 @@ interface ReportService {
     suspend fun createReport(
         @Header("Authorization") token: String,
         @Part("categoryId") categoryId: RequestBody,
+        @Part("isAnonymous") isAnonymous: RequestBody,
         @Part("description") description: RequestBody,
         @Part("location") location: RequestBody,
         @Part("date") date: RequestBody,

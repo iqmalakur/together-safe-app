@@ -24,7 +24,6 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
-import com.togethersafe.app.constants.MapConstants.ZOOM_DEFAULT
 import com.togethersafe.app.data.model.DialogState
 import com.togethersafe.app.viewmodels.AppViewModel
 import com.togethersafe.app.viewmodels.MapViewModel
@@ -33,21 +32,27 @@ import com.togethersafe.app.viewmodels.MapViewModel
 @Composable
 fun GetUserLocation() {
     val activity = LocalActivity.current as ComponentActivity
+
     val appViewModel: AppViewModel = getViewModel()
     val mapViewModel: MapViewModel = getViewModel()
+
     val isLoadingLocation by mapViewModel.isLoadingLocation.collectAsState()
     val isTracking by mapViewModel.isTracking.collectAsState()
+
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(activity) }
     var lastKnownLocation by remember { mutableStateOf<Location?>(null) }
-
-    val updateLocation: (Location) -> Unit = { location ->
-        val latitude = location.latitude
-        val longitude = location.longitude
-        mapViewModel.setUserPosition(latitude, longitude)
-        if (isTracking) {
-            mapViewModel.setZoomLevel(ZOOM_DEFAULT)
-            mapViewModel.setCameraPosition(latitude, longitude)
-            if (isLoadingLocation) mapViewModel.setLoadingLocation(false)
+    val locationCallback = remember {
+        object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult) {
+                locationResult.locations.lastOrNull()?.let { location ->
+                    lastKnownLocation = location
+                    val latitude = location.latitude
+                    val longitude = location.longitude
+                    mapViewModel.setUserPosition(latitude, longitude)
+                    if (isTracking) mapViewModel.setCameraPosition(latitude, longitude)
+                    if (isLoadingLocation) mapViewModel.setLoadingLocation(false)
+                }
+            }
         }
     }
 
@@ -61,23 +66,24 @@ fun GetUserLocation() {
             fusedLocationClient.lastLocation.addOnSuccessListener { lastLocation ->
                 if (lastLocation != null) {
                     lastKnownLocation = lastLocation
-                    updateLocation(lastLocation)
+                    val lat = lastLocation.latitude
+                    val lon = lastLocation.longitude
+                    mapViewModel.setUserPosition(lat, lon)
+                    if (isTracking) mapViewModel.setCameraPosition(lat, lon)
+                    if (isLoadingLocation) mapViewModel.setLoadingLocation(false)
                 }
             }
 
-            getCurrentLocation(activity) { newLocation ->
-                var update = false
+            val locationRequest = LocationRequest.Builder(PRIORITY_HIGH_ACCURACY, 3000)
+                .setMinUpdateIntervalMillis(1000)
+                .setWaitForAccurateLocation(false)
+                .build()
 
-                if (lastKnownLocation == null) update = true
-                lastKnownLocation?.let {
-                    if (!isLocationSame(newLocation, it)) update = true
-                }
-
-                if (update) {
-                    lastKnownLocation = newLocation
-                    updateLocation(newLocation)
-                }
-            }
+            fusedLocationClient.requestLocationUpdates(
+                locationRequest,
+                locationCallback,
+                Looper.getMainLooper()
+            )
         }
     }
 }
@@ -86,32 +92,6 @@ fun isPermissionGranted(context: Context): Boolean {
     return ActivityCompat.checkSelfPermission(
         context, Manifest.permission.ACCESS_FINE_LOCATION
     ) == PackageManager.PERMISSION_GRANTED
-}
-
-@SuppressLint("MissingPermission")
-fun getCurrentLocation(context: Context, onLocationReceived: (Location) -> Unit) {
-    if (isPermissionGranted(context)) {
-        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-        val locationRequest = LocationRequest.Builder(PRIORITY_HIGH_ACCURACY, 1000)
-            .setWaitForAccurateLocation(false)
-            .setMinUpdateIntervalMillis(2000)
-            .build()
-
-        val locationCallback = object : LocationCallback() {
-            override fun onLocationResult(locationResult: LocationResult) {
-                locationResult.locations.lastOrNull()?.let { newLocation ->
-                    onLocationReceived(newLocation)
-                    fusedLocationClient.removeLocationUpdates(this)
-                }
-            }
-        }
-
-        fusedLocationClient.requestLocationUpdates(
-            locationRequest,
-            locationCallback,
-            Looper.getMainLooper()
-        )
-    }
 }
 
 fun isLocationEnabled(context: Context): Boolean {
