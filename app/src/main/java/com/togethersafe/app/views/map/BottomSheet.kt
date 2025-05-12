@@ -80,6 +80,8 @@ private fun BottomSheetContent(incident: IncidentDetailResDto) {
     InfoText("Jam", incident.time)
     InfoText("Tingkat Risiko", getFormattedIncidentRisk(incident.riskLevel))
     InfoText("Status", incident.status)
+    InfoText("Total Upvote", "${incident.upvoteCount}")
+    InfoText("Total Downvote", "${incident.downvoteCount}")
     InfoText("Jumlah Laporan", "${incident.reports.size}")
 
     Spacer(modifier = Modifier.height(16.dp))
@@ -162,6 +164,7 @@ private fun SeeMore(incidentId: String) {
                     onComplete = { appViewModel.setLoading(false) }
                 ) { reports ->
                     reportViewModel.setReportList(reports)
+                    incidentViewModel.clearSelectedIncident()
                     navController.navigate("report-list")
                 }
             }
