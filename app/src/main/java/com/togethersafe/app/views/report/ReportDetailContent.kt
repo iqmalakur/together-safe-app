@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -51,9 +52,11 @@ fun ColumnScope.ReportDetailContent(report: ReportResDto) {
     var isUserOwnReport by remember { mutableStateOf(false) }
     var userEmail by remember { mutableStateOf("") }
     var comments by remember { mutableStateOf<List<CommentResDto>>(emptyList()) }
+    var reputation by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(report) {
         comments = report.comments
+        reputation = report.user.reputation
 
         authViewModel.user.value?.let { user ->
             isLoggedIn = true
@@ -97,7 +100,7 @@ fun ColumnScope.ReportDetailContent(report: ReportResDto) {
                     )
                     Text(
                         text = "Reputasi: " +
-                                if (report.isAnonymous) "-" else report.user.reputation,
+                                if (report.isAnonymous) "-" else reputation,
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
@@ -150,7 +153,7 @@ fun ColumnScope.ReportDetailContent(report: ReportResDto) {
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                VoteButtons(report, isLoggedIn, isUserOwnReport)
+                VoteButtons(report, isLoggedIn, isUserOwnReport) { reputation = it }
                 Text("Status: ${report.status}")
             }
         }

@@ -2,12 +2,22 @@ package com.togethersafe.app.data.dto
 
 import java.util.Date
 
-data class VoteReqDto(val voteType: String?)
+data class VoteReqDto(
+    val prevVoteType: String?,
+    val newVoteType: String?,
+)
+
+data class UserVoteResDto(
+    val userEmail: String,
+    val reportId: String,
+    val type: String?,
+)
 
 data class VoteResDto(
     val userEmail: String,
     val reportId: String,
     val type: String?,
+    val reporterReputation: Int,
 )
 
 data class CommentReqDto(val comment: String)

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.togethersafe.app.data.dto.CommentResDto
+import com.togethersafe.app.data.dto.VoteResDto
 import com.togethersafe.app.repositories.ReportInteractionRepository
 import com.togethersafe.app.utils.ApiErrorCallback
 import com.togethersafe.app.utils.ApiSuccessCallback
@@ -42,7 +43,7 @@ class ReportInteractionViewModel @Inject constructor(
         prevVoteType: String?,
         targetVoteType: String?,
         onError: ApiErrorCallback,
-        onSuccess: (voteType: String?) -> Unit,
+        onSuccess: (voteType: VoteResDto) -> Unit,
         onComplete: () -> Unit,
     ) {
         viewModelScope.launch {
@@ -53,8 +54,8 @@ class ReportInteractionViewModel @Inject constructor(
                 }
 
                 withToken(context, onError) { token ->
-                    val result = repository.vote(token, reportId, voteType)
-                    onSuccess(result.type)
+                    val result = repository.vote(token, reportId, prevVoteType, voteType)
+                    onSuccess(result)
                 }
             } catch (e: Exception) {
                 handleApiError(this::class, e, onError)
