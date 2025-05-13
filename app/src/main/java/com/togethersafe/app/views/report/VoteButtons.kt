@@ -14,12 +14,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.togethersafe.app.data.dto.ReportResDto
+import com.togethersafe.app.data.dto.VoteResDto
 import com.togethersafe.app.utils.getViewModel
 import com.togethersafe.app.viewmodels.AppViewModel
 import com.togethersafe.app.viewmodels.ReportInteractionViewModel
 
 @Composable
-fun VoteButtons(report: ReportResDto, isLoggedIn: Boolean, isUserOwnReport: Boolean) {
+fun VoteButtons(
+    report: ReportResDto,
+    isLoggedIn: Boolean,
+    isUserOwnReport: Boolean,
+    onReputationChange: (Int) -> Unit
+) {
     val appViewModel: AppViewModel = getViewModel()
     val reportInteractionViewModel: ReportInteractionViewModel = getViewModel()
 
@@ -57,7 +63,8 @@ fun VoteButtons(report: ReportResDto, isLoggedIn: Boolean, isUserOwnReport: Bool
             }
         }
 
-        currentVote = it
+        currentVote = it.type
+        onReputationChange(it.reporterReputation)
     }
 
     VoteButton(
@@ -76,7 +83,8 @@ fun VoteButtons(report: ReportResDto, isLoggedIn: Boolean, isUserOwnReport: Bool
             }
         }
 
-        currentVote = it
+        currentVote = it.type
+        onReputationChange(it.reporterReputation)
     }
 }
 
@@ -87,7 +95,7 @@ private fun VoteButton(
     reportId: String,
     currentVote: String?,
     enabled: Boolean,
-    onSuccessVote: (newVote: String?) -> Unit
+    onSuccessVote: (newVote: VoteResDto) -> Unit
 ) {
     val appViewModel: AppViewModel = getViewModel()
     val reportInteractionViewModel: ReportInteractionViewModel = getViewModel()
