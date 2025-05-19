@@ -59,7 +59,6 @@ fun ReportListScreen() {
                         location = report.location,
                         date = report.date,
                         time = report.time,
-                        status = report.status,
                         onClick = {
                             appViewModel.setLoading(true)
                             reportViewModel.fetchDetailReport(

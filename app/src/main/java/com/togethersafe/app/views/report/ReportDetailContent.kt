@@ -52,11 +52,9 @@ fun ColumnScope.ReportDetailContent(report: ReportResDto) {
     var isUserOwnReport by remember { mutableStateOf(false) }
     var userEmail by remember { mutableStateOf("") }
     var comments by remember { mutableStateOf<List<CommentResDto>>(emptyList()) }
-    var reputation by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(report) {
         comments = report.comments
-        reputation = report.user.reputation
 
         authViewModel.user.value?.let { user ->
             isLoggedIn = true
@@ -99,8 +97,7 @@ fun ColumnScope.ReportDetailContent(report: ReportResDto) {
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "Reputasi: " +
-                                if (report.isAnonymous) "-" else reputation,
+                        text = if (report.isAnonymous) "-" else report.user.email,
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
@@ -153,8 +150,7 @@ fun ColumnScope.ReportDetailContent(report: ReportResDto) {
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                VoteButtons(report, isLoggedIn, isUserOwnReport) { reputation = it }
-                Text("Status: ${report.status}")
+                VoteButtons(report, isLoggedIn, isUserOwnReport)
             }
         }
 

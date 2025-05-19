@@ -2,7 +2,6 @@ package com.togethersafe.app.repositories
 
 import com.togethersafe.app.data.dto.CommentReqDto
 import com.togethersafe.app.data.dto.CommentResDto
-import com.togethersafe.app.data.dto.UserVoteResDto
 import com.togethersafe.app.data.dto.VoteReqDto
 import com.togethersafe.app.data.dto.VoteResDto
 import com.togethersafe.app.data.network.ReportInteractionService
@@ -11,18 +10,17 @@ import javax.inject.Singleton
 
 @Singleton
 class ReportInteractionRepository @Inject constructor(private val service: ReportInteractionService) {
-    suspend fun findUserVote(token: String, reportId: String): UserVoteResDto {
+    suspend fun findUserVote(token: String, reportId: String): VoteResDto {
         return service.findUserVote(token, reportId)
     }
 
     suspend fun vote(
         token: String,
         reportId: String,
-        prevVoteType: String?,
-        newVoteType: String?
+        voteType: String?,
     ): VoteResDto {
         return service.vote(
-            token, reportId, VoteReqDto(prevVoteType, newVoteType)
+            token, reportId, VoteReqDto(voteType)
         )
     }
 

@@ -18,7 +18,6 @@ data class RegisterReqDto(
     val name: String,
     val email: String,
     val password: String,
-    val phone: String,
     val profilePhoto: File?,
 )
 

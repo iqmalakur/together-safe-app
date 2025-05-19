@@ -21,7 +21,6 @@ interface AuthService {
         @Part("email") email: RequestBody,
         @Part("password") password: RequestBody,
         @Part("name") name: RequestBody,
-        @Part("phone") phone: RequestBody,
         @Part profilePhoto: MultipartBody.Part?,
     ): SuccessCreateDto
 

@@ -20,7 +20,6 @@ data class ReportItemDto(
     val location: String,
     val date: String,
     val time: String,
-    val status: String,
 )
 
 data class ReportResDto(
@@ -31,7 +30,6 @@ data class ReportResDto(
     val description: String,
     val date: String,
     val time: String,
-    val status: String,
     val location: String,
     val latitude: Double,
     val longitude: Double,

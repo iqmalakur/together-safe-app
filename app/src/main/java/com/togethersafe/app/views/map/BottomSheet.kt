@@ -79,7 +79,7 @@ private fun BottomSheetContent(incident: IncidentDetailResDto) {
     InfoText("Tanggal", incident.date)
     InfoText("Jam", incident.time)
     InfoText("Tingkat Risiko", getFormattedIncidentRisk(incident.riskLevel))
-    InfoText("Status", incident.status)
+    InfoText("Status", getFormattedIncidentStatus(incident.status))
     InfoText("Total Upvote", "${incident.upvoteCount}")
     InfoText("Total Downvote", "${incident.downvoteCount}")
     InfoText("Jumlah Laporan", "${incident.reports.size}")
@@ -172,4 +172,12 @@ private fun SeeMore(incidentId: String) {
     )
 
     Spacer(modifier = Modifier.height(16.dp))
+}
+
+private fun getFormattedIncidentStatus(status: String): String {
+    return when (status) {
+        "verified" -> "Terverifikasi"
+        "admin_verified" -> "Diverifikasi Admin"
+        else -> "Pending"
+    }
 }

@@ -98,7 +98,10 @@ private fun IncidentMarkers() {
             val polygon = polygonManager!!.create(
                 PolygonAnnotationOptions()
                     .withPoints(listOf(circlePoints))
-                    .withFillColor(getRiskLevelColor(incident.riskLevel))
+                    .withFillColor(
+                        if (incident.status == "pending") Color.Gray
+                        else getRiskLevelColor(incident.riskLevel)
+                    )
                     .withFillOpacity(0.3)
             )
 
