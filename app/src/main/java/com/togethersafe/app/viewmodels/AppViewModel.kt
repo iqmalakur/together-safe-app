@@ -16,6 +16,14 @@ class AppViewModel @Inject constructor() : ViewModel() {
     private val _isMenuOpen = MutableStateFlow(false)
     private val _isLoading = MutableStateFlow(false)
     private val _isLoadIncident = MutableStateFlow(true)
+    private val _incidentFilter = MutableStateFlow(
+        mapOf(
+            "Pending" to true,
+            "Rendah" to true,
+            "Sedang" to true,
+            "Tinggi" to true
+        )
+    )
 
     val isPermissionRequest: StateFlow<Boolean> get() = _isPermissionRequest
     val toastMessage: StateFlow<String> get() = _toastMessage
@@ -23,6 +31,7 @@ class AppViewModel @Inject constructor() : ViewModel() {
     val isMenuOpen: StateFlow<Boolean> get() = _isMenuOpen
     val isLoading: StateFlow<Boolean> get() = _isLoading
     val isLoadIncident: StateFlow<Boolean> get() = _isLoadIncident
+    val incidentFilter: StateFlow<Map<String, Boolean>> get() = _incidentFilter
 
     fun requestPermission(onResult: (() -> Unit)?) {
         _isPermissionRequest.value = true
@@ -52,5 +61,11 @@ class AppViewModel @Inject constructor() : ViewModel() {
 
     fun setLoadIncident(isLoadIncident: Boolean) {
         _isLoadIncident.value = isLoadIncident
+    }
+
+    fun setFilter(filter: String, isActive: Boolean) {
+        _incidentFilter.value = _incidentFilter.value.toMutableMap().apply {
+            this[filter] = isActive
+        }
     }
 }

@@ -32,6 +32,7 @@ import coil.compose.AsyncImage
 import com.togethersafe.app.data.dto.IncidentDetailResDto
 import com.togethersafe.app.navigation.LocalNavController
 import com.togethersafe.app.utils.getFormattedIncidentRisk
+import com.togethersafe.app.utils.getFormattedIncidentStatus
 import com.togethersafe.app.utils.getViewModel
 import com.togethersafe.app.viewmodels.AppViewModel
 import com.togethersafe.app.viewmodels.IncidentViewModel
@@ -172,12 +173,4 @@ private fun SeeMore(incidentId: String) {
     )
 
     Spacer(modifier = Modifier.height(16.dp))
-}
-
-private fun getFormattedIncidentStatus(status: String): String {
-    return when (status) {
-        "verified" -> "Terverifikasi"
-        "admin_verified" -> "Diverifikasi Admin"
-        else -> "Pending"
-    }
 }
