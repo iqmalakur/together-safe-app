@@ -14,7 +14,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AppViewModel @Inject constructor(@ApplicationContext private val context: Context) : ViewModel() {
+class AppViewModel @Inject constructor(@ApplicationContext private val context: Context) :
+    ViewModel() {
     private var _onLocationPermissionResult: (() -> Unit)? = null
     private val _isPermissionRequest = MutableStateFlow(false)
     private val _toastMessage = MutableStateFlow("")
@@ -22,6 +23,7 @@ class AppViewModel @Inject constructor(@ApplicationContext private val context: 
     private val _isMenuOpen = MutableStateFlow(false)
     private val _isLoading = MutableStateFlow(false)
     private val _isLoadIncident = MutableStateFlow(true)
+    private val _isShowIncidentList = MutableStateFlow(false)
     private val _incidentFilter = MutableStateFlow(
         mapOf(
             "Pending" to true,
@@ -37,6 +39,7 @@ class AppViewModel @Inject constructor(@ApplicationContext private val context: 
     val isMenuOpen: StateFlow<Boolean> get() = _isMenuOpen
     val isLoading: StateFlow<Boolean> get() = _isLoading
     val isLoadIncident: StateFlow<Boolean> get() = _isLoadIncident
+    val isShowIncidentList: StateFlow<Boolean> get() = _isShowIncidentList
     val incidentFilter: StateFlow<Map<String, Boolean>> get() = _incidentFilter
 
     init {
@@ -73,6 +76,10 @@ class AppViewModel @Inject constructor(@ApplicationContext private val context: 
 
     fun setLoadIncident(isLoadIncident: Boolean) {
         _isLoadIncident.value = isLoadIncident
+    }
+
+    fun setShowIncidentList(isShow: Boolean) {
+        _isShowIncidentList.value = isShow
     }
 
     fun setFilter(filter: String, isActive: Boolean) {

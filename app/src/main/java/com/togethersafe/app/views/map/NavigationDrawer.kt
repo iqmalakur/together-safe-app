@@ -107,7 +107,7 @@ private fun DrawerContent() {
         Column(modifier = Modifier.fillMaxSize()) {
             DrawerHeader()
 
-            DrawerItem("Insiden Terdekat") { navController.navigate("incident-list") }
+            DrawerItem("Insiden Terdekat") { appViewModel.setShowIncidentList(true) }
 
             LoginRequired { showDialog ->
                 DrawerItem("Tambah Laporan") {
