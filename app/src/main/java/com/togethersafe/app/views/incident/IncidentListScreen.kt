@@ -20,6 +20,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.togethersafe.app.components.AppHeader
 import com.togethersafe.app.components.ItemCard
+import com.togethersafe.app.utils.getFormattedIncidentRisk
+import com.togethersafe.app.utils.getFormattedIncidentStatus
 import com.togethersafe.app.utils.getViewModel
 import com.togethersafe.app.viewmodels.AppViewModel
 import com.togethersafe.app.viewmodels.IncidentViewModel
@@ -53,10 +55,11 @@ fun IncidentListScreen() {
                 items(incidents) { incident ->
                     ItemCard(
                         title = incident.category,
-                        description = "Potensi risiko: ${incident.riskLevel}",
+                        description = "Potensi risiko: ${getFormattedIncidentRisk(incident.riskLevel)}",
                         location = incident.location,
                         date = incident.date,
                         time = incident.time,
+                        status = getFormattedIncidentStatus(incident.status),
                         onClick = {
                             appViewModel.setLoading(true)
                             incidentViewModel.fetchIncidentById(

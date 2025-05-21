@@ -23,9 +23,8 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun StatusBadge(status: String) {
     val color = when (status.lowercase()) {
-        "verified" -> Color.Green
-        "invalid" -> Color.Red
-        else -> Color.Blue
+        "terverifikasi", "diverifikasi admin" -> Color.Blue
+        else -> Color.Gray
     }
 
     Text(
