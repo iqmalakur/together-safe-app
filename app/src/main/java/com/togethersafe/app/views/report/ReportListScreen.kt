@@ -40,6 +40,7 @@ fun ReportListScreen() {
         AppHeader("Laporan Insiden") {
             navController.popBackStack()
             reportViewModel.setReportList(emptyList())
+            appViewModel.setLoadIncident(true)
         }
 
         if (reports.isEmpty()) {
