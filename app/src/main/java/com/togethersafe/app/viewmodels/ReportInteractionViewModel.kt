@@ -54,7 +54,7 @@ class ReportInteractionViewModel @Inject constructor(
                 }
 
                 withToken(context, onError) { token ->
-                    val result = repository.vote(token, reportId, prevVoteType, voteType)
+                    val result = repository.vote(token, reportId, voteType)
                     onSuccess(result)
                 }
             } catch (e: Exception) {

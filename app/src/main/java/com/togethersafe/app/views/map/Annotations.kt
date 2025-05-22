@@ -18,9 +18,13 @@ import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.PolygonAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PolygonAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPolygonAnnotationManager
-import com.mapbox.maps.plugin.gestures.gestures
+import com.mapbox.maps.plugin.gestures.OnMapClickListener
+import com.mapbox.maps.plugin.gestures.addOnMapClickListener
+import com.mapbox.maps.plugin.gestures.removeOnMapClickListener
 import com.togethersafe.app.constants.MapConstants.EARTH_RADIUS_METERS
 import com.togethersafe.app.utils.DestinationAnnotation
+import com.togethersafe.app.utils.getFormattedIncidentRisk
+import com.togethersafe.app.utils.getFormattedIncidentStatus
 import com.togethersafe.app.utils.getViewModel
 import com.togethersafe.app.viewmodels.AppViewModel
 import com.togethersafe.app.viewmodels.GeolocationViewModel
@@ -78,12 +82,16 @@ private fun UserPosition(mapViewModel: MapViewModel) {
 private fun IncidentMarkers() {
     val appViewModel: AppViewModel = getViewModel()
     val incidentViewModel: IncidentViewModel = getViewModel()
+
     val incidents by incidentViewModel.incidents.collectAsState()
     val selectedIncident by incidentViewModel.selectedIncident.collectAsState()
+    val incidentFilter by appViewModel.incidentFilter.collectAsState()
+
     var polygonManager by remember { mutableStateOf<PolygonAnnotationManager?>(null) }
+    var mapClickListener by remember { mutableStateOf(OnMapClickListener { false }) }
     val sheetState = rememberModalBottomSheetState()
 
-    MapEffect(incidents) { mapView ->
+    MapEffect(incidents, incidentFilter) { mapView ->
         val mapboxMap = mapView.mapboxMap
 
         when (polygonManager) {
@@ -91,21 +99,29 @@ private fun IncidentMarkers() {
             else -> polygonManager!!.deleteAll()
         }
 
-        val polygons = incidents.map { incident ->
-            val center = Point.fromLngLat(incident.longitude, incident.latitude)
-            val circlePoints = createCircleCoordinates(center, incident.radius)
+        val polygons = incidents.mapNotNull { incident ->
+            if (incidentFilter[getFormattedIncidentRisk(incident.riskLevel)] == false) null
+            else if (incidentFilter[getFormattedIncidentStatus(incident.status)] == false) null
+            else {
+                val center = Point.fromLngLat(incident.longitude, incident.latitude)
+                val circlePoints = createCircleCoordinates(center, incident.radius)
 
-            val polygon = polygonManager!!.create(
-                PolygonAnnotationOptions()
-                    .withPoints(listOf(circlePoints))
-                    .withFillColor(getRiskLevelColor(incident.riskLevel))
-                    .withFillOpacity(0.3)
-            )
+                val polygon = polygonManager!!.create(
+                    PolygonAnnotationOptions()
+                        .withPoints(listOf(circlePoints))
+                        .withFillColor(
+                            if (incident.status == "pending") Color.Gray
+                            else getRiskLevelColor(incident.riskLevel)
+                        )
+                        .withFillOpacity(0.3)
+                )
 
-            Pair(polygon, incident)
+                Pair(polygon, incident)
+            }
         }
 
-        mapView.gestures.addOnMapClickListener { point ->
+        mapboxMap.removeOnMapClickListener(mapClickListener)
+        mapClickListener = OnMapClickListener { point ->
             val clickedLocation = mapboxMap.pixelForCoordinate(point)
             val tappedLatLng = mapboxMap.coordinateForPixel(clickedLocation)
 
@@ -116,15 +132,16 @@ private fun IncidentMarkers() {
 
                     incidentViewModel.fetchIncidentById(
                         id = incident.id,
-                        onError = { _, errors -> appViewModel.setToastMessage(errors[0]) })
-                    { appViewModel.setLoading(false) }
+                        onError = { _, errors -> appViewModel.setToastMessage(errors[0]) }
+                    ) { appViewModel.setLoading(false) }
 
-                    return@addOnMapClickListener true
+                    return@OnMapClickListener true
                 }
             }
 
             false
         }
+        mapboxMap.addOnMapClickListener(mapClickListener)
     }
 
     if (selectedIncident != null) {

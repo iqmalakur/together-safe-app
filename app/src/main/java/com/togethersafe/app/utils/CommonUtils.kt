@@ -110,3 +110,11 @@ fun getFormattedIncidentRisk(incidentRisk: String): String {
         else -> "-"
     }
 }
+
+fun getFormattedIncidentStatus(status: String): String {
+    return when (status) {
+        "verified" -> "Terverifikasi"
+        "admin_verified" -> "Diverifikasi Admin"
+        else -> "Pending"
+    }
+}

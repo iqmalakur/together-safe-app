@@ -134,7 +134,7 @@ fun CommentItem(
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "Reputasi: ${comment.user.reputation}",
+                    text = "${comment.user.email}",
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.Gray
                 )

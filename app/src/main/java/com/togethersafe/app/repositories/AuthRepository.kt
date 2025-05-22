@@ -30,7 +30,6 @@ class AuthRepository @Inject constructor(private val service: AuthService) {
 
         val name = registerDto.name.toRequestBody(textPlain)
         val email = registerDto.email.toRequestBody(textPlain)
-        val phone = registerDto.phone.toRequestBody(textPlain)
         val password = registerDto.password.toRequestBody(textPlain)
 
         var profilePhoto: MultipartBody.Part? = null
@@ -44,7 +43,6 @@ class AuthRepository @Inject constructor(private val service: AuthService) {
         return service.register(
             name = name,
             email = email,
-            phone = phone,
             password = password,
             profilePhoto = profilePhoto,
         )

@@ -13,7 +13,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -27,6 +30,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -101,7 +107,7 @@ private fun DrawerContent() {
         Column(modifier = Modifier.fillMaxSize()) {
             DrawerHeader()
 
-            DrawerItem("Insiden Terdekat") { navController.navigate("incident-list") }
+            DrawerItem("Insiden Terdekat") { appViewModel.setShowIncidentList(true) }
 
             LoginRequired { showDialog ->
                 DrawerItem("Tambah Laporan") {
@@ -124,6 +130,8 @@ private fun DrawerContent() {
                     }
                 }
             }
+
+            IncidentFilterDropdown()
 
             Spacer(modifier = Modifier.weight(1f))
 
@@ -148,6 +156,70 @@ private fun DrawerContent() {
         }
     }
 }
+
+@Composable
+fun IncidentFilterDropdown() {
+    val appViewModel: AppViewModel = getViewModel()
+
+    val statusOptions = listOf("Pending")
+    val riskOptions = listOf("Rendah", "Sedang", "Tinggi")
+
+    var expanded by remember { mutableStateOf(false) }
+    val incidentFilter by appViewModel.incidentFilter.collectAsState()
+
+    Column {
+        DrawerItem("Filter Insiden") { expanded = true }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.width(250.dp)
+        ) {
+            Text(
+                "Status",
+                modifier = Modifier.padding(8.dp),
+                style = MaterialTheme.typography.titleSmall
+            )
+            statusOptions.forEach { option ->
+                DropdownMenuItem(
+                    text = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Checkbox(
+                                checked = incidentFilter[option] ?: false,
+                                onCheckedChange = { appViewModel.setFilter(option, it) }
+                            )
+                            Text(option)
+                        }
+                    },
+                    onClick = {}
+                )
+            }
+
+            HorizontalDivider()
+
+            Text(
+                "Tingkat Risiko",
+                modifier = Modifier.padding(8.dp),
+                style = MaterialTheme.typography.titleSmall
+            )
+            riskOptions.forEach { option ->
+                DropdownMenuItem(
+                    text = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Checkbox(
+                                checked = incidentFilter[option] ?: false,
+                                onCheckedChange = { appViewModel.setFilter(option, it) }
+                            )
+                            Text(option)
+                        }
+                    },
+                    onClick = {}
+                )
+            }
+        }
+    }
+}
+
 
 @Composable
 private fun DrawerHeader() {

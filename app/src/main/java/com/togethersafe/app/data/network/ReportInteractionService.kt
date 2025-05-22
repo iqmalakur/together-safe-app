@@ -2,7 +2,6 @@ package com.togethersafe.app.data.network
 
 import com.togethersafe.app.data.dto.CommentReqDto
 import com.togethersafe.app.data.dto.CommentResDto
-import com.togethersafe.app.data.dto.UserVoteResDto
 import com.togethersafe.app.data.dto.VoteReqDto
 import com.togethersafe.app.data.dto.VoteResDto
 import retrofit2.http.Body
@@ -18,7 +17,7 @@ interface ReportInteractionService {
     suspend fun findUserVote(
         @Header("Authorization") token: String,
         @Path("reportId") reportId: String,
-    ): UserVoteResDto
+    ): VoteResDto
 
     @PATCH("report/{reportId}/vote")
     suspend fun vote(

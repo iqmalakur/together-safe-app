@@ -36,7 +36,7 @@ fun IncidentWarning() {
             incidents.forEach { incident ->
                 val distance = location.distanceTo(incident.latitude, incident.longitude)
 
-                if (distance <= incident.radius) {
+                if (distance <= incident.radius && incident.status != "pending") {
                     if (activeIncidentArea != incident) {
                         incidentViewModel.setActiveIncidentArea(incident)
                         soundPlayer.playWarning(incident.riskLevel)

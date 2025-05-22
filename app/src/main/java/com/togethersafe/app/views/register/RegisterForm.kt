@@ -38,7 +38,6 @@ fun RegisterForm() {
     var errorMessages by remember { mutableStateOf<List<String>>(emptyList()) }
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
-    var phone by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
 
@@ -65,15 +64,6 @@ fun RegisterForm() {
         value = email,
         keyboardType = KeyboardType.Email,
         onValueChange = { email = it }
-    )
-
-    Spacer(modifier = Modifier.height(8.dp))
-
-    InputTextField(
-        label = "Nomor Telepon",
-        value = phone,
-        keyboardType = KeyboardType.Phone,
-        onValueChange = { phone = it }
     )
 
     Spacer(modifier = Modifier.height(8.dp))
@@ -121,7 +111,6 @@ fun RegisterForm() {
                     name = name,
                     email = email,
                     password = password,
-                    phone = phone,
                     profilePhoto = profilePhoto
                 ),
                 onError = { _, messages -> errorMessages = messages },

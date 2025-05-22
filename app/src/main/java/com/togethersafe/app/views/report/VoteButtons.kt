@@ -24,7 +24,6 @@ fun VoteButtons(
     report: ReportResDto,
     isLoggedIn: Boolean,
     isUserOwnReport: Boolean,
-    onReputationChange: (Int) -> Unit
 ) {
     val appViewModel: AppViewModel = getViewModel()
     val reportInteractionViewModel: ReportInteractionViewModel = getViewModel()
@@ -64,7 +63,6 @@ fun VoteButtons(
         }
 
         currentVote = it.type
-        onReputationChange(it.reporterReputation)
     }
 
     VoteButton(
@@ -84,7 +82,6 @@ fun VoteButtons(
         }
 
         currentVote = it.type
-        onReputationChange(it.reporterReputation)
     }
 }
 

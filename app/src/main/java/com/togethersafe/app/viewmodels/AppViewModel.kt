@@ -1,14 +1,21 @@
 package com.togethersafe.app.viewmodels
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.togethersafe.app.data.model.DialogState
+import com.togethersafe.app.utils.getIncidentFilter
+import com.togethersafe.app.utils.saveIncidentFilter
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AppViewModel @Inject constructor() : ViewModel() {
+class AppViewModel @Inject constructor(@ApplicationContext private val context: Context) :
+    ViewModel() {
     private var _onLocationPermissionResult: (() -> Unit)? = null
     private val _isPermissionRequest = MutableStateFlow(false)
     private val _toastMessage = MutableStateFlow("")
@@ -16,6 +23,15 @@ class AppViewModel @Inject constructor() : ViewModel() {
     private val _isMenuOpen = MutableStateFlow(false)
     private val _isLoading = MutableStateFlow(false)
     private val _isLoadIncident = MutableStateFlow(true)
+    private val _isShowIncidentList = MutableStateFlow(false)
+    private val _incidentFilter = MutableStateFlow(
+        mapOf(
+            "Pending" to true,
+            "Rendah" to true,
+            "Sedang" to true,
+            "Tinggi" to true
+        )
+    )
 
     val isPermissionRequest: StateFlow<Boolean> get() = _isPermissionRequest
     val toastMessage: StateFlow<String> get() = _toastMessage
@@ -23,6 +39,14 @@ class AppViewModel @Inject constructor() : ViewModel() {
     val isMenuOpen: StateFlow<Boolean> get() = _isMenuOpen
     val isLoading: StateFlow<Boolean> get() = _isLoading
     val isLoadIncident: StateFlow<Boolean> get() = _isLoadIncident
+    val isShowIncidentList: StateFlow<Boolean> get() = _isShowIncidentList
+    val incidentFilter: StateFlow<Map<String, Boolean>> get() = _incidentFilter
+
+    init {
+        viewModelScope.launch {
+            getIncidentFilter(context)?.let { _incidentFilter.value = it }
+        }
+    }
 
     fun requestPermission(onResult: (() -> Unit)?) {
         _isPermissionRequest.value = true
@@ -52,5 +76,19 @@ class AppViewModel @Inject constructor() : ViewModel() {
 
     fun setLoadIncident(isLoadIncident: Boolean) {
         _isLoadIncident.value = isLoadIncident
+    }
+
+    fun setShowIncidentList(isShow: Boolean) {
+        _isShowIncidentList.value = isShow
+    }
+
+    fun setFilter(filter: String, isActive: Boolean) {
+        _incidentFilter.value = _incidentFilter.value.toMutableMap().apply {
+            this[filter] = isActive
+        }
+
+        viewModelScope.launch {
+            saveIncidentFilter(context, _incidentFilter.value)
+        }
     }
 }

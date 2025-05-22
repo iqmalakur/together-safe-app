@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.google.gson.Gson
 import com.mapbox.geojson.Point
 import com.togethersafe.app.data.dto.AuthResDto
 import com.togethersafe.app.data.model.User
@@ -15,6 +16,7 @@ import org.json.JSONObject
 private val Context.datastore: DataStore<Preferences> by preferencesDataStore(name = "TogetherSafe")
 
 private val MAP_LOCATION_KEY = stringPreferencesKey("map")
+private val FILTER_KEY = stringPreferencesKey("filter")
 private val USER_PROFILE_KEY = stringPreferencesKey("user_profile")
 private val TOKEN_KEY = stringPreferencesKey("token")
 
@@ -83,3 +85,20 @@ suspend fun removeUser(context: Context) {
         prefs.remove(TOKEN_KEY)
     }
 }
+
+suspend fun saveIncidentFilter(context: Context, filterMap: Map<String, Boolean>) {
+    val json = gson.toJson(filterMap)
+    context.datastore.edit { prefs ->
+        prefs[FILTER_KEY] = json
+    }
+}
+
+@Suppress("UNCHECKED_CAST")
+suspend fun getIncidentFilter(context: Context): Map<String, Boolean>? {
+    val prefs = context.datastore.data.first()
+    val json = prefs[FILTER_KEY]
+    return json?.let {
+        gson.fromJson(it, Map::class.java) as Map<String, Boolean>
+    }
+}
+
