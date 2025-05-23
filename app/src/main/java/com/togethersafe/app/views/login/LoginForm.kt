@@ -52,19 +52,6 @@ fun LoginForm() {
 
     ErrorMessages(errorMessages)
 
-    Spacer(modifier = Modifier.height(16.dp))
-
-    Text("atau", fontSize = 14.sp, color = Color.Gray)
-
-    Spacer(modifier = Modifier.height(8.dp))
-
-    OutlinedRoundedButton(
-        text = "Masuk dengan google",
-        testTag = "GoogleLoginButton",
-        contentDescription = "Tombol masuk dengan google",
-        onClick = { /* TODO: handle login with google */ },
-    )
-
     Spacer(modifier = Modifier.height(24.dp))
 
     OutlinedRoundedButton(

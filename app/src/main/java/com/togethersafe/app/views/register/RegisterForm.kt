@@ -78,19 +78,6 @@ fun RegisterForm() {
 
     ErrorMessages(errorMessages)
 
-    Spacer(modifier = Modifier.height(16.dp))
-
-    Text("atau", fontSize = 14.sp, color = Color.Gray)
-
-    Spacer(modifier = Modifier.height(8.dp))
-
-    OutlinedRoundedButton(
-        text = "Daftar dengan google",
-        testTag = "GoogleRegisterButton",
-        contentDescription = "Tombol daftar dengan google",
-        onClick = { /* TODO: handle register with google */ },
-    )
-
     Spacer(modifier = Modifier.height(24.dp))
 
     OutlinedRoundedButton(
