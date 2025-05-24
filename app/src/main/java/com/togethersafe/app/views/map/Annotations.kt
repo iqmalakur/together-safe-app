@@ -36,18 +36,22 @@ import kotlin.math.sin
 @Composable
 fun Annotations() {
     val mapViewModel: MapViewModel = getViewModel()
-    val geolocationViewModel: GeolocationViewModel = getViewModel()
-
-    val userPosition by mapViewModel.userPosition.collectAsState()
     val searchedLocation by mapViewModel.searchedLocation.collectAsState()
-    val routes by geolocationViewModel.routes.collectAsState()
 
-    if (userPosition != null) UserPosition(mapViewModel)
     if (searchedLocation != null) {
         val point = Point.fromLngLat(searchedLocation!!.longitude, searchedLocation!!.latitude)
         DestinationAnnotation(point)
     }
+
+    UserPosition()
     IncidentMarkers()
+    DrawRoutes()
+}
+
+@Composable
+private fun DrawRoutes() {
+    val geolocationViewModel: GeolocationViewModel = getViewModel()
+    val routes by geolocationViewModel.routes.collectAsState()
 
     if (routes.isNotEmpty()) {
         routes.forEach {
@@ -60,20 +64,23 @@ fun Annotations() {
 }
 
 @Composable
-private fun UserPosition(mapViewModel: MapViewModel) {
+private fun UserPosition() {
+    val mapViewModel: MapViewModel = getViewModel()
     val userPosition by mapViewModel.userPosition.collectAsState()
 
-    CircleAnnotation(userPosition!!) {
-        circleRadius = 16.0
-        circleColor = Color(0x553498DB)
-        circleStrokeWidth = 0.0
-    }
+    userPosition?.let {
+        CircleAnnotation(it) {
+            circleRadius = 16.0
+            circleColor = Color(0x553498DB)
+            circleStrokeWidth = 0.0
+        }
 
-    CircleAnnotation(userPosition!!) {
-        circleRadius = 8.0
-        circleColor = Color.Cyan
-        circleStrokeWidth = 2.0
-        circleStrokeColor = Color.Black
+        CircleAnnotation(it) {
+            circleRadius = 8.0
+            circleColor = Color.Cyan
+            circleStrokeWidth = 2.0
+            circleStrokeColor = Color.Black
+        }
     }
 }
 
