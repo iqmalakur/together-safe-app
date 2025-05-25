@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Fullscreen
 import androidx.compose.material.icons.rounded.FullscreenExit
-import androidx.compose.material.icons.rounded.ZoomIn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,7 +36,9 @@ import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.style.MapStyle
 import com.mapbox.maps.plugin.gestures.OnMoveListener
 import com.mapbox.maps.plugin.gestures.addOnMoveListener
+import com.togethersafe.app.components.IncidentMarkers
 import com.togethersafe.app.components.RoundedIconButton
+import com.togethersafe.app.components.UserPosition
 import com.togethersafe.app.components.ZoomButton
 import com.togethersafe.app.constants.MapConstants.ZOOM_DEFAULT
 import com.togethersafe.app.constants.MapConstants.ZOOM_STEP
@@ -119,6 +120,8 @@ fun LocationPicker(
                 handleOnScale(mapView) { zoomLevel = it }
             }
 
+            UserPosition()
+            IncidentMarkers()
             DestinationAnnotation(selectedLocation)
         }
 
