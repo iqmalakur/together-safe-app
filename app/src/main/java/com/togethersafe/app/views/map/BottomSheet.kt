@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.togethersafe.app.data.dto.IncidentDetailResDto
@@ -109,19 +110,30 @@ private fun InfoText(label: String, value: String) {
 private fun BottomSheetMedia(incident: IncidentDetailResDto) {
     SectionTitle("Lampiran Gambar")
 
-    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        itemsIndexed(incident.mediaUrls.take(3)) { index, mediaUrl ->
-            AsyncImage(
-                model = mediaUrl,
-                contentDescription = "Lampiran Gambar",
-                modifier = Modifier
-                    .testTag("IncidentDetail-Image-$index")
-                    .size(120.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .border(1.dp, Color.Gray, RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.Crop
-            )
+    if (incident.mediaUrls.isNotEmpty()) {
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            itemsIndexed(incident.mediaUrls.take(3)) { index, mediaUrl ->
+                AsyncImage(
+                    model = mediaUrl,
+                    contentDescription = "Lampiran Gambar",
+                    modifier = Modifier
+                        .testTag("IncidentDetail-Image-$index")
+                        .size(120.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .border(1.dp, Color.Gray, RoundedCornerShape(8.dp)),
+                    contentScale = ContentScale.Crop
+                )
+            }
         }
+    } else {
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = "Tidak ada lampiran gambar",
+            textAlign = TextAlign.Center,
+            color = Color.Gray,
+        )
     }
 
     Spacer(modifier = Modifier.height(16.dp))
@@ -137,6 +149,8 @@ private fun BottomSheetReport(
     val navController = LocalNavController.current
 
     SectionTitle("Laporan Terkait")
+
+    Spacer(modifier = Modifier.height(8.dp))
 
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp),

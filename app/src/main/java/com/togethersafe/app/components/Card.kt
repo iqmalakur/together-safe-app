@@ -79,10 +79,8 @@ fun ItemCard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Row(
+            Column(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = "$date • $time",
@@ -91,7 +89,13 @@ fun ItemCard(
                 )
 
                 if (status != null) {
-                    StatusBadge(status = status)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        StatusBadge(status = status)
+                    }
                 }
             }
         }
