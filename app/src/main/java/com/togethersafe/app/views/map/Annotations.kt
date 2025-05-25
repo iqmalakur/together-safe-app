@@ -3,6 +3,7 @@ package com.togethersafe.app.views.map
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -66,7 +67,17 @@ private fun DrawRoutes() {
 @Composable
 private fun UserPosition() {
     val mapViewModel: MapViewModel = getViewModel()
+
     val userPosition by mapViewModel.userPosition.collectAsState()
+    val isLoadingLocation by mapViewModel.isLoadingLocation.collectAsState()
+    val isTracking by mapViewModel.isTracking.collectAsState()
+
+    LaunchedEffect(userPosition) {
+        userPosition?.let {
+            if (isTracking) mapViewModel.setCameraPosition(it.latitude(), it.longitude())
+            if (isLoadingLocation) mapViewModel.setLoadingLocation(false)
+        }
+    }
 
     userPosition?.let {
         CircleAnnotation(it) {
