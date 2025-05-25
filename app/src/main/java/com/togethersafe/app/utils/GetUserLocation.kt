@@ -49,8 +49,6 @@ fun GetUserLocation() {
                     val latitude = location.latitude
                     val longitude = location.longitude
                     mapViewModel.setUserPosition(latitude, longitude)
-                    if (isTracking) mapViewModel.setCameraPosition(latitude, longitude)
-                    if (isLoadingLocation) mapViewModel.setLoadingLocation(false)
                 }
             }
         }
