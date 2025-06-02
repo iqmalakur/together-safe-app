@@ -24,6 +24,6 @@ interface AuthService {
         @Part profilePhoto: MultipartBody.Part?,
     ): SuccessCreateDto
 
-    @POST("auth/validate_token")
+    @POST("auth/validate-token")
     suspend fun validateToken(@Body body: ValidateTokenReqDto): AuthResDto
 }
