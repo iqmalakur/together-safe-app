@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import com.togethersafe.app.components.AppHeader
 import com.togethersafe.app.navigation.LocalNavController
 import com.togethersafe.app.utils.getViewModel
+import com.togethersafe.app.viewmodels.AppViewModel
 import com.togethersafe.app.viewmodels.ReportViewModel
 
 @Composable
@@ -24,6 +25,7 @@ fun ReportDetailScreen() {
     val navController = LocalNavController.current
     val focusManager = LocalFocusManager.current
 
+    val appViewModel: AppViewModel = getViewModel()
     val reportViewModel: ReportViewModel = getViewModel()
     val report by reportViewModel.report.collectAsState()
 
@@ -40,6 +42,7 @@ fun ReportDetailScreen() {
                 .fillMaxSize()
         ) {
             AppHeader("Detail Laporan Insiden") {
+                appViewModel.setLoadIncident(true)
                 navController.popBackStack()
                 reportViewModel.resetReport()
             }
