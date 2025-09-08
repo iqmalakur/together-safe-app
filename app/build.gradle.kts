@@ -19,7 +19,7 @@ val apiUrl = config.getProperty("API_URL") ?: ""
 
 android {
     namespace = "com.togethersafe.app"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.togethersafe.app"
