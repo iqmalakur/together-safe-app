@@ -15,9 +15,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewModelScope
 import com.togethersafe.app.data.dto.CategoryResDto
 import com.togethersafe.app.utils.getViewModel
+import com.togethersafe.app.utils.handleApiError
 import com.togethersafe.app.viewmodels.IncidentViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,6 +31,10 @@ fun CategoryDropdown(
     val incidentViewModel: IncidentViewModel = getViewModel()
     val categories by incidentViewModel.categories.collectAsState()
     var expanded by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        incidentViewModel.fetchIncidentCategories()
+    }
 
     LaunchedEffect(categories) {
         if (categories.isNotEmpty()) onCategorySelected(categories[0])

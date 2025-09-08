@@ -42,6 +42,16 @@ class IncidentViewModel @Inject constructor(private val repository: IncidentRepo
         }
     }
 
+    fun fetchIncidentCategories() {
+        viewModelScope.launch {
+            try {
+                _categories.value = repository.getIncidentCategories()
+            } catch (e: Exception) {
+                handleApiError(this::class, e) { _, _ -> }
+            }
+        }
+    }
+
     fun setActiveIncidentArea(incident: IncidentResDto?) {
         _activeIncidentArea.value = incident
     }
